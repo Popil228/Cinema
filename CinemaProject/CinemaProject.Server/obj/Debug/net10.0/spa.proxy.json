@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:57075",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\..\\cinemaproject.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}

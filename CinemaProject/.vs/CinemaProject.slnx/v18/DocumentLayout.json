@@ -1,0 +1,49 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Cinema\\Cinema\\CinemaProject\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{933C1B05-6474-10D4-A39A-50CC3B3D69A6}|cinemaproject.client\\cinemaproject.client.esproj|d:\\cinema\\cinema\\cinemaproject\\cinemaproject.client\\.vscode\\launch.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{933C1B05-6474-10D4-A39A-50CC3B3D69A6}|cinemaproject.client\\cinemaproject.client.esproj|solutionrelative:cinemaproject.client\\.vscode\\launch.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 308,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0174dea2-fdbe-4ef1-8f99-c0beae78880f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "launch.json",
+              "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\cinemaproject.client\\.vscode\\launch.json",
+              "RelativeDocumentMoniker": "cinemaproject.client\\.vscode\\launch.json",
+              "ToolTip": "D:\\Cinema\\Cinema\\CinemaProject\\cinemaproject.client\\.vscode\\launch.json",
+              "RelativeToolTip": "cinemaproject.client\\.vscode\\launch.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-12T18:22:45.642Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

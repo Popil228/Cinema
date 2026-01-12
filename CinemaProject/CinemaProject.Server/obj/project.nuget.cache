@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "zIBg0xsx1U0=",
+  "success": true,
+  "projectFilePath": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\CinemaProject.Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\galen\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.1\\microsoft.aspnetcore.openapi.10.0.1.nupkg.sha512",
+    "C:\\Users\\galen\\.nuget\\packages\\microsoft.aspnetcore.spaproxy\\10.0.1\\microsoft.aspnetcore.spaproxy.10.0.1.nupkg.sha512",
+    "C:\\Users\\galen\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
