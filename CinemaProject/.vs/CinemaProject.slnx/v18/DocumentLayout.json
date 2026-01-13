@@ -77,6 +77,19 @@
           "SelectedChildIndex": 9,
           "Children": [
             {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\appsettings.json",
+              "RelativeDocumentMoniker": "CinemaProject.Server\\appsettings.json",
+              "ToolTip": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\appsettings.json",
+              "RelativeToolTip": "CinemaProject.Server\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-13T14:01:51.047Z",
+              "IsPinned": true
+            },
+            {
               "$type": "Bookmark",
               "Name": "ST:0:0:{0174dea2-fdbe-4ef1-8f99-c0beae78880f}"
             },
@@ -87,18 +100,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\appsettings.json",
-              "RelativeDocumentMoniker": "CinemaProject.Server\\appsettings.json",
-              "ToolTip": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\appsettings.json",
-              "RelativeToolTip": "CinemaProject.Server\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-01-13T14:01:51.047Z"
             },
             {
               "$type": "Document",
@@ -168,7 +169,7 @@
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\Movie.cs",
               "ToolTip": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\Movie.cs",
               "RelativeToolTip": "CinemaProject.Server\\Models\\Entitys\\Movie.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA5AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-13T10:30:37.932Z",
               "EditorCaption": ""
@@ -267,8 +268,7 @@
               "RelativeToolTip": "CinemaProject.Server\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T07:34:09.985Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-13T07:34:09.985Z"
             },
             {
               "$type": "Document",
@@ -281,6 +281,10 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2026-01-12T19:20:09.676Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             }
           ]
         }
