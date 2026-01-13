@@ -9,7 +9,7 @@
       "CinemaProject.Server/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": "10.0.1",
-          "Microsoft.AspNetCore.SpaProxy": "10.0.1",
+          "Microsoft.AspNetCore.SpaProxy": "10.0.2",
           "Microsoft.EntityFrameworkCore.SqlServer": "10.0.1",
           "Microsoft.EntityFrameworkCore.Tools": "10.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0"
@@ -63,11 +63,11 @@
           }
         }
       },
-      "Microsoft.AspNetCore.SpaProxy/10.0.1": {
+      "Microsoft.AspNetCore.SpaProxy/10.0.2": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.SpaProxy.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.2.0",
+            "fileVersion": "10.0.225.61305"
           }
         }
       },
@@ -949,12 +949,12 @@
       "path": "microsoft.aspnetcore.openapi/10.0.1",
       "hashPath": "microsoft.aspnetcore.openapi.10.0.1.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SpaProxy/10.0.1": {
+    "Microsoft.AspNetCore.SpaProxy/10.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-EpbXywkfrb6drP1+Dga+eF4YPswXHWEyDCHjtPbmKAgoHSf1OZN8uJwpm3ZczpRz/w4p9ZZGrTFYcMlNquJo9w==",
-      "path": "microsoft.aspnetcore.spaproxy/10.0.1",
-      "hashPath": "microsoft.aspnetcore.spaproxy.10.0.1.nupkg.sha512"
+      "sha512": "sha512-kcXcAbHM4zCnQSbA0bKPbUcYup+z+bgL4+Jhf6qRICABDEVRPn5HCT8rZnLYfoocVvw3fixDiC8T004T+HPAjA==",
+      "path": "microsoft.aspnetcore.spaproxy/10.0.2",
+      "hashPath": "microsoft.aspnetcore.spaproxy.10.0.2.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
       "type": "package",

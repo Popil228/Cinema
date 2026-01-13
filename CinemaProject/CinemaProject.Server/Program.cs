@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using CinemaProject.Server.Data;
-using Npgsql.EntityFrameworkCore.PostgreSQL; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +9,19 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<CinemaDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin() 
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors();
 
 app.UseDefaultFiles();
 app.MapStaticAssets();
