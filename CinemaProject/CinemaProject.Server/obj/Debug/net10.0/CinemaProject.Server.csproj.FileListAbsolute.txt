@@ -172,3 +172,4 @@ D:\Cinema\Cinema\CinemaProject\CinemaProject.Server\bin\Debug\net10.0\runtimes\w
 D:\Cinema\Cinema\CinemaProject\CinemaProject.Server\bin\Debug\net10.0\Npgsql.dll
 D:\Cinema\Cinema\CinemaProject\CinemaProject.Server\bin\Debug\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 D:\Cinema\Cinema\CinemaProject\CinemaProject.Server\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+D:\Cinema\Cinema\CinemaProject\CinemaProject.Server\bin\Debug\net10.0\CinemaProject.Server.staticwebassets.runtime.json
