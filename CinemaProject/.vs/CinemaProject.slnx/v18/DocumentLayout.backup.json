@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\Cinema\\Cinema\\CinemaProject\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|d:\\cinema\\cinema\\cinemaproject\\cinemaproject.server\\models\\entitys\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|solutionrelative:cinemaproject.server\\models\\entitys\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|d:\\cinema\\cinema\\cinemaproject\\cinemaproject.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|solutionrelative:cinemaproject.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -47,10 +51,6 @@
       "RelativeMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|solutionrelative:cinemaproject.server\\models\\entitys\\ticket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|d:\\cinema\\cinema\\cinemaproject\\cinemaproject.server\\models\\entitys\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|solutionrelative:cinemaproject.server\\models\\entitys\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|d:\\cinema\\cinema\\cinemaproject\\cinemaproject.server\\models\\entitys\\hall.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{53F32670-5FD9-8269-4119-9D4964A4DD1B}|CinemaProject.Server\\CinemaProject.Server.csproj|solutionrelative:cinemaproject.server\\models\\entitys\\hall.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -74,7 +74,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 308,
-          "SelectedChildIndex": 17,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Bookmark",
@@ -90,7 +90,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\appsettings.json",
               "RelativeDocumentMoniker": "CinemaProject.Server\\appsettings.json",
@@ -102,7 +102,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "SessionSeat.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\SessionSeat.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\SessionSeat.cs",
@@ -138,7 +138,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "MovieGenre.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\MovieGenre.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\MovieGenre.cs",
@@ -162,15 +162,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 0,
               "Title": "Movie.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\Movie.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\Movie.cs",
               "ToolTip": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\Movie.cs",
               "RelativeToolTip": "CinemaProject.Server\\Models\\Entitys\\Movie.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAzAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T10:30:37.932Z"
+              "WhenOpened": "2026-01-13T10:30:37.932Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -186,7 +187,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Ticket.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\Ticket.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\Ticket.cs",
@@ -198,7 +199,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Status.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\Status.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\Status.cs",
@@ -210,7 +211,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Booking.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\Booking.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\Booking.cs",
@@ -222,7 +223,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "UserRole.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\UserRole.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\UserRole.cs",
@@ -234,7 +235,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "AppUser.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Models\\Entitys\\AppUser.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Models\\Entitys\\AppUser.cs",
@@ -246,7 +247,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "CinemaDbContext.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Data\\CinemaDbContext.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Data\\CinemaDbContext.cs",
@@ -254,12 +255,11 @@
               "RelativeToolTip": "CinemaProject.Server\\Data\\CinemaDbContext.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAYwD0AAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T07:53:21.831Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-13T07:53:21.831Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\CinemaProject.Server\\Program.cs",
               "RelativeDocumentMoniker": "CinemaProject.Server\\Program.cs",
@@ -272,7 +272,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "App.tsx",
               "DocumentMoniker": "D:\\Cinema\\Cinema\\CinemaProject\\cinemaproject.client\\src\\App.tsx",
               "RelativeDocumentMoniker": "cinemaproject.client\\src\\App.tsx",
