@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="cinemaproject.client/cinemaproject.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="CinemaProject.Server/CinemaProject.Server.csproj" />
+</Solution>
