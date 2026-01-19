@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { NavLink, Link } from 'react-router-dom'; // Додаємо інструменти роутингу
+import { NavLink, Link } from 'react-router-dom';
 import styles from './Header.module.scss';
 
 const Header: React.FC = () => {
@@ -31,8 +31,8 @@ const Header: React.FC = () => {
                 </div>
 
                 <div className={styles.auth}>
-                    <button className={styles.loginBtn}>Увійти</button>
-                    <button className={styles.registerBtn}>Зареєструватися</button>
+                    <Link to="/login" className={styles.loginBtn}>Увійти</Link>
+                    <Link to="/register" className={styles.registerBtn}>Зареєструватися</Link>
                 </div>
             </div>
         </header>

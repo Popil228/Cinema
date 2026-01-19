@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Додаємо імпорт Link
 import type { Movie } from '../../types/movie';
 import styles from './MovieCard.module.scss';
 
@@ -8,7 +9,7 @@ interface Props {
 
 const MovieCard: React.FC<Props> = ({ movie }) => {
   return (
-    <div className={styles.card}>
+    <Link to={`/movie/${movie.id}`} className={styles.card}>
       <div className={styles.poster}>
         {movie.posterUrl ? (
           <img src={movie.posterUrl} alt={movie.title} />
@@ -21,7 +22,7 @@ const MovieCard: React.FC<Props> = ({ movie }) => {
           <p className={styles.date}>{movie.releaseDate || '01/01 - 01/02'}</p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

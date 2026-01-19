@@ -4,6 +4,8 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage/HomePage";
 import SchedulePage from "./pages/SchedulePage/SchedulePage";
 import MoviePage from "./pages/MoviePage/MoviePage";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
 
 function App() {
   return (
@@ -13,9 +15,9 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/schedule" element={<SchedulePage />} />
           <Route path="/movie/:id" element={<MoviePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
         </Route>
-
-        {/* Сюди можна буде додати AuthLayout для сторінок Login/Register */}
       </Routes>
     </BrowserRouter>
   );
