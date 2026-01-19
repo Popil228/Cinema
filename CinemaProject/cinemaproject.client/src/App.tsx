@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 
-import HomePage from "./pages/HomePage/HomePage";
-import SchedulePage from "./pages/SchedulePage/SchedulePage";
-import MoviePage from "./pages/MoviePage/MoviePage";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import HomePage from "./pages/HomePage/HomePage.tsx";
+import SchedulePage from "./pages/SchedulePage/SchedulePage.tsx";
+import MoviePage from "./pages/MoviePage/MoviePage.tsx";
+import LoginPage from "./pages/LoginPage/LoginPage.tsx";
+import RegisterPage from "./pages/RegisterPage/RegisterPage.tsx";
 
 function App() {
   return (
