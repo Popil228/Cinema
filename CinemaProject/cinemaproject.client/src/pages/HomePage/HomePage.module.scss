@@ -1,0 +1,86 @@
+@use "../../styles/mixins" as *;
+
+.section {
+  padding: 30px 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.sectionTitle {
+  max-width: 1300px;
+  margin: 0 auto 30px;
+  padding: 0 var(--spacing-md);
+  
+  font-size: var(--font-xl);
+  color: var(--color-text-main);
+  padding-left: 25px; 
+  font-weight: var(--font-weight-bold);
+  position: relative;
+}
+
+.centeredTitle {
+  font-size: var(--font-xl);
+  color: var(--color-text-main);
+  text-align: center;      
+  margin-bottom: 40px;
+  font-weight: var(--font-weight-bold);
+}
+
+.movieGrid {
+  display: flex;
+  gap: 35px;
+  padding-top: 20px;
+  margin-top: -20px;
+
+  padding-left: max(25px, calc((100% - 1300px) / 2 + 25px));
+  padding-right: max(25px, calc((100% - 1300px) / 2 + 25px));
+  
+  scroll-padding-left: max(25px, calc((100% - 1300px) / 2 + 25px));
+
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none; 
+  }
+
+  & > * {
+    flex: 0 0 240px;
+    scroll-snap-align: start;
+  }
+}
+
+.sessionsWrapper {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+  width: 100%;
+
+  max-width: 1300px;
+  margin: 20px auto 0;
+  padding: 0 25px;
+
+  @include respond(md) {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.hallColumn {
+  flex: 1;
+  min-width: 0;
+  background: transparent; 
+  padding: 0; 
+  border: none;
+
+  h3 {
+    text-align: center;
+    color: var(--color-text-main);
+    margin-bottom: 30px;
+    font-size: var(--font-lg);
+    font-weight: 600;
+  }
+}

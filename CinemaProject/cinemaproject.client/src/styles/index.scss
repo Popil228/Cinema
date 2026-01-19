@@ -1,0 +1,21 @@
+/* src/styles/index.scss */
+
+@use 'normalize' as *;
+@use 'variables' as *;
+@use 'fonts' as *;
+@use 'utils' as *;
+@use 'mixins' as *;
+
+body {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    font-family: var(--font-primary);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
