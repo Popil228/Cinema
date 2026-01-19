@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './RegisterPage.module.scss';
 
 const RegisterPage: React.FC = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <div className={styles.container}>
       <div className={styles.authCard}>
@@ -17,16 +20,34 @@ const RegisterPage: React.FC = () => {
           <div className={styles.inputGroup}>
             <label>Пароль</label>
             <div className={styles.passwordWrapper}>
-              <input type="password" />
-              <button type="button" className={styles.eyeIcon}>👁️</button>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                placeholder="Придумайте пароль"
+              />
+              <button 
+                type="button" 
+                className={styles.eyeIcon}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
             </div>
           </div>
 
           <div className={styles.inputGroup}>
             <label>Повторіть пароль</label>
             <div className={styles.passwordWrapper}>
-              <input type="password" />
-              <button type="button" className={styles.eyeIcon}>👁️</button>
+              <input 
+                type={showConfirmPassword ? "text" : "password"} 
+                placeholder="Повторіть пароль"
+              />
+              <button 
+                type="button" 
+                className={styles.eyeIcon}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? '🙈' : '👁️'}
+              </button>
             </div>
           </div>
           

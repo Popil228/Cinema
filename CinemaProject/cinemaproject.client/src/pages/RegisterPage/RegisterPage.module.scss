@@ -21,7 +21,7 @@
 
 .title {
   color: var(--color-white);
-  font-size: 32px;
+  font-size: var(--font-lg);
   font-weight: 700;
   margin-bottom: 40px;
 }
@@ -70,14 +70,17 @@
     border: none;
     color: var(--color-text-muted);
     cursor: pointer;
-    font-size: 18px;
+    font-size: var(--font-md);
+    padding: 5px;
+    display: flex;
+    align-items: center;
   }
 }
 
 .forgotLink {
   align-self: flex-end;
   color: var(--color-text-muted);
-  font-size: 12px;
+  font-size: var(--font-xs);
   text-decoration: none;
   margin-top: 5px;
 
@@ -100,7 +103,7 @@
 
   &:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--color-accent), transparent 50%);
   }
 }
 

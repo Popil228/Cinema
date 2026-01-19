@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
             <Link to="/forgot-password" className={styles.forgotLink}>Забули пароль?</Link>
           </div>
           
-          <button type="submit" className={styles.submitBtn}>Логін</button>
+          <button type="submit" className={styles.submitBtn}>Увійти</button>
         </form>
         
         <p className={styles.footerText}>
