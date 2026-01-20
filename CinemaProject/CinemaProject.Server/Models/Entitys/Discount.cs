@@ -1,0 +1,21 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CinemaProject.Server.Models.Entitys
+{
+    public class Discount
+    {
+        public int DiscountId { get; set; }
+
+        [Column(TypeName = "varchar(50)")]
+        public string Code { get; set; } = null!;
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int UsesLeft { get; set; }
+
+        [Range(1, 100)]
+        public short DiscountPercent { get; set; }
+
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    }
+}

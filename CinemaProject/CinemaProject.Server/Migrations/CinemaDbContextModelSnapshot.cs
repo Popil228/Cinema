@@ -22,6 +22,23 @@ namespace CinemaProject.Server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Actor", b =>
+                {
+                    b.Property<int>("ActorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ActorId"));
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("ActorId");
+
+                    b.ToTable("Actors");
+                });
+
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.AppUser", b =>
                 {
                     b.Property<int>("AppUserId")
@@ -35,20 +52,20 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("PhoneNum")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(15)");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int>("Role")
                         .HasColumnType("integer");
 
                     b.HasKey("AppUserId");
@@ -59,9 +76,7 @@ namespace CinemaProject.Server.Migrations
                     b.HasIndex("PhoneNum")
                         .IsUnique();
 
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("Users");
+                    b.ToTable("AppUsers");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Booking", b =>
@@ -75,26 +90,58 @@ namespace CinemaProject.Server.Migrations
                     b.Property<DateTime>("BookingAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("SessionId")
+                    b.Property<int?>("DiscountId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
+                        .HasPrecision(6, 2)
+                        .HasColumnType("numeric(6,2)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("BookingId");
 
-                    b.HasIndex("StatusId");
+                    b.HasIndex("DiscountId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Discount", b =>
+                {
+                    b.Property<int>("DiscountId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DiscountId"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<short>("DiscountPercent")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UsesLeft")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DiscountId");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Genre", b =>
@@ -107,7 +154,7 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("GenreName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("GenreId");
 
@@ -122,12 +169,9 @@ namespace CinemaProject.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HallId"));
 
-                    b.Property<int>("HallCapacity")
-                        .HasColumnType("integer");
-
                     b.Property<string>("HallName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("HallId");
 
@@ -142,50 +186,53 @@ namespace CinemaProject.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MovieId"));
 
-                    b.Property<string>("Actors")
-                        .HasColumnType("text");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<int>("Duration")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PosterUrl")
+                    b.Property<string>("PosterUri")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("MovieId");
 
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.MovieGenre", b =>
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.MovieActor", b =>
                 {
-                    b.Property<int>("MovieGenreId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("MovieId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MovieGenreId"));
+                    b.Property<int>("ActorId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MovieId", "ActorId");
+
+                    b.HasIndex("ActorId");
+
+                    b.ToTable("MovieActors");
+                });
+
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.MovieGenre", b =>
+                {
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("GenreId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MovieId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("MovieGenreId");
+                    b.HasKey("MovieId", "GenreId");
 
                     b.HasIndex("GenreId");
 
-                    b.HasIndex("MovieId", "GenreId")
-                        .IsUnique();
-
-                    b.ToTable("MovieGenre");
+                    b.ToTable("MovieGenres");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Seat", b =>
@@ -199,18 +246,43 @@ namespace CinemaProject.Server.Migrations
                     b.Property<int>("HallId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RowNumber")
-                        .HasColumnType("integer");
+                    b.Property<short>("RowNumber")
+                        .HasColumnType("smallint");
 
-                    b.Property<int>("SeatNumber")
+                    b.Property<short>("SeatNumber")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("SeatTypeId")
                         .HasColumnType("integer");
 
                     b.HasKey("SeatId");
+
+                    b.HasIndex("SeatTypeId");
 
                     b.HasIndex("HallId", "RowNumber", "SeatNumber")
                         .IsUnique();
 
                     b.ToTable("Seats");
+                });
+
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SeatType", b =>
+                {
+                    b.Property<int>("SeatTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatTypeId"));
+
+                    b.Property<short>("PricePercent")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("SeatTypeId");
+
+                    b.ToTable("SeatTypes");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Session", b =>
@@ -222,8 +294,8 @@ namespace CinemaProject.Server.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SessionId"));
 
                     b.Property<decimal>("BasePrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
+                        .HasPrecision(6, 2)
+                        .HasColumnType("numeric(6,2)");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp with time zone");
@@ -273,23 +345,6 @@ namespace CinemaProject.Server.Migrations
                     b.ToTable("SessionSeats");
                 });
 
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Status", b =>
-                {
-                    b.Property<int>("StatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StatusId"));
-
-                    b.Property<string>("StatusName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("StatusId");
-
-                    b.ToTable("Status");
-                });
-
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Ticket", b =>
                 {
                     b.Property<int>("TicketId")
@@ -302,8 +357,8 @@ namespace CinemaProject.Server.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
+                        .HasPrecision(6, 2)
+                        .HasColumnType("numeric(6,2)");
 
                     b.Property<int>("SessionSeatId")
                         .HasColumnType("integer");
@@ -312,56 +367,47 @@ namespace CinemaProject.Server.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("SessionSeatId");
+                    b.HasIndex("SessionSeatId")
+                        .IsUnique();
 
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.UserRole", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("RoleId");
-
-                    b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.AppUser", b =>
-                {
-                    b.HasOne("CinemaProject.Server.Models.Entitys.UserRole", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Booking", b =>
                 {
-                    b.HasOne("CinemaProject.Server.Models.Entitys.Status", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("CinemaProject.Server.Models.Entitys.Discount", "Discount")
+                        .WithMany("Bookings")
+                        .HasForeignKey("DiscountId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("CinemaProject.Server.Models.Entitys.AppUser", "User")
+                    b.HasOne("CinemaProject.Server.Models.Entitys.AppUser", "AppUser")
                         .WithMany("Bookings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Status");
+                    b.Navigation("AppUser");
 
-                    b.Navigation("User");
+                    b.Navigation("Discount");
+                });
+
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.MovieActor", b =>
+                {
+                    b.HasOne("CinemaProject.Server.Models.Entitys.Actor", "Actor")
+                        .WithMany("MovieActors")
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CinemaProject.Server.Models.Entitys.Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.MovieGenre", b =>
@@ -391,13 +437,21 @@ namespace CinemaProject.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CinemaProject.Server.Models.Entitys.SeatType", "SeatType")
+                        .WithMany()
+                        .HasForeignKey("SeatTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Hall");
+
+                    b.Navigation("SeatType");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Session", b =>
                 {
                     b.HasOne("CinemaProject.Server.Models.Entitys.Hall", "Hall")
-                        .WithMany()
+                        .WithMany("Sessions")
                         .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -441,14 +495,19 @@ namespace CinemaProject.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("CinemaProject.Server.Models.Entitys.SessionSeat", "SessionSeat")
-                        .WithMany()
-                        .HasForeignKey("SessionSeatId")
+                        .WithOne("Ticket")
+                        .HasForeignKey("CinemaProject.Server.Models.Entitys.Ticket", "SessionSeatId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Booking");
 
                     b.Navigation("SessionSeat");
+                });
+
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Actor", b =>
+                {
+                    b.Navigation("MovieActors");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.AppUser", b =>
@@ -461,6 +520,11 @@ namespace CinemaProject.Server.Migrations
                     b.Navigation("Tickets");
                 });
 
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Discount", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Genre", b =>
                 {
                     b.Navigation("MovieGenres");
@@ -469,6 +533,8 @@ namespace CinemaProject.Server.Migrations
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Hall", b =>
                 {
                     b.Navigation("Seats");
+
+                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Movie", b =>
@@ -483,9 +549,9 @@ namespace CinemaProject.Server.Migrations
                     b.Navigation("SessionSeats");
                 });
 
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.UserRole", b =>
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SessionSeat", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("Ticket");
                 });
 #pragma warning restore 612, 618
         }

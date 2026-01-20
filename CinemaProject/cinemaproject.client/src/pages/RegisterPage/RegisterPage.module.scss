@@ -1,0 +1,153 @@
+@use "../../styles/mixins" as *;
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 20px;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 450px;
+  background: color-mix(in srgb, var(--color-bg-main), transparent 50%);
+  backdrop-filter: blur(10px);
+  border: 3px solid var(--color-border);
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+}
+
+.title {
+  color: var(--color-white);
+  font-size: var(--font-lg);
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+
+  label {
+    color: var(--color-text-muted);
+    font-size: var(--font-sm);
+  }
+
+  .errorText {
+    color: var(--color-error); // Червоний колір для помилки
+    font-size: var(--font-xs);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  input {
+    width: 100%;
+    background: var(--color-border);
+    border: none;
+    border-radius: 20px;
+    padding: 12px 20px;
+    color: var(--color-white);
+    font-size: var(--font-md);
+
+    &:focus {
+      outline: 1px solid var(--color-accent);
+    }
+  }
+}
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .eyeIcon {
+    position: absolute;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: var(--font-md);
+    padding: 5px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.forgotLink {
+  align-self: flex-end;
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+  text-decoration: none;
+  margin-top: 5px;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.submitBtn {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+  padding: 14px;
+  border-radius: 24px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin-top: 10px;
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--color-accent), transparent 50%);
+  }
+}
+
+.footerText {
+  margin-top: 15px;
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+
+  a {
+    color: var(--color-text-main);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      color: var(--color-accent);
+    }
+  }
+}
+
+.maskedInput {
+  width: 100%;
+  background: var(--color-border);
+  border: none;
+  border-radius: 20px;
+  padding: 12px 20px;
+  color: var(--color-white);
+  font-size: var(--font-md);
+
+  &:focus {
+    outline: 1px solid var(--color-accent);
+  }
+}
+
+.errorText {
+  color: var(--color-error);
+  font-size: var(--font-xs);
+  margin-top: 4px;
+  font-weight: 500;
+  text-align: left;
+}
