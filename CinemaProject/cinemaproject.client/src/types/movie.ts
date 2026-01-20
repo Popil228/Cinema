@@ -4,16 +4,17 @@ export interface Movie {
   posterUrl: string;
   releaseDate?: string;
   rating?: number;
-  year?: number;     
+  year?: number;
+  duration?: string;
   genres?: string[];
 }
 
 export interface Session {
   id: number;
   time: string;
-  date: string;      
+  date: string;
   title: string;
-  genres?: string[];  
-  imageUrl: string; 
+  genres?: string[];
+  imageUrl: string;
   hall: 'A' | 'B';
 }
