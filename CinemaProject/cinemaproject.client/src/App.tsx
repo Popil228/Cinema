@@ -6,6 +6,7 @@ import SchedulePage from "./pages/SchedulePage/SchedulePage.tsx";
 import MoviePage from "./pages/MoviePage/MoviePage.tsx";
 import LoginPage from "./pages/LoginPage/LoginPage.tsx";
 import RegisterPage from "./pages/RegisterPage/RegisterPage.tsx";
+import EmailConfirmationPage from "./pages/RegisterPage/EmailConfirmationPage.tsx";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/movie/:id" element={<MoviePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/confirm-email" element={<EmailConfirmationPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

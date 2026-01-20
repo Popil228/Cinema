@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IMaskInput } from 'react-imask';
 import styles from './RegisterPage.module.scss';
 
 const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
+  
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -63,6 +65,7 @@ const RegisterPage: React.FC = () => {
     });
 
     alert(`Реєстрація успішна! Емейл: ${email}, Телефон: ${phoneForServer}, Пароль: ${password}`);
+    navigate('/confirm-email', { state: { email: email } });
   };
 
   return (
