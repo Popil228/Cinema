@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using CinemaProject.Server.Data;
+using CinemaProject.Server.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,9 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IMovieService, MovieService>();
 
 var app = builder.Build();
 
