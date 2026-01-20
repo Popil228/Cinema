@@ -7,13 +7,19 @@ namespace CinemaProject.Server.Models.Entitys
     {
         public int BookingId { get; set; }
         public int UserId { get; set; }
-        public int SessionId { get; set; }
-        public DateTime BookingAt { get; set; }
+        public int? DiscountId { get; set; }
+        public DateTime BookingAt { get; set; } = DateTime.UtcNow;
         public decimal TotalPrice { get; set; }
-        public int StatusId { get; set; }
+        public enum BookingStatus
+        {
+            Confirmed, 
+            Cancelled
+        }
 
-        public AppUser User { get; set; } = null!;
-        public Status Status { get; set; } = null!;
+        public BookingStatus Status { get; set; }
+
+        public AppUser AppUser { get; set; } = null!;
+        public Discount? Discount { get; set; }
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     }
 }

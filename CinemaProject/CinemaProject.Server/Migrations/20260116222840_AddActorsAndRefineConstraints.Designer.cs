@@ -3,6 +3,7 @@ using System;
 using CinemaProject.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaProject.Server.Migrations
 {
     [DbContext(typeof(CinemaDbContext))]
-    partial class CinemaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260116222840_AddActorsAndRefineConstraints")]
+    partial class AddActorsAndRefineConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,7 +35,8 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("ActorId");
 
@@ -52,18 +56,21 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("PhoneNum")
                         .IsRequired()
-                        .HasColumnType("varchar(15)");
+                        .HasMaxLength(15)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
@@ -90,13 +97,10 @@ namespace CinemaProject.Server.Migrations
                     b.Property<DateTime>("BookingAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("DiscountId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<decimal?>("TotalPrice")
                         .HasPrecision(6, 2)
                         .HasColumnType("numeric(6,2)");
 
@@ -105,43 +109,9 @@ namespace CinemaProject.Server.Migrations
 
                     b.HasKey("BookingId");
 
-                    b.HasIndex("DiscountId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Discount", b =>
-                {
-                    b.Property<int>("DiscountId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DiscountId"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<short>("DiscountPercent")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UsesLeft")
-                        .HasColumnType("integer");
-
-                    b.HasKey("DiscountId");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Genre", b =>
@@ -154,7 +124,8 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("GenreName")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(50)
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("GenreId");
 
@@ -171,7 +142,8 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("HallName")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(50)
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("HallId");
 
@@ -194,11 +166,13 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("PosterUri")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(50)
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("MovieId");
 
@@ -278,7 +252,8 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("TypeName")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(50)
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("SeatTypeId");
 
@@ -375,11 +350,6 @@ namespace CinemaProject.Server.Migrations
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Booking", b =>
                 {
-                    b.HasOne("CinemaProject.Server.Models.Entitys.Discount", "Discount")
-                        .WithMany("Bookings")
-                        .HasForeignKey("DiscountId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("CinemaProject.Server.Models.Entitys.AppUser", "AppUser")
                         .WithMany("Bookings")
                         .HasForeignKey("UserId")
@@ -387,8 +357,6 @@ namespace CinemaProject.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("AppUser");
-
-                    b.Navigation("Discount");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.MovieActor", b =>
@@ -518,11 +486,6 @@ namespace CinemaProject.Server.Migrations
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Booking", b =>
                 {
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Discount", b =>
-                {
-                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Genre", b =>

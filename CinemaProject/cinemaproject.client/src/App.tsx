@@ -7,6 +7,7 @@ import MoviePage from "./pages/MoviePage/MoviePage.tsx";
 import LoginPage from "./pages/LoginPage/LoginPage.tsx";
 import RegisterPage from "./pages/RegisterPage/RegisterPage.tsx";
 
+
 function App() {
   return (
     <BrowserRouter>

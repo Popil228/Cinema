@@ -1,11 +1,10 @@
 ﻿namespace CinemaProject.Server.Models.Entitys
 {
-    public class MovieGenre
+    public class MovieActor
     {
+        public int ActorId { get; set; }
         public int MovieId { get; set; }
-        public int GenreId { get; set; }
-
         public Movie Movie { get; set; } = null!;
-        public Genre Genre { get; set; } = null!;
+        public Actor Actor { get; set; } = null!;
     }
 }
