@@ -10,7 +10,7 @@ const AdminSessionsPage: React.FC = () => {
     hall: 'A',           
     date: '3 квітня',
     time: '13:00',
-    imageUrl: '/path-to-img.jpg',
+    imageUrl: '/Minecraft.png',
     genres: ['Фантастика', 'Пригоди']
   };
 

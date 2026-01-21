@@ -10,7 +10,7 @@ const AdminMoviesPage: React.FC = () => {
       title: 'Minecraft', 
       genres: ['Фантастика', 'Пригоди'],
       duration: '2г 30хв', 
-      posterUrl: '/path-to-img.jpg',
+      posterUrl: '/Minecraft.png',
       year: 2024
     },
     { 
@@ -18,14 +18,14 @@ const AdminMoviesPage: React.FC = () => {
       title: 'Minecraft', 
       genres: ['Фантастика', 'Пригоди'], 
       duration: '2г 30хв', 
-      posterUrl: '/path-to-img.jpg' 
+      posterUrl: '/Minecraft.png' 
     },
     { 
       id: 3, 
       title: 'Minecraft', 
       genres: ['Фантастика', 'Пригоди'], 
       duration: '2г 30хв', 
-      posterUrl: '/path-to-img.jpg' 
+      posterUrl: '/Minecraft.png' 
     },
   ];
 
@@ -34,7 +34,7 @@ const AdminMoviesPage: React.FC = () => {
     title: "Minecraft", 
     genres: ["Фантастика", "Пригоди"], 
     duration: "2г 30хв", 
-    posterUrl: "/path-to-img.jpg" 
+    posterUrl: "/Minecraft.png" 
   };
 
   return (
