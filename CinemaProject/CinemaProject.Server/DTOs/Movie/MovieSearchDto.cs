@@ -1,4 +1,4 @@
-﻿namespace CinemaProject.Server.DTOs
+﻿namespace CinemaProject.Server.DTOs.Movie
 {
     public class MovieSearchDto
     {
