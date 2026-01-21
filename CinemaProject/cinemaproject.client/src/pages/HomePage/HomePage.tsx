@@ -7,7 +7,7 @@ import type { Movie, Session } from '../../types/movie';
 const Home: React.FC = () => {
   const movies: Movie[] = [
     { id: 1, title: 'Скажене весілля', posterUrl: '/movies/wedding.png', releaseDate: '01/01 - 01/02' },
-    { id: 2, title: 'Minecraft: Movie', posterUrl: '/movies/minecraft.png', releaseDate: '10/02 - 25/02' },
+    { id: 2, title: 'Minecraft: Movie', posterUrl: '/Minecraft.png', releaseDate: '10/02 - 25/02' },
     { id: 3, title: 'Дюна: Частина друга', posterUrl: '/movies/dune.png', releaseDate: '15/02 - 01/03' },
     { id: 4, title: 'Вонка', posterUrl: '/movies/wonka.png', releaseDate: '20/02 - 10/03' },
     { id: 5, title: 'Аквамен 2', posterUrl: '/movies/aquaman.png', releaseDate: '01/03 - 20/03' },
