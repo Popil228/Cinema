@@ -23,16 +23,14 @@ const ScheduleDayDisplay:React.FC<ScheduleDayDisplayProps> = ({sessions}: Schedu
             <div className={styles.sessionsWrapper}>
                 {windowWidth<=overflowWidth&&<h3>Зал A</h3>}
                 <div className={styles.sessionsColumn}>
-                    {sesssions_A.map((s)=><SessionItem title={s.title} 
-                    genres={s.genres} date={s.date} 
-                    time = {s.time} imageUrl={s.imageUrl}
+                    {sesssions_A.map((s)=><SessionItem 
+                    session={s}
                     showDate={false} showTime={true}/>)}
                 </div>
                 {windowWidth<=overflowWidth&&<h3>Зал B</h3>}
                 <div className={styles.sessionsColumn}>
-                    {sesssions_B.map((s)=><SessionItem title={s.title} 
-                    genres={s.genres} date={s.date} 
-                    time = {s.time} imageUrl={s.imageUrl}
+                    {sesssions_B.map((s)=><SessionItem 
+                    session={s}
                     showDate={false} showTime={true}/>)}
                 </div>
             </div>

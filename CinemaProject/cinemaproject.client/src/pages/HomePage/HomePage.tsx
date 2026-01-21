@@ -65,12 +65,7 @@ const Home: React.FC = () => {
               .filter(s => s.hall === 'A')
               .map(session => (
                 <SessionItem 
-                  key={session.id}
-                  title={session.title}
-                  genres={session.genres}
-                  date={session.date}
-                  time={session.time}
-                  imageUrl={session.imageUrl}
+                  session={session}
 
                   showDate={true}
                   showTime={true}
@@ -84,12 +79,7 @@ const Home: React.FC = () => {
               .filter(s => s.hall === 'B')
               .map(session => (
                 <SessionItem 
-                  key={session.id}
-                  title={session.title}
-                  genres={session.genres}
-                  date={session.date}
-                  time={session.time}
-                  imageUrl={session.imageUrl}
+                  session={session}
                   
                   showDate={true}
                   showTime={true}
