@@ -1,64 +1,80 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styles from './EditMoviePage.module.scss';
+import type { Movie } from '../../../types/movie';
 
 const EditMoviePage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isEditMode = Boolean(id);
 
-  const [movie, setMovie] = useState({
+  // Ініціалізація стану згідно з інтерфейсом Movie
+  const [movie, setMovie] = useState<Partial<Movie>>({
     title: '',
     duration: '',
-    genres: [] as string[],
-    actors: [] as string[],
+    genres: [],
+    actors: [],
     description: '',
-    posterUrl: '/placeholder-poster.png'
+    posterUrl: '/placeholder-poster.png',
+    year: new Date().getFullYear()
   });
 
-  // Імітація завантаження даних при редагуванні
+  // Логіка для нових тегів (жанри)
+  const [newGenre, setNewGenre] = useState('');
+  const [showGenreInput, setShowGenreInput] = useState(false);
+
   useEffect(() => {
-    if (isEditMode) {
-      // Тут пізніше буде запит до сервера: fetchMovie(id)
+    // 1. Якщо ми прийшли зі сторінки пошуку (створюємо новий фільм)
+    if (location.state?.baseData) {
+      const { title, posterUrl, year } = location.state.baseData;
+      
+      setMovie(prev => ({
+        ...prev,
+        title,
+        posterUrl,
+        year,
+        // Імітуємо підтягування решти даних (опис, актори) після вибору фільму
+        duration: '2г 15хв',
+        description: 'Опис фільму, який ми автоматично отримали з бази даних пошуку...',
+        genres: ['Фантастика', 'Бойовик'],
+        actors: [
+          { name: 'Джек Блек', portrait: '/actors/black.jpg', role: 'Стів' },
+          { name: 'Джейсон Момоа', portrait: '/actors/momoa.jpg', role: 'Гаррет' }
+        ]
+      }));
+    } 
+    // 2. Якщо ми просто редагуємо існуючий фільм по ID
+    else if (isEditMode) {
+      // Тут буде реальний fetch(id)
       setMovie({
+        id: Number(id),
         title: 'Minecraft',
         duration: '2г 30хв',
         genres: ['Фантастика', 'Пригоди'],
-        actors: ['Джек Блек', 'Джейсон Момоа'],
-        description: 'Сюжет розповідає...',
+        actors: [
+          { name: 'Емма Майєрс', portrait: '/actors/emma.jpg', role: 'Наталі' }
+        ],
+        description: 'Сюжет про світ блоків...',
         posterUrl: '/Minecraft.png'
       });
     }
-  }, [id, isEditMode]);
-
-  const [newGenre, setNewGenre] = useState('');
-  const [showGenreInput, setShowGenreInput] = useState(false);
-  
-  const [newActor, setNewActor] = useState('');
-  const [showActorInput, setShowActorInput] = useState(false);
+  }, [id, isEditMode, location.state]);
 
   const addGenre = () => {
     if (newGenre.trim()) {
-      setMovie({ ...movie, genres: [...movie.genres, newGenre.trim()] });
+      setMovie(prev => ({ ...prev, genres: [...(prev.genres || []), newGenre.trim()] }));
       setNewGenre('');
     }
     setShowGenreInput(false);
   };
 
-  const addActor = () => {
-    if (newActor.trim()) {
-      setMovie({ ...movie, actors: [...movie.actors, newActor.trim()] });
-      setNewActor('');
-    }
-    setShowActorInput(false);
+  const removeGenre = (genreToRemove: string) => {
+    setMovie(prev => ({ ...prev, genres: prev.genres?.filter(g => g !== genreToRemove) }));
   };
 
-  const handleRemoveGenre = (genreToRemove: string) => {
-    setMovie({ ...movie, genres: movie.genres.filter(g => g !== genreToRemove) });
-  };
-
-  const handleRemoveActor = (actorToRemove: string) => {
-    setMovie({ ...movie, actors: movie.actors.filter(a => a !== actorToRemove) });
+  const removeActor = (actorName: string) => {
+    setMovie(prev => ({ ...prev, actors: prev.actors?.filter(a => a.name !== actorName) }));
   };
 
   return (
@@ -81,13 +97,12 @@ const EditMoviePage: React.FC = () => {
           <div className={styles.fieldGroup}>
             <label>Жанри</label>
             <div className={styles.tagCloud}>
-              {movie.genres.map(genre => (
+              {movie.genres?.map(genre => (
                 <span key={genre} className={styles.tag}>
-                  {genre} <button onClick={() => handleRemoveGenre(genre)}>✕</button>
+                  {genre} <button onClick={() => removeGenre(genre)}>✕</button>
                 </span>
               ))}
               
-              {/* Логіка додавання жанру */}
               {showGenreInput ? (
                 <input 
                   autoFocus
@@ -119,26 +134,18 @@ const EditMoviePage: React.FC = () => {
       <div className={styles.bottomSection}>
         <div className={styles.fieldGroup}>
           <label>Актори</label>
-          <div className={styles.tagCloud}>
-            {movie.actors.map(actor => (
-              <span key={actor} className={styles.tag}>
-                {actor} <button onClick={() => handleRemoveActor(actor)}>✕</button>
-              </span>
+          <div className={styles.actorsGrid}>
+            {movie.actors?.map(actor => (
+              <div key={actor.name} className={styles.actorCard}>
+                <img src={actor.portrait} alt={actor.name} className={styles.actorPhoto} />
+                <div className={styles.actorText}>
+                  <p className={styles.actorName}>{actor.name}</p>
+                  <p className={styles.actorRole}>{actor.role}</p>
+                </div>
+                <button className={styles.removeActor} onClick={() => removeActor(actor.name)}>✕</button>
+              </div>
             ))}
-            
-            {/* Логіка додавання актора */}
-            {showActorInput ? (
-              <input 
-                autoFocus
-                className={styles.miniInput}
-                value={newActor}
-                onChange={(e) => setNewActor(e.target.value)}
-                onBlur={addActor}
-                onKeyDown={(e) => e.key === 'Enter' && addActor()}
-              />
-            ) : (
-              <button className={styles.addTagBtn} onClick={() => setShowActorInput(true)}>+</button>
-            )}
+            <button className={styles.addActorBtn}>+</button>
           </div>
         </div>
 
@@ -147,23 +154,19 @@ const EditMoviePage: React.FC = () => {
           <textarea 
             value={movie.description} 
             onChange={(e) => setMovie({...movie, description: e.target.value})}
-            rows={5}
+            rows={6}
           />
         </div>
       </div>
 
       <div className={styles.footer}>
-        <button 
-          className={styles.cancelBtn} 
-          onClick={() => navigate('/admin/movies')}
-        >
+        <button className={styles.cancelBtn} onClick={() => navigate('/admin/movies')}>
           Скасувати
         </button>
-
         <button 
           className={styles.saveBtn} 
           onClick={() => {
-            console.log('Saved:', movie);
+            console.log('Final Movie Data:', movie);
             navigate('/admin/movies');
           }}
         >
