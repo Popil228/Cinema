@@ -71,6 +71,9 @@ const Home: React.FC = () => {
                   date={session.date}
                   time={session.time}
                   imageUrl={session.imageUrl}
+
+                  showDate={true}
+                  showTime={true}
                 />
               ))}
           </div>
@@ -87,6 +90,9 @@ const Home: React.FC = () => {
                   date={session.date}
                   time={session.time}
                   imageUrl={session.imageUrl}
+                  
+                  showDate={true}
+                  showTime={true}
                 />
               ))}
           </div>
