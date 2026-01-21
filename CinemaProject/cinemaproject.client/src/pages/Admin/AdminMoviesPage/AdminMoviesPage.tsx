@@ -29,6 +29,7 @@ const AdminMoviesPage: React.FC = () => {
     },
   ];
 
+  // Дані для архіву
   const archivedMovie: Movie = {
     id: 10,
     title: "Minecraft", 

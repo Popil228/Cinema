@@ -9,9 +9,9 @@ import LoginPage from "./pages/LoginPage/LoginPage.tsx";
 import RegisterPage from "./pages/RegisterPage/RegisterPage.tsx";
 import EmailConfirmationPage from "./pages/RegisterPage/EmailConfirmationPage.tsx";
 
-import AdminMoviesPage from "./pages/Admin/AdminMoviePage/AdminMoviesPage.tsx";
+import AdminMoviesPage from "./pages/Admin/AdminMoviesPage/AdminMoviesPage.tsx";
 import AdminSessionsPage from "./pages/Admin/AdminSessionsPage/AdminSessionsPage.tsx";
-
+import EditMoviePage from "./pages/Admin/EditMoviePage/EditMoviePage.tsx";
 
 function App() {
   return (
@@ -25,9 +25,11 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/confirm-email" element={<EmailConfirmationPage />} />
         </Route>
+
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminMoviesPage />} />
           <Route path="movies" element={<AdminMoviesPage />} />
+          <Route path="movies/edit/:id" element={<EditMoviePage />} />
           <Route path="sessions" element={<AdminSessionsPage />} />
         </Route>
       </Routes>

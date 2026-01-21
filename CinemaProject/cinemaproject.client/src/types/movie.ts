@@ -7,7 +7,10 @@ export interface Movie {
   year?: number;
   duration?: string;
   genres?: string[];
+  actors?: string[];
+  description?: string;
 }
+
 
 export interface Session {
   id: number;
