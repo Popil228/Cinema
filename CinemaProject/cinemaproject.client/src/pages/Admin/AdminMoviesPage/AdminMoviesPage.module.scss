@@ -1,0 +1,53 @@
+.container {
+  padding: 40px;
+  max-width: 1200px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.pageTitle {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.addBtn {
+  width: 48px;
+  height: 48px;
+  background-color: #1e293b;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.section {
+  margin-bottom: 48px;
+}
+
+.sectionTitle {
+  font-size: 24px;
+  color: #64748b;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
