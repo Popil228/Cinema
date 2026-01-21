@@ -29,6 +29,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminMoviesPage />} />
           <Route path="movies" element={<AdminMoviesPage />} />
+          <Route path="movies/add" element={<EditMoviePage />} />
           <Route path="movies/edit/:id" element={<EditMoviePage />} />
           <Route path="sessions" element={<AdminSessionsPage />} />
         </Route>

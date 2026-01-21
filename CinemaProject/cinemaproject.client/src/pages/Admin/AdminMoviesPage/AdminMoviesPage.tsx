@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminMovieCard from '../../../components/Admin/AdminMovieCard/AdminMovieCard';
 import styles from './AdminMoviesPage.module.scss';
 import type { Movie } from '../../../types/movie';
 
 const AdminMoviesPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const activeMovies: Movie[] = [
     { 
       id: 1, 
@@ -42,7 +45,12 @@ const AdminMoviesPage: React.FC = () => {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.pageTitle}>Фільми</h1>
-        <button className={styles.addBtn}>+</button>
+        <button 
+          className={styles.addBtn} 
+          onClick={() => navigate('/admin/movies/add')}
+        >
+          +
+        </button>
       </header>
 
       <section className={styles.section}>

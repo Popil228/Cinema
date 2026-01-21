@@ -1,30 +1,42 @@
-import React, { useState } from 'react';
-//import { useParams, useNavigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from './EditMoviePage.module.scss';
 
 const EditMoviePage: React.FC = () => {
-  //const { id } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
+  const isEditMode = Boolean(id);
 
-  // Імітація початкових даних (потім буде завантажуватися по ID)
   const [movie, setMovie] = useState({
-    title: 'Minecraft',
-    duration: '2г 30хв',
-    genres: ['Фантастика', 'Пригоди'],
-    actors: ['Джек Блек', 'Джейсон Момоа', 'Емма Майєрс', 'Даніель Брукс', 'Себастьян Юджин Гансен', 'Дженніфер Кулідж', 'Кейт Маккіннон', 'Джемейн Клемент'],
-    description: 'Сюжет розповідає про групу чотирьох аутсайдерів...',
-    posterUrl: '/Minecraft.png'
+    title: '',
+    duration: '',
+    genres: [] as string[],
+    actors: [] as string[],
+    description: '',
+    posterUrl: '/placeholder-poster.png'
   });
 
-  // Стан для керування полями введення
+  // Імітація завантаження даних при редагуванні
+  useEffect(() => {
+    if (isEditMode) {
+      // Тут пізніше буде запит до сервера: fetchMovie(id)
+      setMovie({
+        title: 'Minecraft',
+        duration: '2г 30хв',
+        genres: ['Фантастика', 'Пригоди'],
+        actors: ['Джек Блек', 'Джейсон Момоа'],
+        description: 'Сюжет розповідає...',
+        posterUrl: '/Minecraft.png'
+      });
+    }
+  }, [id, isEditMode]);
+
   const [newGenre, setNewGenre] = useState('');
   const [showGenreInput, setShowGenreInput] = useState(false);
   
   const [newActor, setNewActor] = useState('');
   const [showActorInput, setShowActorInput] = useState(false);
 
-  // Функції додавання
   const addGenre = () => {
     if (newGenre.trim()) {
       setMovie({ ...movie, genres: [...movie.genres, newGenre.trim()] });
