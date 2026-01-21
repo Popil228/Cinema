@@ -127,11 +127,11 @@ namespace CinemaProject.Server.Migrations
                     b.Property<short>("DiscountPercent")
                         .HasColumnType("smallint");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.Property<int>("UsesLeft")
                         .HasColumnType("integer");
@@ -152,7 +152,7 @@ namespace CinemaProject.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GenreId"));
 
-                    b.Property<string>("GenreName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
@@ -169,7 +169,7 @@ namespace CinemaProject.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HallId"));
 
-                    b.Property<string>("HallName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
@@ -189,11 +189,10 @@ namespace CinemaProject.Server.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("Duration")
-                        .HasColumnType("integer");
+                    b.Property<short>("Duration")
+                        .HasColumnType("smallint");
 
                     b.Property<string>("PosterUri")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Title")
@@ -212,6 +211,9 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<int>("ActorId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Character")
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("MovieId", "ActorId");
 
@@ -267,20 +269,20 @@ namespace CinemaProject.Server.Migrations
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SeatType", b =>
                 {
-                    b.Property<int>("SeatTypeId")
+                    b.Property<int>("SeatsTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatTypeId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatsTypeId"));
 
                     b.Property<short>("PricePercent")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("TypeName")
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
-                    b.HasKey("SeatTypeId");
+                    b.HasKey("SeatsTypeId");
 
                     b.ToTable("SeatTypes");
                 });
@@ -400,7 +402,7 @@ namespace CinemaProject.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("CinemaProject.Server.Models.Entitys.Movie", "Movie")
-                        .WithMany()
+                        .WithMany("MovieActors")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -438,7 +440,7 @@ namespace CinemaProject.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("CinemaProject.Server.Models.Entitys.SeatType", "SeatType")
-                        .WithMany()
+                        .WithMany("Seats")
                         .HasForeignKey("SeatTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -470,7 +472,7 @@ namespace CinemaProject.Server.Migrations
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SessionSeat", b =>
                 {
                     b.HasOne("CinemaProject.Server.Models.Entitys.Seat", "Seat")
-                        .WithMany()
+                        .WithMany("SessionSeats")
                         .HasForeignKey("SeatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -539,9 +541,21 @@ namespace CinemaProject.Server.Migrations
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Movie", b =>
                 {
+                    b.Navigation("MovieActors");
+
                     b.Navigation("MovieGenres");
 
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Seat", b =>
+                {
+                    b.Navigation("SessionSeats");
+                });
+
+            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SeatType", b =>
+                {
+                    b.Navigation("Seats");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Session", b =>

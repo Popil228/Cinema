@@ -66,7 +66,7 @@ namespace CinemaProject.Server.Data
             // Налагодження заборони на видалення для крісел та типів крісел
             modelBuilder.Entity<Seat>()
                 .HasOne(s => s.SeatType)
-                .WithMany() 
+                .WithMany(st => st.Seats) 
                 .HasForeignKey(s => s.SeatTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -122,7 +122,7 @@ namespace CinemaProject.Server.Data
             // Налагодження каскадного видалення для мість та сенсів-місць
             modelBuilder.Entity<SessionSeat>()
                 .HasOne(ss => ss.Seat)
-                .WithMany()
+                .WithMany(s => s.SessionSeats)
                 .HasForeignKey(ss => ss.SeatId)
                 .OnDelete(DeleteBehavior.Cascade);
 

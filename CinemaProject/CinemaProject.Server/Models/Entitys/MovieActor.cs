@@ -1,10 +1,16 @@
-﻿namespace CinemaProject.Server.Models.Entitys
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CinemaProject.Server.Models.Entitys
 {
     public class MovieActor
     {
         public int ActorId { get; set; }
         public int MovieId { get; set; }
-        public Movie Movie { get; set; } = null!;
+
+        [Column(TypeName = "varchar(255)")]
+        public string? Character { get; set; }
+
         public Actor Actor { get; set; } = null!;
+        public Movie Movie { get; set; } = null!;
     }
 }

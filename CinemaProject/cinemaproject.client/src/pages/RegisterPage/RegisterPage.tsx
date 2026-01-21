@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IMaskInput } from 'react-imask';
+import { authApi, tokenStorage } from '../../api/authApi';
 import styles from './RegisterPage.module.scss';
 
 const RegisterPage: React.FC = () => {
@@ -16,6 +17,8 @@ const RegisterPage: React.FC = () => {
   
   const [passwordError, setPasswordError] = useState('');
   const [phoneError, setPhoneError] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const validatePassword = (value: string) => {
     setPassword(value);
@@ -30,8 +33,9 @@ const RegisterPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     // 1. Очищаємо номер від маски (залишаємо лише цифри)
     const cleanDigits = phone.replace(/\D/g, '');
@@ -48,30 +52,45 @@ const RegisterPage: React.FC = () => {
       : cleanDigits;
 
     if (passwordError) {
-      alert(`Помилка у паролі: ${passwordError}`);
+      setError(`Помилка у паролі: ${passwordError}`);
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Паролі не збігаються!");
+      setError("Паролі не збігаються!");
       return;
     }
 
-    // Імітація відправки на сервер
-    console.log("Відправка на сервер:", { 
-      email: email, 
-      phone: phoneForServer,
-      password: password 
-    });
+    setIsLoading(true);
 
-    alert(`Реєстрація успішна! Емейл: ${email}, Телефон: ${phoneForServer}, Пароль: ${password}`);
-    navigate('/confirm-email', { state: { email: email } });
+    try {
+      const response = await authApi.register({
+        email,
+        phoneNum: phoneForServer,
+        password,
+        confirmPassword,
+      });
+
+      if (response.success && response.token && response.user) {
+        tokenStorage.setToken(response.token);
+        tokenStorage.setUser(response.user);
+        navigate('/');
+      } else {
+        setError(response.message || 'Помилка реєстрації');
+      }
+    } catch {
+      setError('Помилка з\'єднання з сервером');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.authCard}>
         <h1 className={styles.title}>Зареєструватися</h1>
+        
+        {error && <div className={styles.error}>{error}</div>}
         
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
@@ -143,7 +162,9 @@ const RegisterPage: React.FC = () => {
             </div>
           </div>
           
-          <button type="submit" className={styles.submitBtn}>Зареєструватися</button>
+          <button type="submit" className={styles.submitBtn} disabled={isLoading}>
+            {isLoading ? 'Реєстрація...' : 'Зареєструватися'}
+          </button>
         </form>
         
         <p className={styles.footerText}>

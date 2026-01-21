@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using CinemaProject.Server.Models.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CinemaProject.Server.Models.Entitys
@@ -17,15 +16,9 @@ namespace CinemaProject.Server.Models.Entitys
         [Column(TypeName = "varchar(255)")]
         public string PasswordHash { get; set; } = null!;
 
-        public enum UserRole
-        {
-            Admin = 1,
-            Customer = 2
-        }
-
         public UserRole Role { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public bool IsActive { get; set; } 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; } = true;
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
