@@ -47,7 +47,7 @@ const AdminMoviesPage: React.FC = () => {
         <h1 className={styles.pageTitle}>Фільми</h1>
         <button 
           className={styles.addBtn} 
-          onClick={() => navigate('/admin/movies/add')}
+          onClick={() => navigate('/admin/movies/search')}
         >
           +
         </button>

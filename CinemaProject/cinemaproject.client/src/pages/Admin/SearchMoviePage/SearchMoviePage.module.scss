@@ -1,0 +1,95 @@
+.container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 30px;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 600px;
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 40px;
+  outline: none;
+  transition: all 0.2s ease;
+  color: #1e293b;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+
+  &:focus {
+    background: #fff;
+    border-color: #1e293b;
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.05);
+  }
+}
+
+/* Сітка для результатів */
+.resultsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Картка-плашка фільму в пошуку */
+.moviePlate {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 12px;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    background: #fff;
+    border-color: #cbd5e1;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Міні-постер у плашці */
+  img {
+    width: 60px;
+    height: 90px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #cbd5e1;
+    flex-shrink: 0;
+  }
+}
+
+.plateInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0;
+  }
+}
