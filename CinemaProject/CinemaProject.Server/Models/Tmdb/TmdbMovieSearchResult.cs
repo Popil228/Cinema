@@ -1,4 +1,4 @@
-﻿namespace CinemaProject.Server.Models
+﻿namespace CinemaProject.Server.Models.Tmdb
 {
     public class TmdbMovieSearchResult
     {

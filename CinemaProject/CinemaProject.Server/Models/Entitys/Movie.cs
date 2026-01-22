@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CinemaProject.Server.Models.Entitys
 {
@@ -7,15 +6,18 @@ namespace CinemaProject.Server.Models.Entitys
     {
         public int MovieId { get; set; }
 
+        [Column(TypeName = "varchar(255)")]
+        public string? PosterUri { get; set; }
+
         [Column(TypeName = "varchar(50)")]
         public string Title { get; set; } = null!;
-        public int Duration { get; set; }
-        public string? Description { get; set; } = null!;
 
-        [Column(TypeName = "varchar(255)")]
-        public string PosterUri { get; set; } = null!;
+        public string? Description { get; set; }
 
-        public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
+        public short Duration { get; set; }
+
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
+        public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
+        public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
     }
 }

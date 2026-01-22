@@ -13,6 +13,7 @@ import AdminMoviesPage from "./pages/Admin/AdminMoviesPage/AdminMoviesPage.tsx";
 import AdminSessionsPage from "./pages/Admin/AdminSessionsPage/AdminSessionsPage.tsx";
 import EditMoviePage from "./pages/Admin/EditMoviePage/EditMoviePage.tsx";
 import SearchBarContextProvider from "./context/searchBarContext/SearchBarContextProvider.tsx";
+import SearchMoviePage from "./pages/Admin/SearchMoviePage/SearchMoviePage.tsx";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminMoviesPage />} />
           <Route path="movies" element={<AdminMoviesPage />} />
+          <Route path="movies/search" element={<SearchMoviePage />} /> 
           <Route path="movies/add" element={<EditMoviePage />} />
           <Route path="movies/edit/:id" element={<EditMoviePage />} />
           <Route path="sessions" element={<AdminSessionsPage />} />

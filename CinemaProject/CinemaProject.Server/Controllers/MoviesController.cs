@@ -1,5 +1,6 @@
 ﻿using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CinemaProject.Server.Controllers
 {
@@ -22,5 +23,12 @@ namespace CinemaProject.Server.Controllers
             return Ok(movies);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var result = await _movieService.GetMovieExtraInfoAsync(id);
+            if (result == null) return NotFound("Фільм не знайдено.");
+            return Ok(result);
+        }
     }
 }
