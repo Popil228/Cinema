@@ -19,7 +19,7 @@ const Home: React.FC = () => {
       id: 1,
       title: "Minecraft",
       genres: ["Комедія", "Трагедія"],
-      date: "3 квітня",
+      date: new Date("2025-04-03"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'A'
@@ -28,7 +28,7 @@ const Home: React.FC = () => {
       id: 2,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "3 квітня",
+      date: new Date("2025-04-03"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -37,7 +37,7 @@ const Home: React.FC = () => {
       id: 3,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "3 квітня",
+      date: new Date("2025-04-03"),
       time: "16:00",
       imageUrl: "/logo.png",
       hall: 'B'

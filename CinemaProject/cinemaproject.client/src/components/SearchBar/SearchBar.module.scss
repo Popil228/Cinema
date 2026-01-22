@@ -14,10 +14,18 @@
     }
 }
 
-.searchBar {
+.searchBarContainer{
     width: 100%;
+    display: flex;
+    justify-content: center;
+    
     background-color: var(--color-bg-card);
     border-bottom: 4px solid var(--color-border);
+}
+
+.searchBar {
+    max-width: 1200px;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;

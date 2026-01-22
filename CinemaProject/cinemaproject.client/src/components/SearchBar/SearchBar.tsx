@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import styles from "./SearchBar.module.scss";
-import SearchBarContext from '../../context/searchBarContext/searchBarContext';
+import SearchBarContext from '../../context/searchBarContext/SearchBarContext';
 
 interface SearchBarProps
 {
@@ -11,7 +11,6 @@ const SearchBar:React.FC<SearchBarProps> = ({genres}) => {
     const [titleFilter, setTitleFilter] = useState<string>("");
     const [genreFilter, setGenreFilter] = useState<string>("");
     const [dateInput, setDateInput] = useState<string>("");
-    //const [dateFilter, setDateFilter] = useState<Date>(new Date);
 
     const searchBarData = useContext(SearchBarContext);
 
@@ -20,18 +19,24 @@ const SearchBar:React.FC<SearchBarProps> = ({genres}) => {
         searchBarData.setTitleSearch(titleFilter);
         searchBarData.setGenreSearch(genreFilter);
         searchBarData.setDateInput(dateInput);
+
+        if(dateInput!=""){
+            searchBarData.setDateSearch(new Date(dateInput));
+        }
+
         searchBarData.setSearchEnabled(true);
     }
 
     const handeClearSearch = () =>
     {
-        searchBarData.setTitleSearch("");
-        searchBarData.setGenreSearch("");
-        searchBarData.setDateInput("");
+        // searchBarData.setTitleSearch("");
+        // searchBarData.setGenreSearch("");
+        // searchBarData.setDateInput("");
         searchBarData.setSearchEnabled(false);
     }
 
     return (
+        <div className={styles.searchBarContainer}>
         <div className={styles.searchBar}>
             <div className={styles.inputFields}>
                 <input type='text' placeholder='Назва фільму' className={styles.inputField}
@@ -52,6 +57,7 @@ const SearchBar:React.FC<SearchBarProps> = ({genres}) => {
                     Очистити
                 </button>
             </div>
+        </div>
         </div>
     )
 }

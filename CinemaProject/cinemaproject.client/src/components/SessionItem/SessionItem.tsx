@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './SessionItem.module.scss';
 import type { Session } from '../../types/movie';
+import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
 
 interface SessionItemProps {
   session:Session;
@@ -11,7 +12,8 @@ interface SessionItemProps {
 
 const SessionItem: React.FC<SessionItemProps> = ({ session, showTime=false, showDate=false }) => {
   const genresString = session.genres?.join(', ') || 'Жанр не вказано';
-
+  const dateStr:string = dateToDayMonthStrUA(session.date);
+  
   return (
     <div className={styles.sessionCard}>
       <div className={styles.leftInfo}>
@@ -25,7 +27,7 @@ const SessionItem: React.FC<SessionItemProps> = ({ session, showTime=false, show
       </div>
       
       <div className={styles.rightInfo}>
-        {showDate && <div className={styles.badge}>{session.date}</div>}
+        {showDate && <div className={styles.badge}>{dateStr}</div>}
         {showTime && <div className={styles.badge}>{session.time}</div>}
       </div>
     </div>

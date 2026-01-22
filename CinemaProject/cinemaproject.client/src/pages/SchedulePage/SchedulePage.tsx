@@ -4,7 +4,8 @@ import type { Session } from '../../types/movie';
 import ScheduleDayDisplay from './pageComponents/ScheduleDayDisplay';
 import useWindowWidth from '../../utilities/useWindowWidth';
 import SearchBar from '../../components/SearchBar/SearchBar';
-import SearchBarContext from '../../context/searchBarContext/searchBarContext';
+import SearchBarContext from '../../context/searchBarContext/SearchBarContext';
+import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
 
 const SchedulePage: React.FC = () => {
 
@@ -13,7 +14,7 @@ const SchedulePage: React.FC = () => {
       id: 1,
       title: "Minecraft",
       genres: ["Комедія", "Трагедія"],
-      date: "3 квітня",
+      date: new Date("2025-04-03"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'A'
@@ -22,7 +23,7 @@ const SchedulePage: React.FC = () => {
       id: 2,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "3 квітня",
+      date: new Date("2025-04-03"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'A'
@@ -31,7 +32,7 @@ const SchedulePage: React.FC = () => {
       id: 3,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "3 квітня",
+      date: new Date("2025-04-03"),
       time: "16:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -40,7 +41,7 @@ const SchedulePage: React.FC = () => {
       id: 4,
       title: "Minecraft",
       genres: ["Комедія", "Трагедія"],
-      date: "3 квітня",
+      date: new Date("2025-04-03"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -49,7 +50,7 @@ const SchedulePage: React.FC = () => {
       id: 5,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "4 квітня",
+      date: new Date("2025-04-04"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -58,7 +59,7 @@ const SchedulePage: React.FC = () => {
       id: 6,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "4 квітня",
+      date: new Date("2025-04-04"),
       time: "16:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -67,7 +68,7 @@ const SchedulePage: React.FC = () => {
       id: 7,
       title: "Minecraft",
       genres: ["Комедія", "Трагедія"],
-      date: "4 квітня",
+      date: new Date("2025-04-04"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -76,7 +77,7 @@ const SchedulePage: React.FC = () => {
       id: 8,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "4 квітня",
+      date: new Date("2025-04-04"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -85,7 +86,7 @@ const SchedulePage: React.FC = () => {
       id: 9,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "5 квітня",
+      date: new Date("2025-04-04"),
       time: "16:00",
       imageUrl: "/logo.png",
       hall: 'A'
@@ -94,7 +95,7 @@ const SchedulePage: React.FC = () => {
       id: 10,
       title: "Minecraft",
       genres: ["Комедія", "Трагедія"],
-      date: "5 квітня",
+      date: new Date("2025-04-05"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'A'
@@ -103,7 +104,7 @@ const SchedulePage: React.FC = () => {
       id: 11,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "5 квітня",
+      date: new Date("2025-04-05"),
       time: "13:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -112,7 +113,7 @@ const SchedulePage: React.FC = () => {
       id: 12,
       title: "Дюна: Частина друга",
       genres: ["Фантастика", "Пригоди"], 
-      date: "5 квітня",
+      date: new Date("2025-04-05"),
       time: "16:00",
       imageUrl: "/logo.png",
       hall: 'B'
@@ -126,7 +127,9 @@ const SchedulePage: React.FC = () => {
 
   const filteredSessions = searchBarData.isSearchEnabled ? 
   sessions.filter(s=>s.title.toLowerCase().includes(searchBarData.titleSearch.toLowerCase()))
-  .filter((s)=>searchBarData.genreSearch=="" ? true : s.genres?.includes(searchBarData.genreSearch)||false) 
+  .filter((s)=>searchBarData.genreSearch=="" ? true : s.genres?.includes(searchBarData.genreSearch)||false)
+  .filter((s)=>searchBarData.dateInput=="" ? true : (s.date.getDate()==searchBarData.dateSearch.getDate() &&
+          s.date.getMonth()==searchBarData.dateSearch.getMonth()))
   : sessions
   
   //TODO TODO TODO TODO - уточнити формат дати і написати логіку сортування з урахуванням формату
@@ -137,10 +140,11 @@ const SchedulePage: React.FC = () => {
 
   const splitByDateObj:{[key:string]:Session[]} = {}; //{"date_str": [Session, Session, ...], ...}
   filteredSessions.forEach((s)=>{
-    if(!{}.propertyIsEnumerable.call(splitByDateObj,s.date)){
-        splitByDateObj[s.date] = [];
+    const dateStr:string = dateToDayMonthStrUA(s.date); 
+    if(!{}.propertyIsEnumerable.call(splitByDateObj,dateStr)){
+        splitByDateObj[dateStr] = [];
     }
-    splitByDateObj[s.date].push(s);
+    splitByDateObj[dateStr].push(s);
   })
   const splitByDateArr:Session[][] = Object.keys(splitByDateObj).map((key)=>{return splitByDateObj[key]});
 

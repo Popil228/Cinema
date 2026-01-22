@@ -3,15 +3,15 @@ import styles from './ScheduleDayDisplay.module.scss';
 import type { Session } from '../../../types/movie';
 import SessionItem from '../../../components/SessionItem/SessionItem';
 import useWindowWidth from '../../../utilities/useWindowWidth';
+import { dateToDayMonthStrUA } from '../../../utilities/dateToStringUA';
 
 interface ScheduleDayDisplayProps{
     sessions: Session[]
 }
 
 const ScheduleDayDisplay:React.FC<ScheduleDayDisplayProps> = ({sessions}: ScheduleDayDisplayProps) => {
-  
 
-    const dateStr:string = sessions[0].date;
+    const dateStr:string = dateToDayMonthStrUA(sessions[0].date);
     const windowWidth = useWindowWidth();
     const overflowWidth = 768;
 

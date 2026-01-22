@@ -1,4 +1,4 @@
-import SearchBarContext from "./searchBarContext"
+import SearchBarContext from "./SearchBarContext"
 import { type SearchBarContextInterface } from "./SearchBarContextInterface";
 import React, { useState, type ReactNode } from "react";
 
