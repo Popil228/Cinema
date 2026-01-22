@@ -1,13 +1,21 @@
+export interface Actor {
+  name: string;
+  portrait: string;
+  role: string;
+}
+
 export interface Movie {
   id: number;
   title: string;
   posterUrl: string;
   releaseDate?: string;
-  rating?: number;
   year?: number;
   duration?: string;
   genres?: string[];
+  actors?: Actor[];
+  description?: string;
 }
+
 
 export interface Session {
   id: number;

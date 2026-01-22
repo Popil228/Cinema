@@ -3,6 +3,7 @@ using System;
 using CinemaProject.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaProject.Server.Migrations
 {
     [DbContext(typeof(CinemaDbContext))]
-    partial class CinemaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260121131608_AddCharacterInMovieActor")]
+    partial class AddCharacterInMovieActor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,11 +133,11 @@ namespace CinemaProject.Server.Migrations
                     b.Property<short>("DiscountPercent")
                         .HasColumnType("smallint");
 
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UsesLeft")
                         .HasColumnType("integer");
@@ -155,7 +158,7 @@ namespace CinemaProject.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GenreId"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("GenreName")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
@@ -172,7 +175,7 @@ namespace CinemaProject.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HallId"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("HallName")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
@@ -192,10 +195,11 @@ namespace CinemaProject.Server.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<short>("Duration")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer");
 
                     b.Property<string>("PosterUri")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Title")
@@ -272,20 +276,20 @@ namespace CinemaProject.Server.Migrations
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SeatType", b =>
                 {
-                    b.Property<int>("SeatsTypeId")
+                    b.Property<int>("SeatTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatsTypeId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatTypeId"));
 
                     b.Property<short>("PricePercent")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("TypeName")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
-                    b.HasKey("SeatsTypeId");
+                    b.HasKey("SeatTypeId");
 
                     b.ToTable("SeatTypes");
                 });
@@ -405,7 +409,7 @@ namespace CinemaProject.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("CinemaProject.Server.Models.Entitys.Movie", "Movie")
-                        .WithMany("MovieActors")
+                        .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -443,7 +447,7 @@ namespace CinemaProject.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("CinemaProject.Server.Models.Entitys.SeatType", "SeatType")
-                        .WithMany("Seats")
+                        .WithMany()
                         .HasForeignKey("SeatTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -475,7 +479,7 @@ namespace CinemaProject.Server.Migrations
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SessionSeat", b =>
                 {
                     b.HasOne("CinemaProject.Server.Models.Entitys.Seat", "Seat")
-                        .WithMany("SessionSeats")
+                        .WithMany()
                         .HasForeignKey("SeatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -544,21 +548,9 @@ namespace CinemaProject.Server.Migrations
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Movie", b =>
                 {
-                    b.Navigation("MovieActors");
-
                     b.Navigation("MovieGenres");
 
                     b.Navigation("Sessions");
-                });
-
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Seat", b =>
-                {
-                    b.Navigation("SessionSeats");
-                });
-
-            modelBuilder.Entity("CinemaProject.Server.Models.Entitys.SeatType", b =>
-                {
-                    b.Navigation("Seats");
                 });
 
             modelBuilder.Entity("CinemaProject.Server.Models.Entitys.Session", b =>

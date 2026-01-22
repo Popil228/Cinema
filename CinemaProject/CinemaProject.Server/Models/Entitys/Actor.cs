@@ -9,6 +9,9 @@ namespace CinemaProject.Server.Models.Entitys
 
         [Column(TypeName = "varchar(100)")]
         public string FullName { get; set; } = null!;
+
+        [Column(TypeName = "varchar(255)")]
+        public string? PhotoUri { get; set; } 
         public ICollection<MovieActor> MovieActors { get; set; } = new HashSet<MovieActor>();
     }
 }

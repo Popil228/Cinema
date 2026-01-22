@@ -9,7 +9,7 @@ namespace CinemaProject.Server.Models.Entitys
 
         [Column(TypeName = "varchar(255)")]
         public string? Character { get; set; }
-
+      
         public Actor Actor { get; set; } = null!;
         public Movie Movie { get; set; } = null!;
     }
