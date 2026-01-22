@@ -146,3 +146,5 @@ $RECYCLE.BIN/
 *.bak
 *.backup
 *.old
+CinemaProject/CinemaProject.Server/Migrations/20260120220412_InitialCreate.Designer.cs
+CinemaProject/CinemaProject.Server/Migrations/20260120220412_InitialCreate.cs

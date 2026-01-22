@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CinemaProject.Server.Models.Entitys
 {
@@ -9,11 +8,10 @@ namespace CinemaProject.Server.Models.Entitys
 
         [Column(TypeName = "varchar(50)")]
         public string Code { get; set; } = null!;
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public int UsesLeft { get; set; }
 
-        [Range(1, 100)]
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+        public int UsesLeft { get; set; }
         public short DiscountPercent { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
