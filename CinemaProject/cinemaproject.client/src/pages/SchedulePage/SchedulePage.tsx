@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from './SchedulePage.module.scss';
 import type { Session } from '../../types/movie';
 import ScheduleDayDisplay from './pageComponents/ScheduleDayDisplay';
 import useWindowWidth from '../../utilities/useWindowWidth';
-
+import SearchBar from '../../components/SearchBar/SearchBar';
+import SearchBarContext from '../../context/searchBarContext/searchBarContext';
 
 const SchedulePage: React.FC = () => {
 
@@ -24,7 +25,7 @@ const SchedulePage: React.FC = () => {
       date: "3 квітня",
       time: "13:00",
       imageUrl: "/logo.png",
-      hall: 'B'
+      hall: 'A'
     },
     {
       id: 3,
@@ -42,7 +43,7 @@ const SchedulePage: React.FC = () => {
       date: "3 квітня",
       time: "13:00",
       imageUrl: "/logo.png",
-      hall: 'A'
+      hall: 'B'
     },
     {
       id: 5,
@@ -69,7 +70,7 @@ const SchedulePage: React.FC = () => {
       date: "4 квітня",
       time: "13:00",
       imageUrl: "/logo.png",
-      hall: 'A'
+      hall: 'B'
     },
     {
       id: 8,
@@ -87,7 +88,7 @@ const SchedulePage: React.FC = () => {
       date: "5 квітня",
       time: "16:00",
       imageUrl: "/logo.png",
-      hall: 'B'
+      hall: 'A'
     },
         {
       id: 10,
@@ -121,28 +122,45 @@ const SchedulePage: React.FC = () => {
   const windowWidth = useWindowWidth();
   const overflowWidth = 768;
 
-  const splitByDateObj:{[key:string]:Session[]} = {}; //{"date_str": [Session, Session, ...], ...}
+  const searchBarData = useContext(SearchBarContext);
 
-  sessions.forEach((s)=>{
+  const filteredSessions = searchBarData.isSearchEnabled ? 
+  sessions.filter(s=>s.title.toLowerCase().includes(searchBarData.titleSearch.toLowerCase()))
+  .filter((s)=>searchBarData.genreSearch=="" ? true : s.genres?.includes(searchBarData.genreSearch)||false) 
+  : sessions
+  
+  //TODO TODO TODO TODO - уточнити формат дати і написати логіку сортування з урахуванням формату
+  //TODO TODO  OPTIONAL - зробити динамічне сортування з єдиною конпкою очищення параметрів пошуку
+  //TODO TODO TODO TODO  
+  //TODO TODO TODO TODO
+  //TODO TODO TODO TODO
+
+  const splitByDateObj:{[key:string]:Session[]} = {}; //{"date_str": [Session, Session, ...], ...}
+  filteredSessions.forEach((s)=>{
     if(!{}.propertyIsEnumerable.call(splitByDateObj,s.date)){
         splitByDateObj[s.date] = [];
     }
     splitByDateObj[s.date].push(s);
   })
-
   const splitByDateArr:Session[][] = Object.keys(splitByDateObj).map((key)=>{return splitByDateObj[key]});
 
+  const genres:string[] = [...new Set(sessions.flatMap(s=>s.genres||[]))]; //list of unique non-undefined genres
+
+
   return (
-    <div className={styles.container}>
-      <h1>Розклад сеансів</h1>
-      {windowWidth>overflowWidth&&
-      <div className={styles.hallsHeader}>
-        <h3 className={styles.hallTitle}>Зал A</h3> 
-        <h3  className={styles.hallTitle}>Зал B</h3>
+    <>
+      <SearchBar genres={genres}></SearchBar>
+      <div className={styles.container}>
+        <h1>Розклад сеансів</h1>
+        {windowWidth>overflowWidth&&
+        <div className={styles.hallsHeader}>
+          <h3 className={styles.hallTitle}>Зал A</h3> 
+          <h3  className={styles.hallTitle}>Зал B</h3>
+        </div>
+        }
+        {splitByDateArr.map(s=><ScheduleDayDisplay sessions={s}/>)}
       </div>
-      }
-      {splitByDateArr.map(s=><ScheduleDayDisplay sessions={s}/>)}
-    </div>
+    </>
   );
 };
 
