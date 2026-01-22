@@ -1,5 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using System.Net.Sockets;
+﻿using CinemaProject.Server.Models.Enums;
 
 namespace CinemaProject.Server.Models.Entitys
 {
@@ -10,12 +9,6 @@ namespace CinemaProject.Server.Models.Entitys
         public int? DiscountId { get; set; }
         public DateTime BookingAt { get; set; } = DateTime.UtcNow;
         public decimal TotalPrice { get; set; }
-        public enum BookingStatus
-        {
-            Confirmed, 
-            Cancelled
-        }
-
         public BookingStatus Status { get; set; }
 
         public AppUser AppUser { get; set; } = null!;
