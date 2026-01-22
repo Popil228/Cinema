@@ -16,6 +16,8 @@ namespace CinemaProject.Server.Models.Entitys
 
         public short Duration { get; set; }
 
+        public DateTime ReleaseDate { get; set; } = DateTime.UtcNow;
+
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
         public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
         public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
