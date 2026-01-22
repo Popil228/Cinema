@@ -5,11 +5,14 @@ namespace CinemaProject.Server.Models.Entitys
 {
     public class SeatType
     {
-        public int SeatTypeId { get; set; }
+        [Key]
+        public int SeatsTypeId { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string TypeName { get; set; } = null!;
+        public string Type { get; set; } = null!;
+
         public short PricePercent { get; set; }
 
+        public ICollection<Seat> Seats { get; set; } = new List<Seat>();
     }
 }

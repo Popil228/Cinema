@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaProject.Server.Migrations
 {
     [DbContext(typeof(CinemaDbContext))]
-    [Migration("20260117231708_AddDiscounts")]
-    partial class AddDiscounts
+    [Migration("20260121131608_AddCharacterInMovieActor")]
+    partial class AddCharacterInMovieActor
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,9 @@ namespace CinemaProject.Server.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
+
+                    b.Property<string>("PhotoUri")
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("ActorId");
 
@@ -215,6 +218,9 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<int>("ActorId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Character")
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("MovieId", "ActorId");
 

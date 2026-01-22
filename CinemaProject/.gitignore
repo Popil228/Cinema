@@ -166,3 +166,4 @@ TestResults/
 *.bak
 *.backup
 *.old
+CinemaProject/CinemaProject.Server/appsettings.json
