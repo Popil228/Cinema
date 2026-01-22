@@ -1,1 +1,184 @@
-.container { padding: 40px; text-align: center; color: var(--color-text-main); }
+@use "../../styles/mixins" as *;
+
+.pageWrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 40px;
+}
+
+.contentContainer {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  gap: 60px;
+  padding: 0 25px;
+
+  @include respond(md) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.posterSide {
+  flex: 0 0 350px;
+  
+  .mainPoster {
+    width: 100%;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+}
+
+.detailsSide {
+  flex: 1;
+  min-width: 0;
+}
+
+.movieTitle {
+  font-size: var(--font-xl);
+  color: var(--color-text-main);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 10px;
+}
+
+.metaInfo {
+  color: var(--color-text-muted);
+  font-size: var(--font-md);
+  margin-bottom: 30px;
+}
+
+.subTitle {
+  font-size: var(--font-lg);
+  color: var(--color-text-main);
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+
+.actorsCarousel {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+  padding-bottom: 15px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain; 
+
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.buyBtn {
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 10px;
+  font-size: var(--font-md);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  margin: 30px 0;
+  transition: transform 0.2s, opacity 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.descriptionText {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  font-size: var(--font-sm);
+}
+
+.scheduleSection {
+  padding: 60px 0;
+  width: 100%;
+}
+
+.sectionTitle {
+  max-width: 1300px;
+  margin: 0 auto 30px;
+  padding: 0 25px;
+  font-size: var(--font-xl);
+  color: var(--color-text-main);
+  font-weight: var(--font-weight-bold);
+}
+
+.sessionsWrapper {
+  display: flex;
+  gap: 40px;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 25px;
+
+  @include respond(md) {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.hallColumn {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    text-align: center;
+    color: var(--color-text-main);
+    margin-bottom: 30px;
+    font-size: var(--font-lg);
+    font-weight: 600;
+  }
+}
+
+.clientSessionCard {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 15px;
+  transition: transform 0.2s, background 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateX(10px);
+    background: var(--color-bg-card);
+  }
+}
+
+.miniPoster {
+  width: 55px;
+  height: 55px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.cardInfo {
+  flex: 1;
+}
+
+.sessionTitle {
+  font-size: var(--font-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-main);
+  margin: 0 0 8px 0;
+}
+
+.sessionTags {
+  display: flex;
+  gap: 10px;
+
+  span {
+    background: #334155;
+    color: var(--color-text-main);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+}
