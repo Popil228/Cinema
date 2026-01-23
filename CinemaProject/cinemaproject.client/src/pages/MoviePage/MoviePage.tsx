@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom';
 import ActorCard from '../../components/Movie/ActorCard/ActorCard';
 import styles from './MoviePage.module.scss';
 import type { Movie, Session } from '../../types/movie';
+// Імпортуємо утиліту колеги
+import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
 
 const MoviePage: React.FC = () => {
   const { id } = useParams();
+  id; // для майбутнього використання
   const carouselRef = useRef<HTMLDivElement>(null);
-  id; // Використання id, якщо потрібно для подальшого розвитку
-  // Дані фільму
+
   const movie: Movie = {
     id: 1,
     title: 'Minecraft',
@@ -28,12 +30,12 @@ const MoviePage: React.FC = () => {
     ]
   };
 
-  // Сеанси саме для цього фільму
+  // Сеанси для цього фільму
   const sessions: Session[] = [
-    { id: 1, title: 'Minecraft', hall: 'A', date: '3 квітня', time: '13:00', imageUrl: '/Minecraft.png' },
-    { id: 2, title: 'Minecraft', hall: 'A', date: '3 квітня', time: '16:00', imageUrl: '/Minecraft.png' },
-    { id: 3, title: 'Minecraft', hall: 'B', date: '3 квітня', time: '14:30', imageUrl: '/Minecraft.png' },
-    { id: 4, title: 'Minecraft', hall: 'B', date: '3 квітня', time: '19:00', imageUrl: '/Minecraft.png' },
+    { id: 1, title: 'Minecraft', hall: 'A', date: new Date(2026, 3, 3), time: '13:00', imageUrl: '/Minecraft.png' },
+    { id: 2, title: 'Minecraft', hall: 'A', date: new Date(2026, 3, 3), time: '16:00', imageUrl: '/Minecraft.png' },
+    { id: 3, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '14:30', imageUrl: '/Minecraft.png' },
+    { id: 4, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '19:00', imageUrl: '/Minecraft.png' },
   ];
 
   useEffect(() => {
@@ -46,11 +48,10 @@ const MoviePage: React.FC = () => {
     };
 
     el.addEventListener('wheel', onWheel, { passive: false });
-
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
 
-return (
+  return (
     <div className={styles.pageWrapper}>
       <section className={styles.mainInfo}>
         <div className={styles.contentContainer}>
@@ -83,7 +84,6 @@ return (
         </div>
       </section>
 
-      {/* Секція з розкладом сеансів */}
       <section className={styles.scheduleSection}>
         <h2 className={styles.sectionTitle}>Розклад сеансів</h2>
         <div className={styles.sessionsWrapper}>
@@ -97,7 +97,7 @@ return (
                   <p className={styles.sessionTitle}>{session.title}</p>
                   <div className={styles.sessionTags}>
                     <span>ЗАЛ {session.hall}</span>
-                    <span>{session.date}</span>
+                    <span>{dateToDayMonthStrUA(session.date)}</span>
                     <span>{session.time}</span>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ return (
                   <p className={styles.sessionTitle}>{session.title}</p>
                   <div className={styles.sessionTags}>
                     <span>ЗАЛ {session.hall}</span>
-                    <span>{session.date}</span>
+                    <span>{dateToDayMonthStrUA(session.date)}</span>
                     <span>{session.time}</span>
                   </div>
                 </div>
