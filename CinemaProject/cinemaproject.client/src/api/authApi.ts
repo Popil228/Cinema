@@ -4,7 +4,7 @@ const API_BASE_URL = '/api';
 
 export const authApi = {
   async login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/Auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export const authApi = {
   },
 
   async register(data: RegisterRequest): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/Auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
