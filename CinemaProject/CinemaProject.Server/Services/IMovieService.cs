@@ -1,5 +1,5 @@
 ﻿using CinemaProject.Server.DTOs.Movie;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace CinemaProject.Server.Services
 {
