@@ -9,11 +9,11 @@ namespace CinemaProject.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MoviesController : ControllerBase
+    public class MovieController : ControllerBase
     {
         private readonly IMovieService _movieService;
 
-        public MoviesController(IMovieService movieService)
+        public MovieController(IMovieService movieService)
         {
             _movieService = movieService;
         }
@@ -26,7 +26,7 @@ namespace CinemaProject.Server.Controllers
             return Ok(movies);
         }
 
-        [HttpGet("deteils")]
+        [HttpGet("details")]
         public async Task<IActionResult> Details([FromQuery] int id)
         {
             var result = await _movieService.GetMovieExtraInfoAsync(id);
