@@ -20,7 +20,7 @@ export interface Movie {
 export interface Session {
   id: number;
   time: string;
-  date: string;
+  date: Date;
   title: string;
   genres?: string[];
   imageUrl: string;

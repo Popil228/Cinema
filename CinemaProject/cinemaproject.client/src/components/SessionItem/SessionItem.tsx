@@ -1,32 +1,34 @@
 import React from 'react';
 import styles from './SessionItem.module.scss';
+import type { Session } from '../../types/movie';
+import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
 
 interface SessionItemProps {
-  title: string;
-  genres?: string[];
-  date: string;
-  time: string;
-  imageUrl: string;
+  session:Session;
+
+  showDate: boolean;
+  showTime: boolean;
 }
 
-const SessionItem: React.FC<SessionItemProps> = ({ title, genres, date, time, imageUrl }) => {
-  const genresString = genres?.join(', ') || 'Жанр не вказано';
-
+const SessionItem: React.FC<SessionItemProps> = ({ session, showTime=false, showDate=false }) => {
+  const genresString = session.genres?.join(', ') || 'Жанр не вказано';
+  const dateStr:string = dateToDayMonthStrUA(session.date);
+  
   return (
     <div className={styles.sessionCard}>
       <div className={styles.leftInfo}>
         <div className={styles.poster}>
-          <img src={imageUrl} alt={title} />
+          <img src={session.imageUrl} alt={session.title} />
         </div>
         <div className={styles.movieDetails}>
-          <h4 className={styles.movieTitle}>{title}</h4>
+          <h4 className={styles.movieTitle}>{session.title}</h4>
           <p className={styles.genres}>{genresString}</p>
         </div>
       </div>
       
       <div className={styles.rightInfo}>
-        <div className={styles.badge}>{date}</div>
-        <div className={styles.badge}>{time}</div>
+        {showDate && <div className={styles.badge}>{dateStr}</div>}
+        {showTime && <div className={styles.badge}>{session.time}</div>}
       </div>
     </div>
   );

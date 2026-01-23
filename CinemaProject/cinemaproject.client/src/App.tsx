@@ -12,6 +12,7 @@ import EmailConfirmationPage from "./pages/RegisterPage/EmailConfirmationPage.ts
 import AdminMoviesPage from "./pages/Admin/AdminMoviesPage/AdminMoviesPage.tsx";
 import AdminSessionsPage from "./pages/Admin/AdminSessionsPage/AdminSessionsPage.tsx";
 import EditMoviePage from "./pages/Admin/EditMoviePage/EditMoviePage.tsx";
+import SearchBarContextProvider from "./context/searchBarContext/SearchBarContextProvider.tsx";
 import SearchMoviePage from "./pages/Admin/SearchMoviePage/SearchMoviePage.tsx";
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/schedule" element={<SchedulePage />} />
+          <Route path="/schedule" element={<SearchBarContextProvider> <SchedulePage /> </SearchBarContextProvider>} />
           <Route path="/movie/:id" element={<MoviePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
