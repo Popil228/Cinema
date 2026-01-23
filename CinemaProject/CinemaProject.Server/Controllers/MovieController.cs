@@ -1,9 +1,6 @@
-﻿using Azure.Core;
-using CinemaProject.Server.DTOs.Auth;
-using CinemaProject.Server.DTOs.Movie;
+﻿using CinemaProject.Server.DTOs.Movie;
 using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CinemaProject.Server.Controllers
 {
@@ -18,32 +15,26 @@ namespace CinemaProject.Server.Controllers
             _movieService = movieService;
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string query)
-        {
-            var movies = await _movieService.SearchMoviesAsync(query);
-            if (!movies.Any()) return NotFound("Фільми не знайдено");
-            return Ok(movies);
-        }
-
-        [HttpGet("details")]
-        public async Task<IActionResult> Details([FromQuery] int id)
-        {
-            var result = await _movieService.GetMovieExtraInfoAsync(id);
-            if (result == null) return NotFound("Фільм не знайдено");
-            return Ok(result);
-        }
-
-        [HttpGet("get_all_movie")]
+        [HttpGet]
         public async Task<IActionResult> GetAllMovies()
         {
-            var movies = await _movieService.GetAllMoviesAsync();
-            if (!movies.Any()) return NotFound("Фільми не знайдено");
-            return Ok(movies);
+            try
+            {
+                var movies = await _movieService.GetAllMoviesAsync();
+                return Ok(movies);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = ex.Message
+                });
+            }
+
         }
 
 
-        [HttpPost("add_movie")]
+        [HttpPost]
         public async Task<ActionResult<MovieResponse>> AddMovie([FromBody] MovieDto request)
         {
             if (!ModelState.IsValid)
@@ -65,8 +56,8 @@ namespace CinemaProject.Server.Controllers
             return Ok(result);
         }
 
-        [HttpPost("delete_movie")]
-        public async Task<ActionResult<MovieResponse>> DeleteMovie([FromBody] int movieId)
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<MovieResponse>> DeleteMovie(int Id)
         {
             if (!ModelState.IsValid)
             {
@@ -77,7 +68,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var result = await _movieService.DeleteMovieAsync(movieId);
+            var result = await _movieService.DeleteMovieAsync(Id);
 
             if (!result.Success)
             {
@@ -87,7 +78,7 @@ namespace CinemaProject.Server.Controllers
             return Ok(result);
         }
 
-        [HttpPost("update_movie")]
+        [HttpPut]
         public async Task<ActionResult<MovieResponse>> UpdateMovie([FromBody] MovieDto request)
         {
             if (!ModelState.IsValid)

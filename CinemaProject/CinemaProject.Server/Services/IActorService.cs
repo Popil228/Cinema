@@ -5,7 +5,7 @@ namespace CinemaProject.Server.Services
 {
     public interface IActorService
     {
-        Task<ActorResponse> UpdateActorAsync(ActorDto actorDto, int movieId);
+        Task<ActorResponse> UpdateActorAsync(ActorDto actorDto);
 
     }
 }

@@ -16,8 +16,8 @@ namespace CinemaProject.Server.Controllers
             _actorService = actorService;
         }
 
-        [HttpPost("update")]
-        public async Task<ActionResult<ActorResponse>> UpdateActor ([FromBody]ActorDto request, int movieId)
+        [HttpPut]
+        public async Task<ActionResult<ActorResponse>> UpdateActor ([FromBody]ActorDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -28,7 +28,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var result = await _actorService.UpdateActorAsync(request, movieId);
+            var result = await _actorService.UpdateActorAsync(request);
 
             if (!result.Success)
             {

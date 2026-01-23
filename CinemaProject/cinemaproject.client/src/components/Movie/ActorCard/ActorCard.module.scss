@@ -22,6 +22,12 @@
   object-fit: cover;
 }
 
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .name {
   color: var(--color-text-main);
   font-size: 0.9rem;
