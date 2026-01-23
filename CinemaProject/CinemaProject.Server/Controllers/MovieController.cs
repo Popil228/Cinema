@@ -22,7 +22,7 @@ namespace CinemaProject.Server.Controllers
         public async Task<IActionResult> Search([FromQuery] string query)
         {
             var movies = await _movieService.SearchMoviesAsync(query);
-            if (!movies.Any()) return NotFound("Фільми не знайдено.");
+            if (!movies.Any()) return NotFound("Фільми не знайдено");
             return Ok(movies);
         }
 
@@ -30,7 +30,7 @@ namespace CinemaProject.Server.Controllers
         public async Task<IActionResult> Details([FromQuery] int id)
         {
             var result = await _movieService.GetMovieExtraInfoAsync(id);
-            if (result == null) return NotFound("Фільм не знайдено.");
+            if (result == null) return NotFound("Фільм не знайдено");
             return Ok(result);
         }
 
@@ -38,7 +38,7 @@ namespace CinemaProject.Server.Controllers
         public async Task<IActionResult> GetAllMovies()
         {
             var movies = await _movieService.GetAllMoviesAsync();
-            if (!movies.Any()) return NotFound("Фільми не знайдено.");
+            if (!movies.Any()) return NotFound("Фільми не знайдено");
             return Ok(movies);
         }
 

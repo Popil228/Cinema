@@ -1,10 +1,12 @@
-// import { useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
+import * as movieApi from "../api/movieApi";
 
-// const useMovies = () => {
-//     return useQuery({
-//         queryKey: ["movies"],
-//         queryFn: /* api get/read function*/,
-//         staleTime: Infinity,
-//         gcTime: 1000 * 60 * 15
-//     });
-// }
+const useMovies = (searchStr:string) => {
+    return useQuery({
+        queryKey:["searchMovies"],
+        queryFn: () => movieApi.searchMovies(searchStr),
+        enabled: false,
+    })
+}
+
+export default useMovies;

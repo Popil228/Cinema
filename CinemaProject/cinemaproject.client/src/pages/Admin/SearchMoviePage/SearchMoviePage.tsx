@@ -1,25 +1,44 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SearchMoviePage.module.scss';
-import * as moviesApi from '../../../api/movieApi';
+import * as movieApi from '../../../api/movieApi';
 import { type MovieInfo } from '../../../types/movie';
 
 const SearchMoviePage: React.FC = () => {
-  const [query, setQuery] = useState<string>('');
+  //const [query, setQuery] = useState<string>('');
+  const [searchStr, setSearchStr] = useState<string>('');
   const [searchResults, setSearchResults] = useState<MovieInfo[]>([])
+  const [isError, setIsError] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string>("");
+
   const navigate = useNavigate();
 
   const handleSearchConfirm = async (e:React.KeyboardEvent<HTMLInputElement>) => {
     if(e.key == "Enter")
     {
       
-      if(query.trim().length<3) { return };
+      if(searchStr.trim().length<3) { return };
       console.log("enter key pressed")
       
       //VALIDATE search string here
-
-      const searchResult = await moviesApi.searchMovies(query);
-      setSearchResults(searchResult);
+      try{
+        setSearchResults(await movieApi.searchMovies(searchStr))
+        setIsError(false);
+      }
+      catch(err)
+      {
+        setIsError(true);
+        if(err instanceof Error)
+        {
+          console.log("error caugth");
+          setErrorMsg(err.message);
+        }
+        else
+        {
+          setErrorMsg(err);
+        }
+      }
+      
     }
   }
 
@@ -41,22 +60,28 @@ const SearchMoviePage: React.FC = () => {
       <input 
         className={styles.searchInput}
         placeholder="Введіть назву фільму..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        value={searchStr}
+        onChange={(e) => setSearchStr(e.target.value)}
         onKeyDown={handleSearchConfirm}
       />
-
+      {isError && <>
+        <h1 className={styles.title}>Помилка пошуку</h1>
+        <p className={styles.errorText}>{errorMsg}</p>
+      </>}
+      {!isError && 
       <div className={styles.resultsGrid}>
         {searchResults.map((movie) => (
           <div key={movie.mainInfo?.id} className={styles.moviePlate} onClick={() => handleSelect(movie)}>
-            <img src={movie.mainInfo?.posterPath} alt={movie.mainInfo?.title} />
+            <img src={`https://image.tmdb.org/t/p/w500${movie.mainInfo?.posterPath}`} 
+            alt={movie.mainInfo?.title} />
             <div className={styles.plateInfo}>
               <h3>{movie.mainInfo?.title}</h3>
               <p>{new Date(movie.mainInfo?.releaseDate || "1999-01-01").getFullYear()}</p>
             </div>
           </div>
-        ))}
+        )) || <></>}
       </div>
+      }
     </div>
   );
 };
