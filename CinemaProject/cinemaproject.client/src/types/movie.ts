@@ -22,6 +22,11 @@ export interface Genre{
   name: string;
 }
 
+export interface StrictMovieInfo{
+  mainInfo: MovieMainInfo;
+  extraInfo: MovieExtaInfo;
+}
+
 export interface MovieInfo{
   mainInfo: MovieMainInfo | null;
   extraInfo: MovieExtaInfo | null;

@@ -1,60 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './EditMoviePage.module.scss';
-import type { Movie, Actor } from '../../../types/movie';
+import type { Actor, StrictMovieInfo } from '../../../types/movie';
+import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
 
 const EditMoviePage: React.FC = () => {
-  const { id } = useParams();
+  //const { id } = useParams();
+  //const location = useLocation();
+  //const isEditMode = Boolean(id);
   const navigate = useNavigate();
-  const location = useLocation();
-  const isEditMode = Boolean(id);
 
-  // Стан фільму
-  const [movie, setMovie] = useState<Partial<Movie>>({
-    title: '',
-    duration: '',
-    genres: [],
-    actors: [],
-    description: '',
-    posterUrl: '/placeholder-poster.png',
-    year: new Date().getFullYear()
-  });
+  const movieEditContext = useContext(MoveEditContext);
+  const movie = movieEditContext.movieInfo;
 
   // Стан для редагування актора
   const [editingActorIndex, setEditingActorIndex] = useState<number | null>(null);
-  const [tempActorData, setTempActorData] = useState<Actor>({ name: '', portrait: '', role: '' });
+  const [tempActorData, setTempActorData] = useState<Actor>({ name: '', portrait: '', role: '' } as Actor);
 
   useEffect(() => {
-    if (location.state?.baseData) {
-      const { title, posterUrl, year } = location.state.baseData;
-      setMovie(prev => ({
-        ...prev,
-        title,
-        posterUrl,
-        year,
-        duration: '2г 15хв',
-        description: 'Опис фільму, який ми автоматично отримали з бази даних пошуку...',
-        genres: ['Фантастика', 'Бойовик'],
-        actors: [
-          { name: 'Джек Блек', portrait: '/actors/black.jpg', role: 'Стів' },
-          { name: 'Джейсон Момоа', portrait: '/actors/momoa.jpg', role: 'Гаррет' }
-        ]
-      }));
-    } else if (isEditMode) {
-      setMovie({
-        id: Number(id),
-        title: 'Minecraft',
-        duration: '2г 30хв',
-        genres: ['Фантастика', 'Пригоди'],
-        actors: [
-          { name: 'Емма Майєрс', portrait: '/actors/emma.jpg', role: 'Наталі' },
-          { name: 'Роберт Дауні-молодший', portrait: '/actors/robert.jpg', role: 'Алекс' }
-        ],
-        description: 'Сюжет про світ блоків...',
-        posterUrl: '/Minecraft.png'
-      });
+    if(!movieEditContext.isLoaded)
+    {
+      const stored_text = localStorage.getItem("movie_edit")
+      if(stored_text===null)
+      {
+        //new blank page case
+        //throw new Error("no movie data available");
+      }
+      else
+      {
+        const parsedObj:StrictMovieInfo = JSON.parse(stored_text) as StrictMovieInfo;
+        movieEditContext.setMovieInfo({...parsedObj});
+        movieEditContext.setIsLoaded(true);
+      }
     }
-  }, [id, isEditMode, location.state]);
+    else{
+      localStorage.setItem("movie_edit",JSON.stringify(movieEditContext.movieInfo))
+    }
+  },[])
+
+  // useEffect(() => {
+  //   if (location.state?.baseData) {
+  //     const { title, posterUrl, year } = location.state.baseData;
+  //     setMovie(prev => ({
+  //       ...prev,
+  //       title,
+  //       posterUrl,
+  //       year,
+  //       duration: '2г 15хв',
+  //       description: 'Опис фільму, який ми автоматично отримали з бази даних пошуку...',
+  //       genres: ['Фантастика', 'Бойовик'],
+  //       actors: [
+  //         { name: 'Джек Блек', portrait: '/actors/black.jpg', role: 'Стів' },
+  //         { name: 'Джейсон Момоа', portrait: '/actors/momoa.jpg', role: 'Гаррет' }
+  //       ]
+  //     }));
+  //   } else if (isEditMode) {
+  //     setMovie({
+  //       id: Number(id),
+  //       title: 'Minecraft',
+  //       duration: '2г 30хв',
+  //       genres: ['Фантастика', 'Пригоди'],
+  //       actors: [
+  //         { name: 'Емма Майєрс', portrait: '/actors/emma.jpg', role: 'Наталі' },
+  //         { name: 'Роберт Дауні-молодший', portrait: '/actors/robert.jpg', role: 'Алекс' }
+  //       ],
+  //       description: 'Сюжет про світ блоків...',
+  //       posterUrl: '/Minecraft.png'
+  //     });
+  //   }
+  // }, [id, isEditMode, location.state]);
 
   // Функції для редагування актора
   const handleStartEditActor = (index: number, actor: Actor) => {
@@ -63,32 +77,53 @@ const EditMoviePage: React.FC = () => {
   };
 
   const handleSaveActor = (index: number) => {
-    if (!movie.actors) return;
-    const updatedActors = [...movie.actors];
+    if (!movie.extraInfo.actors) return;
+    const updatedActors = [...movie.extraInfo.actors];
     updatedActors[index] = tempActorData;
-    setMovie({ ...movie, actors: updatedActors });
+    movieEditContext.setMovieInfo({...movie,
+      extraInfo:{...(movie.extraInfo),
+        actors: updatedActors,
+      }
+    })
     setEditingActorIndex(null);
+    localStorage.setItem("movie_edit",JSON.stringify(movieEditContext.movieInfo))
   };
+
+  const handleConfirm = () => {
+    localStorage.removeItem("movie_edit");
+    console.log('Final Movie Data:', movie);
+    navigate('/admin/movies');
+  }
+  
+  const handleCancel = () => {
+    localStorage.removeItem("movie_edit");
+    navigate('/admin/movies/search')
+  }
+
+  if(!movieEditContext.isLoaded)
+  {
+    return (<h2 className={styles.noMovieInfoMsg}>Відсутні дані про фільм</h2>)
+  }
 
   return (
     <div className={styles.container}>
       <div className={styles.topSection}>
         <div className={styles.posterBlock}>
-          <img src={movie.posterUrl} alt="Poster" />
+          <img src={`https://image.tmdb.org/t/p/w500${movie.mainInfo.posterPath}`} alt="Poster" />
         </div>
 
         <div className={styles.mainInfo}>
           <div className={styles.fieldGroup}>
             <label>Назва</label>
-            <p className={styles.staticValue}>{movie.title}</p>
+            <p className={styles.staticValue}>{movie.mainInfo.title}</p>
           </div>
 
           <div className={styles.fieldGroup}>
             <label>Жанри</label>
             <div className={styles.tagCloud}>
-              {movie.genres?.map(genre => (
-                <span key={genre} className={styles.tag}>
-                  {genre}
+              {movie.extraInfo?.genres?.map(genre => (
+                <span key={genre.id} className={styles.tag}>
+                  {genre.name}
                 </span>
               ))}
             </div>
@@ -96,7 +131,7 @@ const EditMoviePage: React.FC = () => {
 
           <div className={styles.fieldGroup}>
             <label>Тривалість</label>
-            <p className={styles.staticValue}>{movie.duration}</p>
+            <p className={styles.staticValue}>{movie.extraInfo.runtime} хв</p>
           </div>
 
           <button className={styles.sessionsBtn}>Редагувати Сеанси ✎</button>
@@ -107,7 +142,7 @@ const EditMoviePage: React.FC = () => {
         <div className={styles.fieldGroup}>
           <label>Актори</label>
           <div className={styles.actorsGrid}>
-            {movie.actors?.map((actor, index) => (
+            {movie.extraInfo.actors?.map((actor, index) => (
               <div key={actor.name} className={styles.actorCard}>
                 <img src={actor.portrait} alt={actor.name} className={styles.actorPhoto} />
                 
@@ -148,24 +183,26 @@ const EditMoviePage: React.FC = () => {
         <div className={styles.fieldGroup}>
           <label>Опис</label>
           <textarea 
-            value={movie.description} 
-            onChange={(e) => setMovie({...movie, description: e.target.value})}
+            value={movie.extraInfo.overview} 
+            onChange={(e) => {movieEditContext.setMovieInfo(
+              {...movie, 
+                extraInfo:{
+                  ...(movie.extraInfo), 
+                  overview: e.target.value
+                }
+              })}}
             rows={6}
           />
         </div>
       </div>
 
       <div className={styles.footer}>
-        <button className={styles.cancelBtn} onClick={() => navigate('/admin/movies')}>
+        <button className={styles.cancelBtn} onClick={handleCancel}>
           Скасувати
         </button>
         <button 
           className={styles.saveBtn} 
-          onClick={() => {
-            console.log('Final Movie Data:', movie);
-            navigate('/admin/movies');
-          }}
-        >
+          onClick={handleConfirm}>
           ✓
         </button>
       </div>

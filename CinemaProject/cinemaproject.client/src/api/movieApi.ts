@@ -22,4 +22,22 @@ const searchMovies = async (searchStr:string) => {
     return result;
 }
 
-export {searchMovies}
+const getMovieInfoByIdTMDB = async (movieId:number) => {
+    const responseText = await fetch(`${API_BASE_URL}/Movie/details?id=${movieId}`)
+    .then(response=>response.text());
+
+    let result:MovieInfo;
+
+    try{
+        result = JSON.parse(responseText) as MovieInfo;
+    }
+    catch
+    {
+        throw new Error(responseText);
+    }
+
+    console.log(result);
+    return result;
+}
+
+export {searchMovies, getMovieInfoByIdTMDB}
