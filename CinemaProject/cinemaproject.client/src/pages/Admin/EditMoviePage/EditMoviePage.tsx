@@ -15,7 +15,7 @@ const EditMoviePage: React.FC = () => {
 
   // Стан для редагування актора
   const [editingActorIndex, setEditingActorIndex] = useState<number | null>(null);
-  const [tempActorData, setTempActorData] = useState<Actor>({ name: '', portrait: '', role: '' } as Actor);
+  const [tempActorData, setTempActorData] = useState<Actor>({ name: '', photoUri: '', role: '' } as Actor);
 
   useEffect(() => {
     if(!movieEditContext.isLoaded)
@@ -144,7 +144,7 @@ const EditMoviePage: React.FC = () => {
           <div className={styles.actorsGrid}>
             {movie.extraInfo.actors?.map((actor, index) => (
               <div key={actor.name} className={styles.actorCard}>
-                <img src={actor.portrait} alt={actor.name} className={styles.actorPhoto} />
+                <img src={`https://image.tmdb.org/t/p/w500${actor.photoUri}`} alt={actor.name} className={styles.actorPhoto} />
                 
                 <div className={styles.actorText}>
                   {editingActorIndex === index ? (

@@ -31,8 +31,8 @@ namespace CinemaProject.Server.Controllers
             }
         }
 
-        [HttpGet("details/{Id:int}")]
-        public async Task<IActionResult> Details([FromQuery] int id)
+        [HttpGet("details/{id:int}")]
+        public async Task<IActionResult> Details(int id)
         {
             try
             {

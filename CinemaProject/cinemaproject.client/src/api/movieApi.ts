@@ -3,7 +3,7 @@ import type { MovieInfo } from "../types/movie";
 const API_BASE_URL = '/api';
 
 const searchMovies = async (searchStr:string) => {
-    const responseText = await fetch(`${API_BASE_URL}/Movie/search?query=${searchStr}`, {
+    const responseText = await fetch(`${API_BASE_URL}/Tmdb/search?query=${searchStr}`, {
         method: 'GET',
         headers: { 'Content-type' : 'application/json' },})
     .then(response => response.text());
@@ -23,7 +23,7 @@ const searchMovies = async (searchStr:string) => {
 }
 
 const getMovieInfoByIdTMDB = async (movieId:number) => {
-    const responseText = await fetch(`${API_BASE_URL}/Movie/details?id=${movieId}`)
+    const responseText = await fetch(`${API_BASE_URL}/Tmdb/details/${movieId}`, {method:"GET"})
     .then(response=>response.text());
 
     let result:MovieInfo;

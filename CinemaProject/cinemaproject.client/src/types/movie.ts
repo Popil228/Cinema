@@ -1,7 +1,7 @@
 export interface Actor {
   id: number;
   name: string;
-  portrait: string;
+  photoUri: string;
   role: string;
 }
 
