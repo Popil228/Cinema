@@ -19,7 +19,6 @@ namespace CinemaProject.Server.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly CinemaDbContext _context;
         private readonly string _apiKey;
-        private const string PosterBaseUri = "https://image.tmdb.org/t/p/w500";
 
         public MovieService(CinemaDbContext context, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
@@ -51,10 +50,12 @@ namespace CinemaProject.Server.Services
                 {
                     Id = m.Id,
                     Title = m.Title,
-                    ReleaseDate = m.Release_date,
+                    ReleaseDate = DateTime.TryParse(m.Release_date, out var date)
+                        ? DateTime.SpecifyKind(date, DateTimeKind.Utc)
+                        : default,
                     PosterPath = string.IsNullOrEmpty(m.Poster_path)
                         ? null
-                        : $"{PosterBaseUri}{m.Poster_path}"
+                        : $"{m.Poster_path}"
                 },
                 ExtraInfo = null
             }).ToList() ?? new List<MovieDto>();
@@ -113,7 +114,7 @@ namespace CinemaProject.Server.Services
                         Role = a.Character,
                         PhotoUri = string.IsNullOrEmpty(a.Profile_Path)
                             ? null
-                            : $"{PosterBaseUri}{a.Profile_Path}"
+                            : $"{a.Profile_Path}"
                     })
                     .ToList()
                 }
