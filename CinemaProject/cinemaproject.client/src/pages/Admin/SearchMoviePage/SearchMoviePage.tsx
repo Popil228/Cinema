@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SearchMoviePage.module.scss';
+import * as moviesApi from '../../../api/movieApi';
+import { type MovieInfo } from '../../../types/movie';
 
 const SearchMoviePage: React.FC = () => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<MovieInfo[]>([])
   const navigate = useNavigate();
 
-  // Імітація результатів пошуку
-  const results = [
-    { title: 'Minecraft Movie', year: 2025, poster: '/Minecraft.png' },
-    { title: 'Minecraft: Story Mode', year: 2015, poster: '/Minecraft.png' },
-  ];
+  const handleSearchConfirm = async (e:React.KeyboardEvent<HTMLInputElement>) => {
+    if(e.key == "Enter")
+    {
+      
+      if(query.trim().length<3) { return };
+      console.log("enter key pressed")
+      
+      //VALIDATE search string here
+
+      const searchResult = await moviesApi.searchMovies(query);
+      setSearchResults(searchResult);
+    }
+  }
 
   const handleSelect = (movie: any) => {
     navigate('/admin/movies/add', { 
@@ -32,15 +43,16 @@ const SearchMoviePage: React.FC = () => {
         placeholder="Введіть назву фільму..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleSearchConfirm}
       />
 
       <div className={styles.resultsGrid}>
-        {results.map((movie, idx) => (
-          <div key={idx} className={styles.moviePlate} onClick={() => handleSelect(movie)}>
-            <img src={movie.poster} alt={movie.title} />
+        {searchResults.map((movie) => (
+          <div key={movie.mainInfo?.id} className={styles.moviePlate} onClick={() => handleSelect(movie)}>
+            <img src={movie.mainInfo?.posterPath} alt={movie.mainInfo?.title} />
             <div className={styles.plateInfo}>
-              <h3>{movie.title}</h3>
-              <p>{movie.year}</p>
+              <h3>{movie.mainInfo?.title}</h3>
+              <p>{new Date(movie.mainInfo?.releaseDate || "1999-01-01").getFullYear()}</p>
             </div>
           </div>
         ))}
