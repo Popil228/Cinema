@@ -6,6 +6,11 @@
   padding-top: 40px;
 }
 
+.mainInfo {
+  width: 100%;
+  margin-bottom: 40px;
+}
+
 .contentContainer {
   max-width: 1300px;
   margin: 0 auto;
@@ -54,6 +59,9 @@
   font-weight: 600;
 }
 
+.actorsBlock {
+  margin-bottom: 30px;
+}
 
 .actorsCarousel {
   display: flex;
@@ -84,6 +92,10 @@
     transform: scale(1.05);
     opacity: 0.9;
   }
+}
+
+.descriptionBlock {
+  margin-top: 20px;
 }
 
 .descriptionText {
