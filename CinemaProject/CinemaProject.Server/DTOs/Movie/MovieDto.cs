@@ -22,6 +22,6 @@ namespace CinemaProject.Server.DTOs.Movie
         public int Runtime { get; set; }
         public string Overview { get; set; }
         public List<GenreDto> Genres { get; set; }
-        public List<ActorDto> Actors { get; set; }
+        public List<CastDto> Actors { get; set; }
     }
 }

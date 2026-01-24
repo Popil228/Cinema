@@ -1,5 +1,6 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.MovieActor;
+using CinemaProject.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaProject.Server.Services
@@ -11,6 +12,67 @@ namespace CinemaProject.Server.Services
         public MovieActorService(CinemaDbContext context)
         {
             _context = context;
+        }
+
+        /// <summary>
+        /// Adds an actor to a movie asynchronously using the provided actor and movie information.
+        /// </summary>
+        /// <remarks>Returns a failure response if the specified movie or actor does not exist. The
+        /// operation is performed asynchronously and updates the database upon success.</remarks>
+        /// <param name="request">An object containing the details of the actor, the movie, and the character name to associate. Cannot be
+        /// null.</param>
+        /// <returns>A response indicating whether the actor was successfully added to the movie. The response includes a success
+        /// flag and a message describing the result.</returns>
+        public async Task<MovieActorResponse> CreateMovieActorAsync(MovieActorDto request)
+        {
+            if (request == null)
+            {
+                return new MovieActorResponse
+                {
+                    Success = false,
+                    Message = "Некоректні дані"
+                };
+            }
+
+            var movieExists = await _context.Movies.AsNoTracking()
+                .AnyAsync(m => m.MovieId == request.movieId);
+
+            if (!movieExists)
+            {
+                return new MovieActorResponse
+                {
+                    Success = false,
+                    Message = "Фільм не знайдено"
+                };
+            }
+
+            var actorExists = await _context.Actors.AsNoTracking()
+                .AnyAsync(a => a.ActorId == request.actorId);
+
+            if (!actorExists)
+            {
+                return new MovieActorResponse
+                {
+                    Success = false,
+                    Message = "Актор не знайдений"
+                };
+            }
+
+            var movieActor = new Models.Entitys.MovieActor
+            {
+                MovieId = request.movieId,
+                ActorId = request.actorId,
+                Character = request.Character
+            };
+
+            _context.MovieActors.Add(movieActor);
+            await _context.SaveChangesAsync();
+
+            return new MovieActorResponse
+            {
+                Success = true,
+                Message = "Актор успішно доданий до фільму"
+            };
         }
 
         /// <summary>
@@ -67,13 +129,11 @@ namespace CinemaProject.Server.Services
 
             if (movieActor == null)
             {
-                movieActor = new Models.Entitys.MovieActor
+                return new MovieActorResponse
                 {
-                    MovieId = request.movieId,
-                    ActorId = request.actorId,
-                    Character = request.Character
+                    Success = false,
+                    Message = "Актор не пов'язаний з фільмом. Додайте актора до фільму перед оновленням ролі."
                 };
-                _context.MovieActors.Add(movieActor);
             }
             else
             {

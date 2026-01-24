@@ -57,7 +57,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult<MovieResponse>> DeleteMovie(int Id)
+        public async Task<ActionResult<MovieResponse>> DeleteMovie(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -68,7 +68,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var result = await _movieService.DeleteMovieAsync(Id);
+            var result = await _movieService.DeleteMovieAsync(id);
 
             if (!result.Success)
             {
