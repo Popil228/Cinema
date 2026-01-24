@@ -152,3 +152,7 @@ CinemaProject/CinemaProject.Server/appsettings.json
 CinemaProject/CinemaProject.Server/Services/ITmdbImportService.cs
 CinemaProject/CinemaProject.Server/Models/Tmdb/TmdbGenreListResponse.cs
 CinemaProject/CinemaProject.Server/Models/Tmdb/TmdbDiscoverResponse.cs
+CinemaProject/CinemaProject.Server/Controllers/TmdbImportController.cs
+CinemaProject/CinemaProject.Server/Services/TmdbImportService.cs
+CinemaProject/CinemaProject.Server/appsettings.json
+CinemaProject/CinemaProject.Server/appsettings.json
