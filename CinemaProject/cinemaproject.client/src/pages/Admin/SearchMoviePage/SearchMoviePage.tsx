@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SearchMoviePage.module.scss';
-import * as movieApi from '../../../api/movieApi';
+import * as tmdbApi from '../../../api/tmdbApi';
 import { type MovieInfo, type StrictMovieInfo } from '../../../types/movie';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
 
@@ -25,7 +25,7 @@ const SearchMoviePage: React.FC = () => {
       
       //VALIDATE search string here
       try{
-        setSearchResults(await movieApi.searchMovies(searchStr))
+        setSearchResults(await tmdbApi.searchMovies(searchStr))
         setIsError(false);
       }
       catch(err)
@@ -54,7 +54,7 @@ const SearchMoviePage: React.FC = () => {
     }
 
     try{
-      const movieExtraInfo:MovieInfo = await movieApi.getMovieInfoByIdTMDB(movie.mainInfo.id);
+      const movieExtraInfo:MovieInfo = await tmdbApi.getMovieInfoByIdTMDB(movie.mainInfo.id);
       movie.extraInfo = movieExtraInfo.extraInfo;
       if(movie.extraInfo===null)
       {

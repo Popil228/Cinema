@@ -1,45 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminMovieCard from '../../../components/Admin/AdminMovieCard/AdminMovieCard';
 import styles from './AdminMoviesPage.module.scss';
-import type { Movie } from '../../../types/movie';
+import type { Movie, StrictMovieInfo } from '../../../types/movie';
+import * as movieApi from '../../../api/movieApi';
 
 const AdminMoviesPage: React.FC = () => {
   const navigate = useNavigate();
+  const [movies, setMovies] = useState<Movie[]>([]);
 
-  const activeMovies: Movie[] = [
-    { 
-      id: 1, 
-      title: 'Minecraft', 
-      genres: ['Фантастика', 'Пригоди'],
-      duration: '2г 30хв', 
-      posterUrl: '/Minecraft.png',
-      year: 2024
-    },
-    { 
-      id: 2, 
-      title: 'Minecraft', 
-      genres: ['Фантастика', 'Пригоди'], 
-      duration: '2г 30хв', 
-      posterUrl: '/Minecraft.png' 
-    },
-    { 
-      id: 3, 
-      title: 'Minecraft', 
-      genres: ['Фантастика', 'Пригоди'], 
-      duration: '2г 30хв', 
-      posterUrl: '/Minecraft.png' 
-    },
-  ];
+  const mapStrictMovieToMovie = (
+    movie: StrictMovieInfo
+  ): Movie => ({
+    id: movie.mainInfo.id,
+    title: movie.mainInfo.title,
+    posterUrl: `https://image.tmdb.org/t/p/w500${movie.mainInfo.posterPath}`,
+    releaseDate: movie.mainInfo.releaseDate,
+    year: new Date(movie.mainInfo.releaseDate).getFullYear(),
 
-  // Дані для архіву
-  const archivedMovie: Movie = {
-    id: 10,
-    title: "Minecraft", 
-    genres: ["Фантастика", "Пригоди"], 
-    duration: "2г 30хв", 
-    posterUrl: "/Minecraft.png" 
-  };
+    duration: movie.extraInfo.runtime
+      ? `${movie.extraInfo.runtime} хв`
+      : undefined,
+
+    genres: movie.extraInfo.genres?.map(g => g.name),
+    actors: movie.extraInfo.actors,
+    description: movie.extraInfo.overview,
+  });
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      const data = await movieApi.getAllMovies(); 
+      setMovies(data.map(mapStrictMovieToMovie));
+    };
+
+    loadMovies();
+  }, []);
+ 
 
   return (
     <div className={styles.container}>
@@ -56,18 +52,20 @@ const AdminMoviesPage: React.FC = () => {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>В прокаті</h2>
         <div className={styles.grid}>
-          {activeMovies.map(movie => (
+          {movies.map(movie => (
             <AdminMovieCard key={movie.id} {...movie} />
           ))}
         </div>
       </section>
 
-      <section className={styles.section}>
+      {/*<section className={styles.section}>
         <h2 className={styles.sectionTitle}>Архів</h2>
         <div className={styles.grid}>
-          <AdminMovieCard {...archivedMovie} />
+          {movies.map(movie => (
+            <AdminMovieCard key={movie.id} {...movie} />
+          ))}
         </div>
-      </section>
+      </section>*/}
     </div>
   );
 };
