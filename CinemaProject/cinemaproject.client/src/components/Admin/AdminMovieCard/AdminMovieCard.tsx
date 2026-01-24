@@ -15,7 +15,7 @@ const AdminMovieCard: React.FC<Movie> = ({ id, title, genres, posterUrl, duratio
           {genres?.join(', ')} {duration ? `| ${duration}` : ''}
         </p>
         <div className={styles.actions}>
-          <Link to={`/admin/movies/edit/${id}`} className={styles.actionBtn}>
+          <Link to={{/*`/admin/movies/edit/${id}`*/}} className={styles.actionBtn}>
             Фільм ✎
           </Link>
           <button className={styles.actionBtn}>Сеанси ✎</button>

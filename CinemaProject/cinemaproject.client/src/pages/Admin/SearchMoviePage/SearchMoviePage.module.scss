@@ -11,6 +11,11 @@
   margin-bottom: 30px;
 }
 
+.errorText{
+  font-size: var(--font-xs);
+  color: var(--color-error);
+}
+
 .searchInput {
   width: 100%;
   max-width: 600px;

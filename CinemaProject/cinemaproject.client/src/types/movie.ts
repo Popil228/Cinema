@@ -1,7 +1,8 @@
-export interface Actor {
+export interface Cast {
+  id: number;
   name: string;
-  portrait: string;
-  role: string;
+  photoUri: string;
+  character: string;
 }
 
 export interface Movie {
@@ -12,79 +13,47 @@ export interface Movie {
   year?: number;
   duration?: string;
   genres?: string[];
-  actors?: Actor[];
+  actors?: Cast[];
   description?: string;
 }
 
-// DTO типи для API 
-export interface GenreDto {
+export interface Genre{
   id: number;
   name: string;
 }
 
-export interface ActorDto {
-  id: number;
-  name: string;
-  role?: string;
-  photoUri?: string;
+export interface StrictMovieInfo{
+  mainInfo: MovieMainInfo;
+  extraInfo: MovieExtaInfo;
 }
 
-export interface MovieMainInfoDto {
+export interface MovieInfo{
+  mainInfo: MovieMainInfo | null;
+  extraInfo: MovieExtaInfo | null;
+}
+
+export interface MovieMainInfo{
   id: number;
   title: string;
   releaseDate: string;
-  posterPath?: string;
+  posterPath:string;
 }
 
-export interface MovieExtraInfoDto {
-  runtime?: number;
-  overview?: string;
-  genres?: GenreDto[];
-  actors?: ActorDto[];
+export interface MovieExtaInfo{
+  runtime: number; //in minutes
+  overview: string;
+  genres: Genre[];
+  actors: Cast[];
 }
 
-export interface MovieDto {
-  mainInfo?: MovieMainInfoDto;
-  extraInfo?: MovieExtraInfoDto;
-}
 
-export interface MovieApiResponse {
-  success: boolean;
-  message: string;
-}
 
 export interface Session {
   id: number;
   time: string;
-  date: string;
+  date: Date;
   title: string;
   genres?: string[];
   imageUrl: string;
   hall: 'A' | 'B';
-}
-
-// Додаткові типи для API
-export interface SessionDto {
-  id: number;
-  movieId: number;
-  movieTitle: string;
-  moviePosterPath?: string;
-  movieGenres?: string[];
-  hallId: number;
-  hallName: string;
-  startTime: string;
-  endTime: string;
-  basePrice: number;
-}
-
-export interface CreateSessionDto {
-  movieId: number;
-  hallId: number;
-  startTime: string;
-  ticketPrice: number;
-}
-
-export interface HallDto {
-  hallId: number;
-  name: string;
 }

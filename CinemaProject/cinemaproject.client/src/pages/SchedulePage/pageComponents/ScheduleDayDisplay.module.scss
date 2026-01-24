@@ -1,0 +1,34 @@
+@use "../../../styles/mixins" as *;
+
+
+h3 {
+    text-align: center;
+    width: 100%;
+    color: var(--color-text-main);
+    margin-bottom: 10px;
+    font-size: var(--font-md);
+    font-weight: 600;
+}
+
+.sessionsColumn {
+  flex: 1;
+  min-width: 0;
+  background: transparent; 
+  padding: 0; 
+  border: none;
+}
+
+.sessionsWrapper {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+  width: 100%;
+
+  max-width: 1300px;
+  margin: 20px auto 0;
+
+  @include respond(md) {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

@@ -1,49 +1,129 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import ActorCard from '../../components/Movie/ActorCard/ActorCard';
 import styles from './MoviePage.module.scss';
-import type { Movie } from '../../types/movie';
+import type { Movie, Session } from '../../types/movie';
+// Імпортуємо утиліту колеги
+import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
 
 const MoviePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
+  id; // для майбутнього використання
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Тимчасовий масив фільмів для демонстрації (у реальному додатку дані можуть надходити з API)
-  const movies: Movie[] = [
-    { id: 1, title: 'Скажене весілля', posterUrl: '/movies/wedding.png', releaseDate: '01/01 - 01/02' },
-    { id: 2, title: 'Minecraft: Movie', posterUrl: '/movies/minecraft.png', releaseDate: '10/02 - 25/02' },
-    { id: 3, title: 'Дюна: Частина друга', posterUrl: '/movies/dune.png', releaseDate: '15/02 - 01/03' },
-    { id: 4, title: 'Вонка', posterUrl: '/movies/wonka.png', releaseDate: '20/02 - 10/03' },
-    { id: 5, title: 'Аквамен 2', posterUrl: '/movies/aquaman.png', releaseDate: '01/03 - 20/03' },
-    { id: 6, title: 'Кунг-фу Панда 4', posterUrl: '/movies/panda.png', releaseDate: '05/03 - 30/03' },
+  const movie: Movie = {
+    id: 1,
+    title: 'Minecraft',
+    posterUrl: '/Minecraft.png',
+    genres: ['Фантастика', 'Пригоди'],
+    duration: '2г 30хв',
+    year: 2024,
+    description: 'Сюжет розповідає про групу чотирьох аутсайдерів (Гаррет, Генрі, Наталі та Дон), які через таємничий портал потрапляють у дивовижний кубічний світ Верхнього світу. Щоб повернутися додому, їм доведеться не лише опанувати майстерність крафту, а й захистити цей світ від піглінів та зомбі разом із досвідченим майстром-будівельником Стівом.',
+    actors: [
+      { name: 'Джек Блек', portrait: '/actors/black.jpg', role: 'Стів' },
+      { name: 'Джейсон Момоа', portrait: '/actors/momoa.jpg', role: 'Гаррет' },
+      { name: 'Емма Майєрс', portrait: '/actors/emma.jpg', role: 'Наталі' },
+      { name: 'Даніель Брукс', portrait: '/actors/brooks.jpg', role: 'Дон' },
+      { name: 'Себастьян Юджин Гансен', portrait: '/actors/henry.jpg', role: 'Генрі' },
+      { name: 'Роберт Дауні-молодший', portrait: '/actors/robert.jpg', role: 'Алекс' },
+      { name: 'Ірфан Хан', portrait: '/actors/irfan.jpg', role: 'Оракул' },
+    ]
+  };
+
+  // Сеанси для цього фільму
+  const sessions: Session[] = [
+    { id: 1, title: 'Minecraft', hall: 'A', date: new Date(2026, 3, 3), time: '13:00', imageUrl: '/Minecraft.png' },
+    { id: 2, title: 'Minecraft', hall: 'A', date: new Date(2026, 3, 3), time: '16:00', imageUrl: '/Minecraft.png' },
+    { id: 3, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '14:30', imageUrl: '/Minecraft.png' },
+    { id: 4, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '19:00', imageUrl: '/Minecraft.png' },
   ];
 
-  const movie = movies.find(m => m.id === Number(id));
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
 
-  if (!movie) {
-    return (
-      <div className={styles.container}>
-        <h1>Фільм не знайдено</h1>
-      </div>
-    );
-  }
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.movieContent}>
-        
-        <div className={styles.infoSide}>
-          <h1 className={styles.title}>{movie.title}</h1>
-          <p className={styles.releaseDate}>В прокаті: {movie.releaseDate}</p>
-          
-          <div className={styles.description}>
-            <p>
-              Тут згодом з'явиться детальний опис фільму "{movie.title}". 
-              Це динамічна сторінка, яка отримує дані на основі ID: {id}.
-            </p>
+    <div className={styles.pageWrapper}>
+      <section className={styles.mainInfo}>
+        <div className={styles.contentContainer}>
+          <div className={styles.posterSide}>
+            <img src={movie.posterUrl} alt={movie.title} className={styles.mainPoster} />
           </div>
 
-          <button className={styles.buyTicketBtn}>Придбати квиток</button>
+          <div className={styles.detailsSide}>
+            <h1 className={styles.movieTitle}>{movie.title}</h1>
+            <p className={styles.metaInfo}>
+              {movie.genres?.join(', ')} | {movie.duration} | {movie.year}
+            </p>
+
+            <div className={styles.actorsBlock}>
+              <h2 className={styles.subTitle}>Актори</h2>
+              <div className={styles.actorsCarousel} ref={carouselRef}>
+                {movie.actors?.map((actor, index) => (
+                  <ActorCard key={index} {...actor} />
+                ))}
+              </div>
+            </div>
+
+            <button className={styles.buyBtn}>Забронювати місце</button>
+
+            <div className={styles.descriptionBlock}>
+              <h2 className={styles.subTitle}>Опис</h2>
+              <p className={styles.descriptionText}>{movie.description}</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section className={styles.scheduleSection}>
+        <h2 className={styles.sectionTitle}>Розклад сеансів</h2>
+        <div className={styles.sessionsWrapper}>
+          
+          <div className={styles.hallColumn}>
+            <h3>ЗАЛ А</h3>
+            {sessions.filter(s => s.hall === 'A').map(session => (
+              <div key={session.id} className={styles.clientSessionCard}>
+                <img src={session.imageUrl} alt={session.title} className={styles.miniPoster} />
+                <div className={styles.cardInfo}>
+                  <p className={styles.sessionTitle}>{session.title}</p>
+                  <div className={styles.sessionTags}>
+                    <span>ЗАЛ {session.hall}</span>
+                    <span>{dateToDayMonthStrUA(session.date)}</span>
+                    <span>{session.time}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.hallColumn}>
+            <h3>ЗАЛ В</h3>
+            {sessions.filter(s => s.hall === 'B').map(session => (
+              <div key={session.id} className={styles.clientSessionCard}>
+                <img src={session.imageUrl} alt={session.title} className={styles.miniPoster} />
+                <div className={styles.cardInfo}>
+                  <p className={styles.sessionTitle}>{session.title}</p>
+                  <div className={styles.sessionTags}>
+                    <span>ЗАЛ {session.hall}</span>
+                    <span>{dateToDayMonthStrUA(session.date)}</span>
+                    <span>{session.time}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
     </div>
   );
 };

@@ -55,8 +55,8 @@ builder.Services.AddCors(options =>
 // HTTP Client
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMovieService, MovieService>();
-builder.Services.AddScoped<ITmdbImportService, TmdbImportService>();
-builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IActorService, ActorService>();
+builder.Services.AddScoped<ITmdbService, TmdbService>();
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
