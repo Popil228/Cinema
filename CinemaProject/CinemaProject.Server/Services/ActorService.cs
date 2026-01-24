@@ -23,13 +23,17 @@ namespace CinemaProject.Server.Services
         /// whether the actor was successfully created and includes a message describing the outcome.</returns>
         public async Task<ActorResponse> CreateActorAsync(ActorDto request)
         {
+            if (await _context.Actors.AnyAsync(a => a.ActorId == request.Id))
+            {
+                return new ActorResponse { Success = false, Message = "Актор вже існує" };
+            }
+
             if (request == null)
                 return new ActorResponse { Success = false, Message = "Некоректні дані актора" };
             if (string.IsNullOrWhiteSpace(request.Name))
                 return new ActorResponse { Success = false, Message = "Ім'я актора обов'язкове" };
             if (string.IsNullOrWhiteSpace(request.PhotoUri))
                 return new ActorResponse { Success = false, Message = "Фото актора обов'язкове" };
-
             var newActor = new Models.Entitys.Actor
             {
                 ActorId = request.Id,

@@ -7,12 +7,12 @@ namespace CinemaProject.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ActorController : Controller
+    public class ActorsController : Controller
     {
 
         private readonly IActorService _actorService;
 
-        public ActorController(IActorService actorService)
+        public ActorsController(IActorService actorService)
         {
             _actorService = actorService;
         }

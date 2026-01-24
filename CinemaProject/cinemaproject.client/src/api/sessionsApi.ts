@@ -33,7 +33,7 @@ export interface HallDto {
 }
 
 export const getAllSessions = async (): Promise<SessionDto[]> => {
-  const response = await fetch(`${API_BASE_URL}/sessions`);
+  const response = await fetch(`${API_BASE_URL}/Sessions`);
   if (!response.ok) {
     throw new Error('Помилка завантаження сесій');
   }
@@ -41,7 +41,7 @@ export const getAllSessions = async (): Promise<SessionDto[]> => {
 };
 
 export const getSessionById = async (id: number): Promise<SessionDto> => {
-  const response = await fetch(`${API_BASE_URL}/sessions/${id}`);
+  const response = await fetch(`${API_BASE_URL}/Sessions/${id}`);
   if (!response.ok) {
     throw new Error(`Сесія з ID ${id} не знайдена`);
   }
@@ -49,7 +49,7 @@ export const getSessionById = async (id: number): Promise<SessionDto> => {
 };
 
 export const createSession = async (dto: CreateSessionDto): Promise<SessionDto> => {
-  const response = await fetch(`${API_BASE_URL}/sessions`, {
+  const response = await fetch(`${API_BASE_URL}/Sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(dto),
@@ -64,7 +64,7 @@ export const createSession = async (dto: CreateSessionDto): Promise<SessionDto> 
 };
 
 export const updateSession = async (id: number, dto: UpdateSessionDto): Promise<SessionDto> => {
-  const response = await fetch(`${API_BASE_URL}/sessions/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/Sessions/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(dto),
@@ -79,7 +79,7 @@ export const updateSession = async (id: number, dto: UpdateSessionDto): Promise<
 };
 
 export const deleteSession = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/sessions/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/Sessions/${id}`, {
     method: 'DELETE',
   });
   
@@ -90,7 +90,7 @@ export const deleteSession = async (id: number): Promise<void> => {
 };
 
 export const getHalls = async (): Promise<HallDto[]> => {
-  const response = await fetch(`${API_BASE_URL}/halls`);
+  const response = await fetch(`${API_BASE_URL}/Halls`);
   if (!response.ok) {
     throw new Error('Помилка завантаження залів');
   }
@@ -98,7 +98,7 @@ export const getHalls = async (): Promise<HallDto[]> => {
 };
 
 export const initHalls = async (): Promise<{ message: string }> => {
-  const response = await fetch(`${API_BASE_URL}/halls/init`, {
+  const response = await fetch(`${API_BASE_URL}/Halls/init`, {
     method: 'POST',
   });
   if (!response.ok) {

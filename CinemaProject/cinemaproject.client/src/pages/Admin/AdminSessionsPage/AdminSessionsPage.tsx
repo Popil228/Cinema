@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import AdminSessionCard from '../../../components/Admin/AdminSessionCard/AdminSessionCard.tsx';
 import styles from './AdminSessionsPage.module.scss';
 import type { SessionDto, HallDto } from '../../../api/sessionsApi';
-import type { Movie } from '../../../types/movie';
+import type { StrictMovieInfo } from '../../../types/movie';
 import type { CreateSessionDto } from '../../../api/sessionsApi';
 import { getAllSessions, createSession, deleteSession, getHalls } from '../../../api/sessionsApi';
-import { getAllMovies } from '../../../api/moviesApi';
+import { getAllMovies } from '../../../api/moviesApi.ts';
 
 const AdminSessionsPage: React.FC = () => {
   const [filterMovie, setFilterMovie] = useState('all');
   const [sessions, setSessions] = useState<SessionDto[]>([]);
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<StrictMovieInfo[]>([]);
   const [halls, setHalls] = useState<HallDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,11 +55,12 @@ const AdminSessionsPage: React.FC = () => {
 
     try {
       setCreating(true);
-      const startTime = `${sessionDate}T${sessionTime}:00`;
+      const date = new Date(`${sessionDate}T${sessionTime}:00`);
+      console.log(date.toISOString())
       const newSession: CreateSessionDto = {
         movieId: selectedMovieId,
         hallId: selectedHallId,
-        startTime,
+        startTime: date.toISOString(),
         ticketPrice
       };
       await createSession(newSession);
@@ -172,7 +173,7 @@ const AdminSessionsPage: React.FC = () => {
               >
                 <option value={0}>Оберіть фільм</option>
                 {movies.map(movie => (
-                  <option key={movie.id} value={movie.id}>{movie.title}</option>
+                  <option key={movie.mainInfo.id} value={movie.mainInfo.id}>{movie.mainInfo.title}</option>
                 ))}
               </select>
             </div>
@@ -202,9 +203,9 @@ const AdminSessionsPage: React.FC = () => {
               <div className={styles.formGroup}>
                 <label>Час</label>
                 <input 
-                  type="time" 
+                  type="time"
                   value={sessionTime}
-                  onChange={e => setSessionTime(e.target.value)}
+                  onChange={e => { setSessionTime(e.target.value)}}
                 />
               </div>
             </div>

@@ -8,6 +8,7 @@ namespace CinemaProject.Server.Models.Entitys
 
         [Column(TypeName = "varchar(255)")]
         public string? PosterUri { get; set; }
+        public DateTime ReleaseDate { get; set; }
 
         [Column(TypeName = "varchar(255)")]
         public string Title { get; set; } = null!;

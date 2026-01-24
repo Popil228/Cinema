@@ -47,7 +47,7 @@ namespace CinemaProject.Server.Services
                     Genres = m.MovieGenres.Select(mg => new GenreDto
                     {
                         Id = mg.Genre.GenreId,
-                        Name = mg.Genre.GenreName
+                        Name = mg.Genre.Name
                     }).ToList(),
                     Actors = m.MovieActors.Select(ma => new CastDto
                     {

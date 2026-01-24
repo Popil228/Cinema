@@ -7,7 +7,7 @@ namespace CinemaProject.Server.Models.Entitys
         public int GenreId { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string GenreName { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
     }
