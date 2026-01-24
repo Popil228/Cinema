@@ -198,9 +198,12 @@ namespace CinemaProject.Server.Migrations
                     b.Property<string>("PosterUri")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("MovieId");
 
