@@ -1,31 +1,65 @@
-import type { MovieInfo } from "../types/movie";
+import type { MovieInfo, StrictMovieInfo } from "../types/movie";
 
 const API_BASE_URL = '/api';
 
-const searchMovies = async (searchStr:string) => {
-    const response = await fetch(`${API_BASE_URL}/Tmdb/search?query=${searchStr}`, {
+const createMovie = async (movieData: MovieInfo) => {
+    const response = await fetch(`${API_BASE_URL}/Movie`, {
+        method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify(movieData),
+    })
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    throw new Error(body.massage ?? 'Помилка сервера');
+  }
+
+  return body.massage;
+}
+
+const updateMovie = async (movieData: MovieInfo) => {
+  const response = await fetch(`${API_BASE_URL}/Movie`, {
+    method: 'PUT',
+    headers: { 'Content-type': 'application/json' },
+    body: JSON.stringify(movieData),
+  })
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    throw new Error(body.massage ?? 'Помилка сервера');
+  }
+
+  return body.massage;
+}
+
+const getAllMovies = async () => {
+    const response = await fetch(`${API_BASE_URL}/Movie`, {
         method: 'GET',
-        headers: { 'Content-type' : 'application/json' },})
-    
-    const body = await response.json();
+      headers: { 'Content-type': 'application/json' },
+    })
 
-    if (!response.ok) {
-      throw new Error(body.error ?? 'Помилка сервера');
-    }
+  const body = await response.json();
 
-    return body as MovieInfo[];
+  if (!response.ok) {
+    throw new Error(body.massage ?? 'Помилка сервера');
+  }
+
+  return body as StrictMovieInfo[];
 }
 
-const getMovieInfoByIdTMDB = async (movieId:number) => {
-    const response = await fetch(`${API_BASE_URL}/Tmdb/details/${movieId}`, {method:"GET"})
 
-    const body = await response.json();
+const deleteMovieById = async (movieId: number) => {
+  const response = await fetch(`${API_BASE_URL}/Movie/${movieId}`, { method: "DELETE" })
+
+  const body = await response.json();
 
     if (!response.ok) {
-      throw new Error(body.error ?? 'Помилка сервера');
+      throw new Error(body.massage ?? 'Помилка сервера');
     }
 
-    return body as MovieInfo[];
+  return body;
 }
 
-export {searchMovies, getMovieInfoByIdTMDB}
+export { deleteMovieById, getAllMovies, createMovie, updateMovie}
