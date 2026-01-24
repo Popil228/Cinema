@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Session } from '../../../types/movie';
 import styles from './AdminSessionCard.module.scss';
+import { dateToDayMonthStrUA } from '../../../utilities/dateToStringUA';
 
 const AdminSessionCard: React.FC<Session> = ({ title, hall, date, time, imageUrl }) => {
   return (
@@ -13,7 +14,7 @@ const AdminSessionCard: React.FC<Session> = ({ title, hall, date, time, imageUrl
           <h3 className={styles.title}>{title}</h3>
           <div className={styles.tags}>
             <span className={styles.tag}>ЗАЛ {hall}</span>
-            <span className={styles.tag}>{date}</span>
+            <span className={styles.tag}>{dateToDayMonthStrUA(date)}</span>
             <span className={styles.tag}>{time}</span>
           </div>
         </div>
