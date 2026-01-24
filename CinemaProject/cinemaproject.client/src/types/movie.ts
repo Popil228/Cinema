@@ -1,7 +1,7 @@
 export interface Actor {
   id: number;
   name: string;
-  portrait: string;
+  photoUri: string;
   role: string;
 }
 
@@ -20,6 +20,11 @@ export interface Movie {
 export interface Genre{
   id: number;
   name: string;
+}
+
+export interface StrictMovieInfo{
+  mainInfo: MovieMainInfo;
+  extraInfo: MovieExtaInfo;
 }
 
 export interface MovieInfo{
