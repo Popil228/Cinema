@@ -203,7 +203,7 @@ namespace CinemaProject.Server.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("MovieId");
 

@@ -9,14 +9,12 @@ namespace CinemaProject.Server.Models.Entitys
         [Column(TypeName = "varchar(255)")]
         public string? PosterUri { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
+        [Column(TypeName = "varchar(255)")]
         public string Title { get; set; } = null!;
 
         public string? Description { get; set; }
 
         public short Duration { get; set; }
-
-        public DateTime ReleaseDate { get; set; } = DateTime.UtcNow;
 
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
         public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
