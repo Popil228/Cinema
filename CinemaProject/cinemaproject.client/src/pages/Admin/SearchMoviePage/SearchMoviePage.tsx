@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SearchMoviePage.module.scss';
 import * as movieApi from '../../../api/movieApi';
-import { type MovieInfo } from '../../../types/movie';
+import { type MovieInfo, type StrictMovieInfo } from '../../../types/movie';
+import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
 
 const SearchMoviePage: React.FC = () => {
   //const [query, setQuery] = useState<string>('');
@@ -12,6 +13,8 @@ const SearchMoviePage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   const navigate = useNavigate();
+
+  const movieEditContext = useContext(MoveEditContext);
 
   const handleSearchConfirm = async (e:React.KeyboardEvent<HTMLInputElement>) => {
     if(e.key == "Enter")
@@ -35,23 +38,45 @@ const SearchMoviePage: React.FC = () => {
         }
         else
         {
-          setErrorMsg(err);
+          console.error(err)
+          setErrorMsg("Error type - unknown. For details check console")
         }
       }
       
     }
   }
 
-  const handleSelect = (movie: any) => {
-    navigate('/admin/movies/add', { 
-      state: { 
-        baseData: {
-          title: movie.title,
-          posterUrl: movie.poster,
-          year: movie.year
-        } 
-      } 
-    });
+  const handleSelect = async (movie: MovieInfo) => {
+    if(movie.mainInfo === null)
+    {
+      console.error("Cannot add/edit null movie");
+      return;
+    }
+
+    try{
+      const movieExtraInfo:MovieInfo = await movieApi.getMovieInfoByIdTMDB(movie.mainInfo.id);
+      movie.extraInfo = movieExtraInfo.extraInfo;
+      if(movie.extraInfo===null)
+      {
+        throw new Error(`movie id:${movie.mainInfo.id} extra info was null`);
+      }
+    }
+    catch(err: unknown)
+    {
+      if(err instanceof Error)
+        {
+          console.error(err.message);
+        }
+        else
+        {
+          console.error(err);
+        }
+      return;
+    }
+
+    movieEditContext.setMovieInfo({mainInfo:movie.mainInfo, extraInfo: movie.extraInfo} as StrictMovieInfo);
+    movieEditContext.setIsLoaded(true);
+    navigate('/admin/movies/add');
   };
 
   return (
