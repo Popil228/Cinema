@@ -3,41 +3,29 @@ import type { MovieInfo } from "../types/movie";
 const API_BASE_URL = '/api';
 
 const searchMovies = async (searchStr:string) => {
-    const responseText = await fetch(`${API_BASE_URL}/Tmdb/search?query=${searchStr}`, {
+    const response = await fetch(`${API_BASE_URL}/Tmdb/search?query=${searchStr}`, {
         method: 'GET',
         headers: { 'Content-type' : 'application/json' },})
-    .then(response => response.text());
     
-    let result:MovieInfo[] = [];
-    try{
-        result = JSON.parse(responseText) as MovieInfo[]    
-    }
-    catch
-    {
-        throw new Error(responseText);
+    const body = await response.json();
+
+    if (!response.ok) {
+      throw new Error(body.error ?? 'Помилка сервера');
     }
 
-
-    console.log(result);
-    return result;
+    return body as MovieInfo[];
 }
 
 const getMovieInfoByIdTMDB = async (movieId:number) => {
-    const responseText = await fetch(`${API_BASE_URL}/Tmdb/details/${movieId}`, {method:"GET"})
-    .then(response=>response.text());
+    const response = await fetch(`${API_BASE_URL}/Tmdb/details/${movieId}`, {method:"GET"})
 
-    let result:MovieInfo;
+    const body = await response.json();
 
-    try{
-        result = JSON.parse(responseText) as MovieInfo;
-    }
-    catch
-    {
-        throw new Error(responseText);
+    if (!response.ok) {
+      throw new Error(body.error ?? 'Помилка сервера');
     }
 
-    console.log(result);
-    return result;
+    return body as MovieInfo[];
 }
 
 export {searchMovies, getMovieInfoByIdTMDB}

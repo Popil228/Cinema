@@ -1,8 +1,8 @@
-export interface Actor {
+export interface Cast {
   id: number;
   name: string;
   photoUri: string;
-  role: string;
+  character: string;
 }
 
 export interface Movie {
@@ -13,7 +13,7 @@ export interface Movie {
   year?: number;
   duration?: string;
   genres?: string[];
-  actors?: Actor[];
+  actors?: Cast[];
   description?: string;
 }
 
@@ -43,7 +43,7 @@ export interface MovieExtaInfo{
   runtime: number; //in minutes
   overview: string;
   genres: Genre[];
-  actors: Actor[];
+  actors: Cast[];
 }
 
 

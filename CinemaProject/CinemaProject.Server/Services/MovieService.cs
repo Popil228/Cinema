@@ -1,13 +1,9 @@
 ﻿using CinemaProject.Server.Data;
-using CinemaProject.Server.DTOs.Actor;
 using CinemaProject.Server.DTOs.Genre;
 using CinemaProject.Server.DTOs.Movie;
-using CinemaProject.Server.Models.Tmdb;
 
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Net.WebSockets;
-using System.Text.Json;
 
 namespace CinemaProject.Server.Services
 {
@@ -53,7 +49,7 @@ namespace CinemaProject.Server.Services
                         Id = mg.Genre.GenreId,
                         Name = mg.Genre.GenreName
                     }).ToList(),
-                    Actors = m.MovieActors.Select(ma => new ActorDto
+                    Actors = m.MovieActors.Select(ma => new CastDto
                     {
                         Id = ma.Actor.ActorId,
                         Name = ma.Actor.FullName,
@@ -234,7 +230,7 @@ namespace CinemaProject.Server.Services
             movie.MovieActors = resultActors.Actors
                 .Select(a =>
                 {
-                    var actorDto = request.ExtraInfo.Actors.First(ad => ad.Id == a.ActorId);
+                    CastDto actorDto = request.ExtraInfo.Actors.First(ad => ad.Id == a.ActorId);
                     return new Models.Entitys.MovieActor
                     {
                         Actor = a,

@@ -135,14 +135,14 @@ namespace CinemaProject.Server.Services
                             .ToList(),
                         Actors = credits?.Cast?
                             .Take(15)
-                            .Select(a => new ActorDto
+                            .Select(a => new CastDto
                             {
                                 Id = a.Id,
                                 Name = a.Name,
                                 Role = a.Character,
                                 PhotoUri = string.IsNullOrEmpty(a.Profile_Path) ? null : a.Profile_Path
                             })
-                            .ToList() ?? new List<ActorDto>()
+                            .ToList() ?? new List<CastDto>()
                     }
                 };
             }
