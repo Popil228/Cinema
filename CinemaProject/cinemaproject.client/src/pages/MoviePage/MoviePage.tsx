@@ -19,13 +19,13 @@ const MoviePage: React.FC = () => {
     year: 2024,
     description: 'Сюжет розповідає про групу чотирьох аутсайдерів (Гаррет, Генрі, Наталі та Дон), які через таємничий портал потрапляють у дивовижний кубічний світ Верхнього світу. Щоб повернутися додому, їм доведеться не лише опанувати майстерність крафту, а й захистити цей світ від піглінів та зомбі разом із досвідченим майстром-будівельником Стівом.',
     actors: [
-      {id: 1, name: 'Джек Блек', photoUri: '/actors/black.jpg', character: 'Стів' },
-      {id: 2, name: 'Джейсон Момоа', photoUri: '/actors/momoa.jpg', character: 'Гаррет' },
-      {id: 3, name: 'Емма Майєрс', photoUri: '/actors/emma.jpg', character: 'Наталі' },
-      {id: 4, name: 'Даніель Брукс', photoUri: '/actors/brooks.jpg', character: 'Дон' },
-      {id: 5, name: 'Себастьян Юджин Гансен', photoUri: '/actors/henry.jpg', character: 'Генрі' },
-      {id: 6, name: 'Роберт Дауні-молодший', photoUri: '/actors/robert.jpg', character: 'Алекс' },
-      {id: 7, name: 'Ірфан Хан', photoUri: '/actors/irfan.jpg', character: 'Оракул' },
+      {id: 1, name: 'Джек Блек', photoUri: '/actors/black.jpg', role: 'Стів' },
+      {id: 2, name: 'Джейсон Момоа', photoUri: '/actors/momoa.jpg', role: 'Гаррет' },
+      {id: 3, name: 'Емма Майєрс', photoUri: '/actors/emma.jpg', role: 'Наталі' },
+      {id: 4, name: 'Даніель Брукс', photoUri: '/actors/brooks.jpg', role: 'Дон' },
+      {id: 5, name: 'Себастьян Юджин Гансен', photoUri: '/actors/henry.jpg', role: 'Генрі' },
+      {id: 6, name: 'Роберт Дауні-молодший', photoUri: '/actors/robert.jpg', role: 'Алекс' },
+      {id: 7, name: 'Ірфан Хан', photoUri: '/actors/irfan.jpg', role: 'Оракул' },
     ]
   };
 

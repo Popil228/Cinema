@@ -25,7 +25,7 @@ const EditMoviePage: React.FC = () => {
   ]);
 
   const [editingActorIndex, setEditingActorIndex] = useState<number | null>(null);
-  const [tempActorData, setTempActorData] = useState<Cast>({ name: '', photoUri: '', character: '' } as Cast);
+  const [tempActorData, setTempActorData] = useState<Cast>({ name: '', photoUri: '', role: '' } as Cast);
 
   useEffect(() => {
     const loadMovie = async () => {
@@ -190,14 +190,14 @@ const EditMoviePage: React.FC = () => {
                         onChange={(e) => setTempActorData({...tempActorData, name: e.target.value})}
                       />
                       <input 
-                        value={tempActorData.character} 
-                        onChange={(e) => setTempActorData({...tempActorData, character: e.target.value})}
+                        value={tempActorData.role} 
+                        onChange={(e) => setTempActorData({...tempActorData, role: e.target.value})}
                       />
                     </div>
                   ) : (
                     <>
                       <p className={styles.actorName}>{actor.name}</p>
-                      <p className={styles.actorRole}>{actor.character}</p>
+                      <p className={styles.actorRole}>{actor.role}</p>
                     </>
                   )}
                 </div>
