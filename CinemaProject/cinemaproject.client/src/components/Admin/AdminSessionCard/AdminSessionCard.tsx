@@ -1,7 +1,6 @@
 import React from 'react';
 import type { SessionDto } from '../../../api/sessionsApi';
 import styles from './AdminSessionCard.module.scss';
-import { dateToDayMonthStrUA } from '../../../utilities/dateToStringUA';
 
 interface AdminSessionCardProps {
   session: SessionDto;

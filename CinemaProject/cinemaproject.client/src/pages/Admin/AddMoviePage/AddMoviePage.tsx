@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../EditMoviePage/EditMoviePage.module.scss';
 import type { Cast, StrictMovieInfo, Genre } from '../../../types/movie';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
-import * as movieApi from '../../../api/movieApi';
+import * as movieApi from '../../../api/moviesApi';
 
 const AddMoviePage: React.FC = () => {
   const navigate = useNavigate();
