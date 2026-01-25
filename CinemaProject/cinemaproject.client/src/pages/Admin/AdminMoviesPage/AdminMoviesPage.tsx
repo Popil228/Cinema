@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminMovieCard from '../../../components/Admin/AdminMovieCard/AdminMovieCard';
 import styles from './AdminMoviesPage.module.scss';
 import type { Movie, StrictMovieInfo } from '../../../types/movie';
-import * as movieApi from '../../../api/movieApi';
+import * as moviesApi from '../../../api/moviesApi';
 
 const AdminMoviesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const AdminMoviesPage: React.FC = () => {
 
   useEffect(() => {
     const loadMovies = async () => {
-      const data = await movieApi.getAllMovies(); 
+      const data = await moviesApi.getAllMovies(); 
       setMovies(data.map(mapStrictMovieToMovie));
     };
 
@@ -40,7 +40,7 @@ const AdminMoviesPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.pageTitle}>Фільми</h1>
+        <h1 className={styles.pageTitle}>Фільми ({movies.length})</h1>
         <button 
           className={styles.addBtn} 
           onClick={() => navigate('/admin/movies/search')}
