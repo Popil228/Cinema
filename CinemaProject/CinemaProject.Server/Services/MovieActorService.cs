@@ -148,5 +148,75 @@ namespace CinemaProject.Server.Services
                 Message = "Роль актор успішно оновлена у фільмі"
             };
         }
+
+        /// <summary>
+        /// Asynchronously removes the association between a specified actor and movie.
+        /// </summary>
+        /// <param name="request">An object containing the identifiers of the movie and actor whose association is to be deleted. Cannot be
+        /// null.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a MovieActorResponse indicating
+        /// whether the association was successfully removed, or providing an error message if the operation could not
+        /// be completed.</returns>
+        public async Task<MovieActorResponse> DeleteMovieActorsAsync(MovieActorDto request)
+        {
+            if (request == null)
+            {
+                return new MovieActorResponse
+                {
+                    Success = false,
+                    Message = "Некоректні дані"
+                };
+            }
+
+            var movieExists = await _context.Movies.AsNoTracking()
+                .AnyAsync(m => m.MovieId == request.movieId);
+
+            if (!movieExists)
+            {
+                return new MovieActorResponse
+                {
+                    Success = false,
+                    Message = "Фільм не знайдено"
+                };
+            }
+
+            var actorExists = await _context.Actors.AsNoTracking()
+                .AnyAsync(a => a.ActorId == request.actorId);
+
+            if (!actorExists)
+            {
+                return new MovieActorResponse
+                {
+                    Success = false,
+                    Message = "Актор не знайдений"
+                };
+            }
+
+            var movieActor = await _context.MovieActors
+                .FirstOrDefaultAsync(ma =>
+                    ma.MovieId == request.movieId &&
+                    ma.ActorId == request.actorId);
+
+            if (movieActor == null)
+            {
+                return new MovieActorResponse
+                {
+                    Success = false,
+                    Message = "Актор не пов'язаний з фільмом."
+                };
+            }
+            else
+            {
+                _context.MovieActors.Remove(movieActor);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new MovieActorResponse
+            {
+                Success = true,
+                Message = "Актор видалений з фільму успішно"
+            };
+        }
     }
 }
