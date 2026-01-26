@@ -1,18 +1,30 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import SessionItem from '../../components/SessionItem/SessionItem';
 import styles from './HomePage.module.scss';
-import type { Movie, Session } from '../../types/movie';
+import { type Session } from '../../types/movie';
+import { getAllRollingMovies } from '../../api/moviesApi';
+import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext';
 
 const Home: React.FC = () => {
-  const movies: Movie[] = [
-    { id: 1, title: 'Скажене весілля', posterUrl: '/movies/wedding.png', releaseDate: '01/01 - 01/02' },
-    { id: 2, title: 'Minecraft: Movie', posterUrl: '/Minecraft.png', releaseDate: '10/02 - 25/02' },
-    { id: 3, title: 'Дюна: Частина друга', posterUrl: '/movies/dune.png', releaseDate: '15/02 - 01/03' },
-    { id: 4, title: 'Вонка', posterUrl: '/movies/wonka.png', releaseDate: '20/02 - 10/03' },
-    { id: 5, title: 'Аквамен 2', posterUrl: '/movies/aquaman.png', releaseDate: '01/03 - 20/03' },
-    { id: 6, title: 'Кунг-фу Панда 4', posterUrl: '/movies/panda.png', releaseDate: '05/03 - 30/03' },
-  ];
+  const rollingMovies = useContext(UserMoviesContext);
+  const [rollingMoviesError,setRollingMoviesError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
+
+  useEffect(()=>{
+    const fetchData = async() => {
+      try{
+        rollingMovies.setMovies(await getAllRollingMovies())
+        setRollingMoviesError({is:false, text:"цього не повинно бути видно"});
+      }
+      catch(err)
+      {
+        setRollingMoviesError({is:true, text:"Фільмів в прокаті не знайдено :("});
+        console.error(err);
+      }
+    }
+
+    fetchData();
+  },[])
 
   const sessions: Session[] = [
     {
@@ -48,11 +60,14 @@ const Home: React.FC = () => {
     <>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>В прокаті</h2>
+        { rollingMoviesError.is ? 
+        <h2 className={styles.sectionTitle}>{rollingMoviesError.text}</h2> :
         <div className={styles.movieGrid}>
-          {movies.map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
+          {rollingMovies.movies.map(movie => (
+            <MovieCard key={movie.mainInfo.id} movie={movie} />
           ))}
         </div>
+        }
       </section>
 
       <section className={styles.section}>
