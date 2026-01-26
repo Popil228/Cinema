@@ -57,8 +57,28 @@ namespace CinemaProject.Server.Controllers
             }
 
             return Ok(result);
+        }
 
+        [HttpDelete]
+        public async Task<ActionResult<MovieActorResponse>> DeleteMovieActors([FromBody] MovieActorDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ActorResponse
+                {
+                    Success = false,
+                    Message = "Невалідні дані"
+                });
+            }
 
+            var result = await _movieActorService.DeleteMovieActorsAsync(request);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
     }
 }

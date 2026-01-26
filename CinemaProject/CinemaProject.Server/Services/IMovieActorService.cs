@@ -7,5 +7,6 @@ namespace CinemaProject.Server.Services
     {
         Task<MovieActorResponse> CreateMovieActorAsync(MovieActorDto request);
         Task<MovieActorResponse> UpdateMovieActorsAsync(MovieActorDto request);
+        Task<MovieActorResponse> DeleteMovieActorsAsync(MovieActorDto request);
     }
 }

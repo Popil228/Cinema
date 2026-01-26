@@ -12,7 +12,7 @@ const createMovie = async (movieData: MovieInfo) => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.massage ?? 'Помилка сервера');
+    throw new Error(body.message ?? 'Помилка сервера');
   }
 
   return body.massage;
@@ -28,7 +28,7 @@ const updateMovie = async (movieData: MovieInfo) => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.massage ?? 'Помилка сервера');
+    throw new Error(body.message ?? 'Помилка сервера');
   }
 
   return body.massage;
@@ -43,7 +43,7 @@ const getAllMovies = async () => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.massage ?? 'Помилка сервера');
+    throw new Error(body.message ?? 'Помилка сервера');
   }
 
   return body as StrictMovieInfo[];
@@ -58,7 +58,7 @@ const getAllRollingMovies = async () => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.massage ?? 'Помилка сервера');
+    throw new Error(body.message ?? 'Помилка сервера');
   }
 
   return body as StrictMovieInfo[];
@@ -73,7 +73,7 @@ const getMovieById = async (id: number) => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.massage ?? 'Помилка сервера');
+    throw new Error(body.message ?? 'Помилка сервера');
   }
 
   return body as StrictMovieInfo;
@@ -85,7 +85,7 @@ const deleteMovieById = async (movieId: number) => {
   const body = await response.json();
 
     if (!response.ok) {
-      throw new Error(body.massage ?? 'Помилка сервера');
+      throw new Error(body.message ?? 'Помилка сервера');
     }
 
   return body;
