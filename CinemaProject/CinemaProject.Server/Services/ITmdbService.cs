@@ -6,5 +6,6 @@ namespace CinemaProject.Server.Services
     {
         Task<List<MovieDto>> SearchMoviesAsync(string query);
         Task<MovieDto?> GetMovieExtraInfoAsync(int id);
+        Task<IEnumerable<CastDto>> GetCastAsync(int id);
     }
 }

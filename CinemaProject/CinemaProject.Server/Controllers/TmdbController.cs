@@ -32,11 +32,28 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet("details/{id:int}")]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> GetDetails(int id)
         {
             try
             {
                 var result = await _tmdbService.GetMovieExtraInfoAsync(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("actors/{id:int}")]
+        public async Task<IActionResult> GetCast(int id)
+        {
+            try
+            {
+                var result = await _tmdbService.GetCastAsync(id);
                 return Ok(result);
             }
             catch (Exception ex)

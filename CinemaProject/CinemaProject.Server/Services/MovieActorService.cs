@@ -15,27 +15,31 @@ namespace CinemaProject.Server.Services
         }
 
         /// <summary>
-        /// Adds an actor to a movie asynchronously using the provided actor and movie information.
+        /// Creates associations between a movie and one or more actors asynchronously.
         /// </summary>
-        /// <remarks>Returns a failure response if the specified movie or actor does not exist. The
-        /// operation is performed asynchronously and updates the database upon success.</remarks>
-        /// <param name="request">An object containing the details of the actor, the movie, and the character name to associate. Cannot be
-        /// null.</param>
-        /// <returns>A response indicating whether the actor was successfully added to the movie. The response includes a success
-        /// flag and a message describing the result.</returns>
-        public async Task<MovieActorResponse> CreateMovieActorAsync(MovieActorDto request)
+        /// <remarks>If any actor specified in the request does not exist, or if the movie does not exist,
+        /// the operation will not create any associations and the response will indicate failure. Actors already
+        /// associated with the movie will be ignored. Only new associations are created.</remarks>
+        /// <param name="request">A list of movie-actor data transfer objects specifying the movie and actors to associate. The list must not
+        /// be null or empty, and all actors must exist in the database.</param>
+        /// <returns>A MovieActorResponse indicating the result of the operation. The response contains a success flag and a
+        /// message describing the outcome.</returns>
+        public async Task<MovieActorResponse> CreateMovieActorsAsync(List<MovieActorDto> request)
         {
-            if (request == null)
+            if (request == null || request.Count == 0)
             {
                 return new MovieActorResponse
                 {
                     Success = false,
-                    Message = "Некоректні дані"
+                    Message = "Список акторів порожній"
                 };
             }
 
-            var movieExists = await _context.Movies.AsNoTracking()
-                .AnyAsync(m => m.MovieId == request.movieId);
+            var movieId = request.First().movieId;
+
+            var movieExists = await _context.Movies
+                .AsNoTracking()
+                .AnyAsync(m => m.MovieId == movieId);
 
             if (!movieExists)
             {
@@ -46,98 +50,135 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            var actorExists = await _context.Actors.AsNoTracking()
-                .AnyAsync(a => a.ActorId == request.actorId);
+            var actorIds = request.Select(r => r.actorId).Distinct().ToList();
 
-            if (!actorExists)
+            var existingActorIds = await _context.Actors
+                .AsNoTracking()
+                .Where(a => actorIds.Contains(a.ActorId))
+                .Select(a => a.ActorId)
+                .ToListAsync();
+
+            if (existingActorIds.Count != actorIds.Count)
             {
                 return new MovieActorResponse
                 {
                     Success = false,
-                    Message = "Актор не знайдений"
+                    Message = "Один або більше акторів не знайдені"
                 };
             }
 
-            var movieActor = new Models.Entitys.MovieActor
-            {
-                MovieId = request.movieId,
-                ActorId = request.actorId,
-                Character = request.Character
-            };
+            var existingLinks = await _context.MovieActors
+                .Where(ma => ma.MovieId == movieId && actorIds.Contains(ma.ActorId))
+                .Select(ma => ma.ActorId)
+                .ToListAsync();
 
-            _context.MovieActors.Add(movieActor);
+            var newLinks = request
+                .Where(r => !existingLinks.Contains(r.actorId))
+                .Select(r => new Models.Entitys.MovieActor
+                {
+                    MovieId = r.movieId,
+                    ActorId = r.actorId,
+                    Character = r.Character
+                })
+                .ToList();
+
+            if (newLinks.Count == 0)
+            {
+                return new MovieActorResponse
+                {
+                    Success = true,
+                    Message = "Усі актори вже привʼязані до фільму"
+                };
+            }
+
+            _context.MovieActors.AddRange(newLinks);
             await _context.SaveChangesAsync();
 
             return new MovieActorResponse
             {
                 Success = true,
-                Message = "Актор успішно доданий до фільму"
+                Message = $"Додано акторів: {newLinks.Count}"
             };
         }
 
         /// <summary>
-        /// Updates the character information for an actor in a specified movie, or adds the actor to the movie if not
-        /// already associated.
+        /// Updates the character roles of actors in movies based on the provided list of movie-actor associations.
         /// </summary>
-        /// <remarks>If the specified movie or actor does not exist, the operation fails and the response
-        /// contains an appropriate error message. If the actor is not already associated with the movie, a new
-        /// association is created.</remarks>
-        /// <param name="request">An object containing the movie and actor identifiers, along with the character name to be updated or added.
-        /// Cannot be null.</param>
-        /// <returns>A response indicating whether the update or addition was successful, including a success flag and a
-        /// descriptive message.</returns>
-        public async Task<MovieActorResponse> UpdateMovieActorsAsync(MovieActorDto request)
+        /// <remarks>All specified movies and actors must exist, and each actor must already be associated
+        /// with the corresponding movie. If any movie or actor is not found, or if an actor is not linked to a movie,
+        /// the operation fails and returns an appropriate message.</remarks>
+        /// <param name="request">A list of movie-actor data transfer objects specifying the movies, actors, and their updated character
+        /// roles. Cannot be null or empty.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a MovieActorResponse indicating
+        /// whether the update was successful and providing a descriptive message.</returns>
+        public async Task<MovieActorResponse> UpdateMovieActorsAsync(List<MovieActorDto> request)
         {
-
-            if (request == null)
+            if (request == null || request.Count == 0)
             {
                 return new MovieActorResponse
                 {
                     Success = false,
-                    Message = "Некоректні дані"
+                    Message = "Список ролей порожній"
                 };
             }
 
-            var movieExists = await _context.Movies.AsNoTracking()
-                .AnyAsync(m => m.MovieId == request.movieId);
+            var movieId = request.First().movieId;
+
+            var movieExists = await _context.Movies
+                .AsNoTracking()
+                .AnyAsync(m => m.MovieId == movieId);
 
             if (!movieExists)
             {
                 return new MovieActorResponse
                 {
                     Success = false,
-                    Message = "Фільм не знайдено"
+                    Message = $"Фільм {movieId} не знайдено"
                 };
             }
 
-            var actorExists = await _context.Actors.AsNoTracking()
-                .AnyAsync(a => a.ActorId == request.actorId);
+            var actorIds = request.Select(r => r.actorId).Distinct().ToList();
 
-            if (!actorExists)
+            var existingActors = await _context.Actors
+                .Where(a => actorIds.Contains(a.ActorId))
+                .Select(a => a.ActorId)
+                .ToListAsync();
+
+            var missingActors = actorIds.Except(existingActors).ToList();
+            if (missingActors.Any())
             {
                 return new MovieActorResponse
                 {
                     Success = false,
-                    Message = "Актор не знайдений"
+                    Message = $"Актори не знайдені: {string.Join(", ", missingActors)}"
                 };
             }
 
-            var movieActor = await _context.MovieActors
-                .FirstOrDefaultAsync(ma =>
-                    ma.MovieId == request.movieId &&
-                    ma.ActorId == request.actorId);
+            var currentMovieActors = await _context.MovieActors
+                .Where(ma => ma.MovieId == movieId)
+                .ToListAsync();
 
-            if (movieActor == null)
+            var toRemove = currentMovieActors
+                .Where(ma => !actorIds.Contains(ma.ActorId))
+                .ToList();
+            _context.MovieActors.RemoveRange(toRemove);
+
+            foreach (var dto in request)
             {
-                return new MovieActorResponse
+                var existing = currentMovieActors.FirstOrDefault(ma => ma.ActorId == dto.actorId);
+                if (existing != null)
                 {
-                    Success = false,
-                    Message = "Актор не пов'язаний з фільмом. Додайте актора до фільму перед оновленням ролі."
-                };
-            }
-            else
-            {
-                movieActor.Character = request.Character;
+                    existing.Character = dto.Character;
+                }
+                else
+                {
+                    _context.MovieActors.Add(new Models.Entitys.MovieActor
+                    {
+                        MovieId = movieId,
+                        ActorId = dto.actorId,
+                        Character = dto.Character
+                    });
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -145,7 +186,7 @@ namespace CinemaProject.Server.Services
             return new MovieActorResponse
             {
                 Success = true,
-                Message = "Роль актор успішно оновлена у фільмі"
+                Message = "Ролі акторів успішно оновлені у фільмі"
             };
         }
 

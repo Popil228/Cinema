@@ -24,4 +24,15 @@ namespace CinemaProject.Server.DTOs.Movie
         public List<GenreDto> Genres { get; set; }
         public List<CastDto> Actors { get; set; }
     }
+
+    public class ShortMovieDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public string PosterPath { get; set; }
+        public int Runtime { get; set; }
+        public string Overview { get; set; }
+    }
+
 }

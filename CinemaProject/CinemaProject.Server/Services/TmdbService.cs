@@ -1,7 +1,7 @@
-﻿using CinemaProject.Server.DTOs.Actor;
-using CinemaProject.Server.DTOs.Genre;
+﻿using CinemaProject.Server.DTOs.Genre;
 using CinemaProject.Server.DTOs.Movie;
 using CinemaProject.Server.Models.Tmdb;
+using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -145,6 +145,59 @@ namespace CinemaProject.Server.Services
                             .ToList() ?? new List<CastDto>()
                     }
                 };
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Не вдалося підключитись до TMDb API", ex);
+            }
+            catch (JsonException ex)
+            {
+                throw new Exception("Помилка обробки відповіді TMDb API", ex);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves the cast information for a specified movie from the TMDb API.
+        /// </summary>
+        /// <param name="tmdbId">The TMDb identifier of the movie for which to retrieve cast information.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a collection of cast members for
+        /// the specified movie. The collection is empty if no cast information is available.</returns>
+        /// <exception cref="Exception">Thrown if the TMDb API request fails, the response cannot be processed, or a network error occurs.</exception>
+        public async Task<IEnumerable<CastDto>> GetCastAsync(int tmdbId)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("tmdb");
+
+                var creditsTask = client.GetAsync($"{TmdbBaseUrl}/movie/{tmdbId}/credits?api_key={_apiKey}&language=uk-UA");
+
+                await Task.WhenAll(creditsTask);
+
+                var creditsResponse = creditsTask.Result;
+
+                if (!creditsResponse.IsSuccessStatusCode)
+                {
+                    var errorBody = await creditsResponse.Content.ReadAsStringAsync();
+                    throw new Exception($"TMDb API error ({(int)creditsResponse.StatusCode}): {errorBody}");
+                }
+
+                var creditsJson = await creditsResponse.Content.ReadAsStringAsync();
+
+                var credits = JsonSerializer.Deserialize<TmdbCreditsResponse>(creditsJson,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return credits?.Cast?
+                    .Select(c => new CastDto
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Role = c.Character,
+                        PhotoUri = string.IsNullOrWhiteSpace(c.Profile_Path)
+                            ? null
+                            : c.Profile_Path
+                    })
+                    .ToList()
+                    ?? new List<CastDto>();
             }
             catch (HttpRequestException ex)
             {
