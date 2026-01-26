@@ -1,34 +1,18 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ActorCard from '../../components/Movie/ActorCard/ActorCard';
 import styles from './MoviePage.module.scss';
-import type { Movie, Session } from '../../types/movie';
+import type { Session, StrictMovieInfo } from '../../types/movie';
 // Імпортуємо утиліту колеги
 import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
+import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext';
 
 const MoviePage: React.FC = () => {
   const { id } = useParams();
-  id; // для майбутнього використання
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const movie: Movie = {
-    id: 1,
-    title: 'Minecraft',
-    posterUrl: '/Minecraft.png',
-    genres: ['Фантастика', 'Пригоди'],
-    duration: '2г 30хв',
-    year: 2024,
-    description: 'Сюжет розповідає про групу чотирьох аутсайдерів (Гаррет, Генрі, Наталі та Дон), які через таємничий портал потрапляють у дивовижний кубічний світ Верхнього світу. Щоб повернутися додому, їм доведеться не лише опанувати майстерність крафту, а й захистити цей світ від піглінів та зомбі разом із досвідченим майстром-будівельником Стівом.',
-    actors: [
-      { name: 'Джек Блек', portrait: '/actors/black.jpg', role: 'Стів' },
-      { name: 'Джейсон Момоа', portrait: '/actors/momoa.jpg', role: 'Гаррет' },
-      { name: 'Емма Майєрс', portrait: '/actors/emma.jpg', role: 'Наталі' },
-      { name: 'Даніель Брукс', portrait: '/actors/brooks.jpg', role: 'Дон' },
-      { name: 'Себастьян Юджин Гансен', portrait: '/actors/henry.jpg', role: 'Генрі' },
-      { name: 'Роберт Дауні-молодший', portrait: '/actors/robert.jpg', role: 'Алекс' },
-      { name: 'Ірфан Хан', portrait: '/actors/irfan.jpg', role: 'Оракул' },
-    ]
-  };
+  const [movie, setMovie] = useState<StrictMovieInfo>({} as StrictMovieInfo);
+  const [movieError,setMovieError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
+  const userMoviesContext = useContext(UserMoviesContext);
+  const carouselRef = useRef<HTMLDivElement>(null); //for actors scroll
 
   // Сеанси для цього фільму
   const sessions: Session[] = [
@@ -37,7 +21,7 @@ const MoviePage: React.FC = () => {
     { id: 3, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '14:30', imageUrl: '/Minecraft.png' },
     { id: 4, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '19:00', imageUrl: '/Minecraft.png' },
   ];
-
+  
   useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
@@ -49,27 +33,55 @@ const MoviePage: React.FC = () => {
 
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
-  }, []);
+  }, [!movieError.is]); //triggered when info is loaded
 
+  useEffect(()=>{
+    const fetchData = async() => {
+      try{
+        setMovie(await userMoviesContext.getMovieById(Number.parseInt(id||"0")));
+        setMovieError({is:false, text:"цього не видно"});
+      }
+      catch(err)
+      {
+        console.error(err);
+        setMovieError({is:true, text:"Помилка завантаженя інформації про фільм"});
+        return;
+      }
+
+
+    }
+    fetchData();
+
+  },[])
+
+  if(movieError.is)
+  {
+    return (
+      <div className={styles.pageWrapper}>
+        <h1 className={styles.movieTitle}>{movieError.text}</h1>
+      </div>
+    )
+  }
+ 
   return (
     <div className={styles.pageWrapper}>
       <section className={styles.mainInfo}>
         <div className={styles.contentContainer}>
           <div className={styles.posterSide}>
-            <img src={movie.posterUrl} alt={movie.title} className={styles.mainPoster} />
+            <img src={`https://image.tmdb.org/t/p/w500${movie.mainInfo.posterPath}`} alt={movie.mainInfo.title} className={styles.mainPoster} />
           </div>
 
           <div className={styles.detailsSide}>
-            <h1 className={styles.movieTitle}>{movie.title}</h1>
+            <h1 className={styles.movieTitle}>{movie.mainInfo.title}</h1>
             <p className={styles.metaInfo}>
-              {movie.genres?.join(', ')} | {movie.duration} | {movie.year}
+              {movie.extraInfo.genres.map(g=>g.name).join(', ')} | {`${movie.extraInfo.runtime} хв`} | {new Date(movie.mainInfo.releaseDate).getFullYear()}
             </p>
 
             <div className={styles.actorsBlock}>
               <h2 className={styles.subTitle}>Актори</h2>
               <div className={styles.actorsCarousel} ref={carouselRef}>
-                {movie.actors?.map((actor, index) => (
-                  <ActorCard key={index} {...actor} />
+                {movie.extraInfo.actors.map((actor, index) => (
+                  <ActorCard key={index} actor={actor} />
                 ))}
               </div>
             </div>
@@ -78,7 +90,7 @@ const MoviePage: React.FC = () => {
 
             <div className={styles.descriptionBlock}>
               <h2 className={styles.subTitle}>Опис</h2>
-              <p className={styles.descriptionText}>{movie.description}</p>
+              <p className={styles.descriptionText}>{movie.extraInfo.overview}</p>
             </div>
           </div>
         </div>

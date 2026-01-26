@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './EditMoviePage.module.scss';
-import type { Actor, StrictMovieInfo } from '../../../types/movie';
+import type { Cast, StrictMovieInfo } from '../../../types/movie';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
 
 const EditMoviePage: React.FC = () => {
@@ -15,7 +15,7 @@ const EditMoviePage: React.FC = () => {
 
   // Стан для редагування актора
   const [editingActorIndex, setEditingActorIndex] = useState<number | null>(null);
-  const [tempActorData, setTempActorData] = useState<Actor>({ name: '', photoUri: '', role: '' } as Actor);
+  const [tempActorData, setTempActorData] = useState<Cast>({ name: '', photoUri: '', role: '' } as Cast);
 
   useEffect(() => {
     if(!movieEditContext.isLoaded)
@@ -71,7 +71,7 @@ const EditMoviePage: React.FC = () => {
   // }, [id, isEditMode, location.state]);
 
   // Функції для редагування актора
-  const handleStartEditActor = (index: number, actor: Actor) => {
+  const handleStartEditActor = (index: number, actor: Cast) => {
     setEditingActorIndex(index);
     setTempActorData(actor);
   };
