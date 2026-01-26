@@ -20,10 +20,9 @@
 .leftSide {
     display: flex;
     align-items: center;
-    gap: 40px; // Трохи збільшив відступ між лого та навігацією
+    gap: 40px;
 }
 
-/* ФІКС: Додано клас logo, якого не вистачало */
 .logo {
     display: flex;
     align-items: center;

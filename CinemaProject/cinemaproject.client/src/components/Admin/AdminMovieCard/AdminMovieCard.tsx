@@ -1,11 +1,28 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import type { Movie } from '../../../types/movie';
 import styles from './AdminMovieCard.module.scss';
 
-const AdminMovieCard: React.FC<Movie> = ({ id, title, genres, posterUrl, duration }) => {
+interface AdminMovieCardProps extends Movie {
+  onEdit?: () => void;
+  onSessionsEdit?: () => void; // на майбутнє для сеансів
+  onDelete?: () => void
+}
+
+const AdminMovieCard: React.FC<AdminMovieCardProps> = ({ 
+  title, 
+  genres, 
+  posterUrl, 
+  duration, 
+  onEdit,
+  onSessionsEdit,
+  onDelete
+}) => {
   return (
     <div className={styles.card}>
+      <button className={styles.deleteBtn} onClick={onDelete} title="Видалити фільм">
+        🗑
+      </button>
+      
       <div className={styles.poster}>
         <img src={posterUrl} alt={title} />
       </div>
@@ -15,10 +32,13 @@ const AdminMovieCard: React.FC<Movie> = ({ id, title, genres, posterUrl, duratio
           {genres?.join(', ')} {duration ? `| ${duration}` : ''}
         </p>
         <div className={styles.actions}>
-          <Link to={{/*`/admin/movies/edit/${id}`*/}} className={styles.actionBtn}>
+          <button onClick={onEdit} className={styles.actionBtn}>
             Фільм ✎
-          </Link>
-          <button className={styles.actionBtn}>Сеанси ✎</button>
+          </button>
+          
+          <button onClick={onSessionsEdit} className={styles.actionBtn}>
+            Сеанси ✎
+          </button>
         </div>
       </div>
     </div>

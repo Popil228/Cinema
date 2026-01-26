@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import ActorCard from '../../components/Movie/ActorCard/ActorCard';
+import ActorCard from './pageComponents/ActorCard';
 import styles from './MoviePage.module.scss';
 import type { Movie, Session } from '../../types/movie';
-// Імпортуємо утиліту колеги
 import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
 
 const MoviePage: React.FC = () => {
@@ -20,13 +19,13 @@ const MoviePage: React.FC = () => {
     year: 2024,
     description: 'Сюжет розповідає про групу чотирьох аутсайдерів (Гаррет, Генрі, Наталі та Дон), які через таємничий портал потрапляють у дивовижний кубічний світ Верхнього світу. Щоб повернутися додому, їм доведеться не лише опанувати майстерність крафту, а й захистити цей світ від піглінів та зомбі разом із досвідченим майстром-будівельником Стівом.',
     actors: [
-      { name: 'Джек Блек', portrait: '/actors/black.jpg', role: 'Стів' },
-      { name: 'Джейсон Момоа', portrait: '/actors/momoa.jpg', role: 'Гаррет' },
-      { name: 'Емма Майєрс', portrait: '/actors/emma.jpg', role: 'Наталі' },
-      { name: 'Даніель Брукс', portrait: '/actors/brooks.jpg', role: 'Дон' },
-      { name: 'Себастьян Юджин Гансен', portrait: '/actors/henry.jpg', role: 'Генрі' },
-      { name: 'Роберт Дауні-молодший', portrait: '/actors/robert.jpg', role: 'Алекс' },
-      { name: 'Ірфан Хан', portrait: '/actors/irfan.jpg', role: 'Оракул' },
+      {id: 1, name: 'Джек Блек', photoUri: '/actors/black.jpg', role: 'Стів' },
+      {id: 2, name: 'Джейсон Момоа', photoUri: '/actors/momoa.jpg', role: 'Гаррет' },
+      {id: 3, name: 'Емма Майєрс', photoUri: '/actors/emma.jpg', role: 'Наталі' },
+      {id: 4, name: 'Даніель Брукс', photoUri: '/actors/brooks.jpg', role: 'Дон' },
+      {id: 5, name: 'Себастьян Юджин Гансен', photoUri: '/actors/henry.jpg', role: 'Генрі' },
+      {id: 6, name: 'Роберт Дауні-молодший', photoUri: '/actors/robert.jpg', role: 'Алекс' },
+      {id: 7, name: 'Ірфан Хан', photoUri: '/actors/irfan.jpg', role: 'Оракул' },
     ]
   };
 

@@ -2,7 +2,7 @@ export interface Cast {
   id: number;
   name: string;
   photoUri: string;
-  character: string;
+  role: string;
 }
 
 export interface Movie {

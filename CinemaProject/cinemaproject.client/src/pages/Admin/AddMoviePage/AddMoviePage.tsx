@@ -1,17 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import styles from './EditMoviePage.module.scss';
+import { useNavigate } from 'react-router-dom';
+import styles from '../EditMoviePage/EditMoviePage.module.scss';
 import type { Cast, StrictMovieInfo, Genre } from '../../../types/movie';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
 import * as movieApi from '../../../api/moviesApi';
 
-const EditMoviePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const AddMoviePage: React.FC = () => {
   const navigate = useNavigate();
   const movieEditContext = useContext(MoveEditContext);
   const movie = movieEditContext.movieInfo;
 
-  // Список доступних жанрів (замінити на завантаження з API)
   const [availableGenres] = useState<Genre[]>([
     { id: 28, name: 'Бойовик' },
     { id: 12, name: 'Пригоди' },
@@ -28,28 +26,17 @@ const EditMoviePage: React.FC = () => {
   const [tempActorData, setTempActorData] = useState<Cast>({ name: '', photoUri: '', role: '' } as Cast);
 
   useEffect(() => {
-    const loadMovie = async () => {
-      if (!movieEditContext.isLoaded && id) {
-        try {
-          const stored_text = localStorage.getItem("movie_edit");
-          if (stored_text) {
-            const parsedObj = JSON.parse(stored_text) as StrictMovieInfo;
-            movieEditContext.setMovieInfo({ ...parsedObj });
-            movieEditContext.setIsLoaded(true);
-          }
-        } catch (err) {
-          console.error("Помилка завантаження фільму", err);
-        }
+    if (!movieEditContext.isLoaded) {
+      const stored_text = localStorage.getItem("movie_add_temp");
+      if (stored_text) {
+        const parsedObj = JSON.parse(stored_text) as StrictMovieInfo;
+        movieEditContext.setMovieInfo({ ...parsedObj });
+        movieEditContext.setIsLoaded(true);
       }
-    };
-    loadMovie();
-  }, [id, movieEditContext]);
-
-  useEffect(() => {
-    if (movieEditContext.isLoaded) {
-      localStorage.setItem("movie_edit", JSON.stringify(movieEditContext.movieInfo));
+    } else {
+      localStorage.setItem("movie_add_temp", JSON.stringify(movieEditContext.movieInfo));
     }
-  }, [movieEditContext.movieInfo, movieEditContext.isLoaded]);
+  }, [movieEditContext.movieInfo]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     movieEditContext.setMovieInfo({
@@ -65,6 +52,7 @@ const EditMoviePage: React.FC = () => {
     });
   };
 
+  // Логіка Жанрів
   const handleAddGenre = (genreId: string) => {
     const selectedGenre = availableGenres.find(g => g.id === Number(genreId));
     if (selectedGenre && !movie.extraInfo.genres.some(g => g.id === selectedGenre.id)) {
@@ -85,7 +73,6 @@ const EditMoviePage: React.FC = () => {
     });
   };
 
-  // Актори
   const handleStartEditActor = (index: number, actor: Cast) => {
     setEditingActorIndex(index);
     setTempActorData(actor);
@@ -103,23 +90,23 @@ const EditMoviePage: React.FC = () => {
 
   const handleConfirm = async () => {
     try {
-      await movieApi.updateMovie(movie);
-      localStorage.removeItem("movie_edit");
-      alert("Дані фільму успішно оновлено!");
+      await movieApi.createMovie(movie);
+      localStorage.removeItem("movie_add_temp");
+      alert("Фільм успішно створено!");
       navigate('/admin/movies');
     } catch (err) {
       console.error(err);
-      alert("Помилка при оновленні фільму");
+      alert("Помилка при створенні фільму");
     }
   };
 
   const handleCancel = () => {
-    localStorage.removeItem("movie_edit");
-    navigate('/admin/movies');
+    localStorage.removeItem("movie_add_temp");
+    navigate('/admin/movies/search');
   };
 
   if (!movieEditContext.isLoaded) {
-    return <h2 className={styles.noMovieInfoMsg}>Завантаження даних...</h2>;
+    return <h2 className={styles.noMovieInfoMsg}>Завантаження даних фільму...</h2>;
   }
 
   return (
@@ -131,7 +118,7 @@ const EditMoviePage: React.FC = () => {
 
         <div className={styles.mainInfo}>
           <div className={styles.fieldGroup}>
-            <label>Назва (Редагування)</label>
+            <label>Назва фільму</label>
             <input 
               className={styles.editInput} 
               value={movie.mainInfo.title} 
@@ -153,7 +140,7 @@ const EditMoviePage: React.FC = () => {
                 onChange={(e) => handleAddGenre(e.target.value)}
                 value=""
               >
-                <option value="" disabled hidden>+ Додати</option>
+                <option value="" disabled hidden>+ Додати жанр</option>
                 {availableGenres.map(g => (
                   <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
@@ -170,8 +157,6 @@ const EditMoviePage: React.FC = () => {
               onChange={handleRuntimeChange} 
             />
           </div>
-
-          <button className={styles.sessionsBtn}>Редагувати Сеанси ✎</button>
         </div>
       </div>
 
@@ -232,4 +217,4 @@ const EditMoviePage: React.FC = () => {
   );
 };
 
-export default EditMoviePage;
+export default AddMoviePage;
