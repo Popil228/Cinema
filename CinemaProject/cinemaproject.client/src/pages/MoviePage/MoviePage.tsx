@@ -10,7 +10,7 @@ import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext
 const MoviePage: React.FC = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState<StrictMovieInfo>({} as StrictMovieInfo);
-  const [movieError, setMovieError] = useState<{ is: boolean, text: string }>({ is: true, text: "Завантаження..." });
+  const [movieError,setMovieError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
   const userMoviesContext = useContext(UserMoviesContext);
   const carouselRef = useRef<HTMLDivElement>(null); //for actors scroll
 
@@ -21,7 +21,7 @@ const MoviePage: React.FC = () => {
     { id: 3, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '14:30', imageUrl: '/Minecraft.png' },
     { id: 4, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '19:00', imageUrl: '/Minecraft.png' },
   ];
-
+  
   useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
@@ -35,15 +35,16 @@ const MoviePage: React.FC = () => {
     return () => el.removeEventListener('wheel', onWheel);
   }, [!movieError.is]); //triggered when info is loaded
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setMovie(await userMoviesContext.getMovieById(Number.parseInt(id || "0")));
-        setMovieError({ is: false, text: "цього не видно" });
+  useEffect(()=>{
+    const fetchData = async() => {
+      try{
+        setMovie(await userMoviesContext.getMovieById(Number.parseInt(id||"0")));
+        setMovieError({is:false, text:"цього не видно"});
       }
-      catch (err) {
+      catch(err)
+      {
         console.error(err);
-        setMovieError({ is: true, text: "Помилка завантаженя інформації про фільм" });
+        setMovieError({is:true, text:"Помилка завантаженя інформації про фільм"});
         return;
       }
 
@@ -51,16 +52,17 @@ const MoviePage: React.FC = () => {
     }
     fetchData();
 
-  }, [])
+  },[])
 
-  if (movieError.is) {
+  if(movieError.is)
+  {
     return (
       <div className={styles.pageWrapper}>
         <h1 className={styles.movieTitle}>{movieError.text}</h1>
       </div>
     )
   }
-
+ 
   return (
     <div className={styles.pageWrapper}>
       <section className={styles.mainInfo}>
@@ -72,7 +74,7 @@ const MoviePage: React.FC = () => {
           <div className={styles.detailsSide}>
             <h1 className={styles.movieTitle}>{movie.mainInfo.title}</h1>
             <p className={styles.metaInfo}>
-              {movie.extraInfo.genres.map(g => g.name).join(', ')} | {`${movie.extraInfo.runtime} хв`} | {new Date(movie.mainInfo.releaseDate).getFullYear()}
+              {movie.extraInfo.genres.map(g=>g.name).join(', ')} | {`${movie.extraInfo.runtime} хв`} | {new Date(movie.mainInfo.releaseDate).getFullYear()}
             </p>
 
             <div className={styles.actorsBlock}>

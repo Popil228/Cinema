@@ -49,6 +49,35 @@ const getAllMovies = async () => {
   return body as StrictMovieInfo[];
 }
 
+const getAllRollingMovies = async () => {
+    const response = await fetch(`${API_BASE_URL}/Movies/rolling`, {
+        method: 'GET',
+      headers: { 'Content-type': 'application/json' },
+    })
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    throw new Error(body.massage ?? 'Помилка сервера');
+  }
+
+  return body as StrictMovieInfo[];
+}
+
+const getMovieById = async (id: number) => {
+    const response = await fetch(`${API_BASE_URL}/Movies/${id}`, {
+        method: 'GET',
+      headers: { 'Content-type': 'application/json' },
+    })
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    throw new Error(body.massage ?? 'Помилка сервера');
+  }
+
+  return body as StrictMovieInfo;
+}
 
 const deleteMovieById = async (movieId: number) => {
   const response = await fetch(`${API_BASE_URL}/Movies/${movieId}`, { method: "DELETE" })
@@ -62,4 +91,4 @@ const deleteMovieById = async (movieId: number) => {
   return body;
 }
 
-export { deleteMovieById, getAllMovies, createMovie, updateMovie}
+export { deleteMovieById, getAllMovies, createMovie, updateMovie, getAllRollingMovies, getMovieById}

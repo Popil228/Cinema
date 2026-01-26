@@ -33,6 +33,41 @@ namespace CinemaProject.Server.Controllers
 
         }
 
+        [HttpGet ("rolling")]
+        public async Task<IActionResult> GetAllRollingMovies()
+        {
+            try
+            {
+                var movies = await _movieService.GetAllRollingMoviesAsync();
+                return Ok(movies);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = ex.Message
+                });
+            }
+
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetMovieById(int id)
+        {
+            try
+            {
+                var movie = await _movieService.GetMovieByIdAsync(id);
+                return Ok(movie);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = ex.Message
+                });
+            }
+
+        }
 
         [HttpPost]
         public async Task<ActionResult<MovieResponse>> AddMovie([FromBody] MovieDto request)

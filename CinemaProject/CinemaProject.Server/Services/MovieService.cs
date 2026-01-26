@@ -1,7 +1,7 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Genre;
 using CinemaProject.Server.DTOs.Movie;
-
+using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -63,6 +63,127 @@ namespace CinemaProject.Server.Services
             {
                 throw new Exception("Фільмів в БД не знайдено");
             }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves all movies that have sessions assigned in the future, including their genres and actors, as data transfer objects.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="MovieDto"/>
+        /// objects, each representing a movie with its associated genres and actors. The list is empty if no movies are
+        /// found.</returns>
+        public async Task<List<MovieDto>> GetAllRollingMoviesAsync()
+        {
+            var rollingMoviesId = await _context.Sessions
+                .Where(s => s.StartTime.Date >= DateTime.UtcNow.Date)
+                .Select(s => s.MovieId)
+                .Distinct()
+                .ToListAsync();
+            
+            if(!rollingMoviesId.Any())
+            {
+                throw new Exception("В БД немає майбутніх сеансів");
+            }
+
+            var movies = await _context.Movies
+                .Where(m=>rollingMoviesId.Contains(m.MovieId))
+                .Include(m => m.MovieGenres)
+                    .ThenInclude(mg => mg.Genre)
+                .Include(m => m.MovieActors)
+                    .ThenInclude(ma => ma.Actor)
+                .ToListAsync();
+            
+
+            var result = movies.Select(m => new MovieDto
+            {
+                MainInfo = new MovieMainInfoDto
+                {
+                    Id = m.MovieId,
+                    Title = m.Title,
+                    ReleaseDate = m.ReleaseDate,
+                    PosterPath = m.PosterUri
+                },
+                ExtraInfo = new MovieExtraInfoDto
+                {
+                    Overview = m.Description,
+                    Runtime = m.Duration,
+                    Genres = m.MovieGenres.Select(mg => new GenreDto
+                    {
+                        Id = mg.Genre.GenreId,
+                        Name = mg.Genre.Name
+                    }).ToList(),
+                    Actors = m.MovieActors.Select(ma => new CastDto
+                    {
+                        Id = ma.Actor.ActorId,
+                        Name = ma.Actor.FullName,
+                        Role = ma.Character,
+                        PhotoUri = ma.Actor.PhotoUri
+                    }).ToList()
+                }
+            }).ToList();
+
+            if (!result.Any())
+            {
+                throw new Exception("Фільмів в БД не знайдено");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves requested movie data.
+        /// </summary>
+        /// <param name="id">Id of a movie in db. Cannot
+        /// be null.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="MovieDto"/> object 
+        /// that contains information about movie.</returns>
+        public async Task<MovieDto> GetMovieByIdAsync(int id)
+        {
+            Movie movie;
+            try
+            {
+                movie = await _context.Movies
+                    .Where(m => m.MovieId == id)
+                    .Include(m => m.MovieGenres)
+                        .ThenInclude(mg => mg.Genre)
+                    .Include(m => m.MovieActors)
+                        .ThenInclude(ma => ma.Actor)
+                    .FirstAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Фільм з id: {id} відсутній");
+            }
+
+            MovieDto result = new MovieDto
+            {
+                MainInfo = new MovieMainInfoDto
+                {
+                    Id = movie.MovieId,
+                    Title = movie.Title,
+                    ReleaseDate = movie.ReleaseDate,
+                    PosterPath = movie.PosterUri
+                },
+                ExtraInfo = new MovieExtraInfoDto
+                {
+                    Overview = movie.Description,
+                    Runtime = movie.Duration,
+                    Genres = movie.MovieGenres.Select(mg => new GenreDto
+                    {
+                        Id = mg.Genre.GenreId,
+                        Name = mg.Genre.Name
+                    }).ToList(),
+                    Actors = movie.MovieActors.Select(ma => new CastDto
+                    {
+                        Id = ma.Actor.ActorId,
+                        Name = ma.Actor.FullName,
+                        Role = ma.Character,
+                        PhotoUri = ma.Actor.PhotoUri
+                    }).ToList()
+                }
+
+            };
 
             return result;
         }
