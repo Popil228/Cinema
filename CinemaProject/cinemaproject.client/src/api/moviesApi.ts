@@ -15,7 +15,7 @@ const createMovie = async (movieData: MovieInfo) => {
     throw new Error(body.message ?? 'Помилка сервера');
   }
 
-  return body.massage;
+  return body.message;
 }
 
 const updateMovie = async (movieData: MovieInfo) => {
@@ -31,7 +31,7 @@ const updateMovie = async (movieData: MovieInfo) => {
     throw new Error(body.message ?? 'Помилка сервера');
   }
 
-  return body.massage;
+  return body.message;
 }
 
 const getAllMovies = async () => {
