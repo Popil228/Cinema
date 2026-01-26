@@ -191,13 +191,13 @@ const EditMoviePage: React.FC = () => {
                       />
                       <input 
                         value={tempActorData.role} 
-                        onChange={(e) => setTempActorData({...tempActorData, role: e.target.value})}
+                        onChange={(e) => setTempActorData({ ...tempActorData, role: e.target.value})}
                       />
                     </div>
                   ) : (
                     <>
                       <p className={styles.actorName}>{actor.name}</p>
-                      <p className={styles.actorRole}>{actor.role}</p>
+                        <p className={styles.actorRole}>{actor.role}</p>
                     </>
                   )}
                 </div>
