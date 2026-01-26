@@ -81,7 +81,7 @@ const MoviePage: React.FC = () => {
               <h2 className={styles.subTitle}>Актори</h2>
               <div className={styles.actorsCarousel} ref={carouselRef}>
                 {movie.extraInfo.actors.map((actor, index) => (
-                  <ActorCard key={index} actor={actor} />
+                  <ActorCard key={index} {...actor} />
                 ))}
               </div>
             </div>
@@ -99,7 +99,7 @@ const MoviePage: React.FC = () => {
       <section className={styles.scheduleSection}>
         <h2 className={styles.sectionTitle}>Розклад сеансів</h2>
         <div className={styles.sessionsWrapper}>
-          
+
           <div className={styles.hallColumn}>
             <h3>ЗАЛ А</h3>
             {sessions.filter(s => s.hall === 'A').map(session => (
