@@ -1,12 +1,12 @@
-import type { Actor } from '../types/actor';
+import type { MovieGenre } from "../types/moviegenre";
 
 const API_BASE_URL = '/api';
 
-const createActor = async (movieActorData: Actor[]) => {
-    const response = await fetch(`${API_BASE_URL}/Actors`, {
+const createMovieGenre = async (movieGenreData: MovieGenre[]) => {
+    const response = await fetch(`${API_BASE_URL}/MovieGenres`, {
         method: 'POST',
       headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify(movieActorData),
+      body: JSON.stringify(movieGenreData),
     })
 
   const body = await response.json();
@@ -18,11 +18,11 @@ const createActor = async (movieActorData: Actor[]) => {
   return body.message;
 }
 
-const updateActor = async (actorData: Actor[]) => {
-  const response = await fetch(`${API_BASE_URL}/Actors`, {
+const updateMovieGenre = async (movieGenreData: MovieGenre[]) => {
+  const response = await fetch(`${API_BASE_URL}/MovieGenres`, {
     method: 'PUT',
     headers: { 'Content-type': 'application/json' },
-    body: JSON.stringify(actorData),
+    body: JSON.stringify(movieGenreData),
   })
 
   const body = await response.json();
@@ -34,4 +34,5 @@ const updateActor = async (actorData: Actor[]) => {
   return body.message;
 }
 
-export { updateActor, createActor };
+export { createMovieGenre, updateMovieGenre };
+

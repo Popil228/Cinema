@@ -103,7 +103,7 @@ const EditMoviePage: React.FC = () => {
 
   const handleConfirm = async () => {
     try {
-      await movieApi.updateMovie(movie);
+      //await movieApi.updateMovie(movie);
       localStorage.removeItem("movie_edit");
       alert("Дані фільму успішно оновлено!");
       navigate('/admin/movies');
