@@ -73,7 +73,7 @@ namespace CinemaProject.Server.Services
         /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="MovieDto"/>
         /// objects, each representing a movie with its associated genres and actors. The list is empty if no movies are
         /// found.</returns>
-        public async Task<List<MovieDto>> GetAllRollingMoviesAsync()
+        public async Task<List<MovieDto>> GetNowShowingMoviesAsync()
         {
             var rollingMoviesId = await _context.Sessions
                 .Where(s => s.StartTime.Date >= DateTime.UtcNow.Date)

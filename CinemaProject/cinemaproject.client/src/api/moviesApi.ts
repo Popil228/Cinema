@@ -50,7 +50,7 @@ const getAllMovies = async () => {
 }
 
 const getAllRollingMovies = async () => {
-    const response = await fetch(`${API_BASE_URL}/Movies/rolling`, {
+    const response = await fetch(`${API_BASE_URL}/Movies/now-showing`, {
         method: 'GET',
       headers: { 'Content-type': 'application/json' },
     })

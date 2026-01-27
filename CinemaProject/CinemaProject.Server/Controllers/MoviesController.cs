@@ -33,12 +33,12 @@ namespace CinemaProject.Server.Controllers
 
         }
 
-        [HttpGet ("rolling")]
-        public async Task<IActionResult> GetAllRollingMovies()
+        [HttpGet ("now-showing")]
+        public async Task<IActionResult> GetNowShowingMovies()
         {
             try
             {
-                var movies = await _movieService.GetAllRollingMoviesAsync();
+                var movies = await _movieService.GetNowShowingMoviesAsync();
                 return Ok(movies);
             }
             catch (Exception ex)
