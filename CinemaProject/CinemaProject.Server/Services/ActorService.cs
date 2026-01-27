@@ -1,6 +1,5 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Actor;
-using CinemaProject.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaProject.Server.Services
@@ -15,74 +14,111 @@ namespace CinemaProject.Server.Services
         }
 
         /// <summary>
-        /// Asynchronously creates a new actor using the specified actor data.
+        /// Creates new actor records based on the provided list of actor data transfer objects.
         /// </summary>
-        /// <param name="request">An object containing the details of the actor to create. The actor's name and photo URI must not be null or
-        /// empty.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains an ActorResponse indicating
-        /// whether the actor was successfully created and includes a message describing the outcome.</returns>
-        public async Task<ActorResponse> CreateActorAsync(ActorDto request)
+        /// <remarks>If any actor in the list already exists, it will not be created again. The method
+        /// returns a failure response if the input list is null, empty, or contains invalid actor data. Only actors
+        /// that do not already exist in the database will be created.</remarks>
+        /// <param name="request">A list of actor data transfer objects containing the information for each actor to be created. Each item
+        /// must not be null and must have a non-empty name.</param>
+        /// <returns>A response indicating the result of the creation operation. The response includes a success flag and a
+        /// message describing the outcome.</returns>
+        public async Task<ActorResponse> CreateActorsAsync(List<ActorDto> request)
         {
-            if (await _context.Actors.AnyAsync(a => a.ActorId == request.Id))
-            {
-                return new ActorResponse { Success = false, Message = "Актор вже існує" };
-            }
-
-            if (request == null)
-                return new ActorResponse { Success = false, Message = "Некоректні дані актора" };
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return new ActorResponse { Success = false, Message = "Ім'я актора обов'язкове" };
-            if (string.IsNullOrWhiteSpace(request.PhotoUri))
-                return new ActorResponse { Success = false, Message = "Фото актора обов'язкове" };
-            var newActor = new Models.Entitys.Actor
-            {
-                ActorId = request.Id,
-                FullName = request.Name,
-                PhotoUri = request.PhotoUri
-            };
-
-            _context.Actors.Add(newActor);
-            await _context.SaveChangesAsync();
-            return new ActorResponse
-            {
-                Success = true,
-                Message = "Актор успішно створений"
-            };
-        }
-
-        /// <summary>
-        /// Asynchronously updates the details of an existing actor based on the provided data.
-        /// </summary>
-        /// <param name="request">An object containing the updated information for the actor. The actor's identifier, name, and photo URI must
-        /// be specified. Cannot be null.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains an ActorResponse indicating
-        /// whether the update was successful and providing a relevant message.</returns>
-        public async Task<ActorResponse> UpdateActorAsync(ActorDto request)
-        {
-            if (request == null)
-                return new ActorResponse { Success = false, Message = "Некоректні дані актора" };
-
-            if (string.IsNullOrWhiteSpace(request.Name))
-                return new ActorResponse { Success = false, Message = "Ім'я актора обов'язкове" };
-
-            if (string.IsNullOrWhiteSpace(request.PhotoUri))
-                return new ActorResponse { Success = false, Message = "Фото актора обов'язкове" };
-
-            var actor = await _context.Actors
-                .FirstOrDefaultAsync(a => a.ActorId == request.Id);
-
-            if (actor == null)
+            if (request == null || request.Count == 0)
             {
                 return new ActorResponse
                 {
                     Success = false,
-                    Message = "Актор не знайдений"
+                    Message = "Список акторів порожній"
                 };
             }
-            else
+
+            var invalidActor = request.FirstOrDefault(a =>
+                a == null ||
+                string.IsNullOrWhiteSpace(a.Name)
+            );
+
+            if (invalidActor != null)
             {
-                actor.FullName = request.Name;
-                actor.PhotoUri = request.PhotoUri;
+                return new ActorResponse
+                {
+                    Success = false,
+                    Message = "Один або більше акторів мають невалідні дані"
+                };
+            }
+
+            var actorIds = request.Select(a => a.Id).ToList();
+
+            var existingActorIds = await _context.Actors
+                .Where(a => actorIds.Contains(a.ActorId))
+                .Select(a => a.ActorId)
+                .ToListAsync();
+
+            var newActors = request
+                .Where(a => !existingActorIds.Contains(a.Id))
+                .Select(a => new Models.Entitys.Actor
+                {
+                    ActorId = a.Id,
+                    FullName = a.Name,
+                    PhotoUri = string.IsNullOrWhiteSpace(a.PhotoUri)
+                        ? null
+                        : a.PhotoUri
+                })
+                .ToList();
+
+            if (newActors.Count == 0)
+            {
+                return new ActorResponse
+                {
+                    Success = true,
+                    Message = "Усі актори вже існують"
+                };
+            }
+
+            _context.Actors.AddRange(newActors);
+            await _context.SaveChangesAsync();
+
+            return new ActorResponse
+            {
+                Success = true,
+                Message = $"Створено акторів: {newActors.Count}"
+            };
+        }
+
+       /// <summary>
+       /// Updates the details of one or more actors based on the provided list of actor data transfer objects.'
+       /// </summary>
+       /// <param name="request">A list of <see cref="ActorDto"/> objects containing the updated information for each actor. Each item must
+       /// specify a valid actor identifier. The list cannot be null or empty.</param>
+       /// <returns>An <see cref="ActorResponse"/> indicating whether the update operation was successful. If the operation
+       /// fails, the response contains an appropriate error message.</returns>
+        public async Task<ActorResponse> UpdateActorsAsync(List<ActorDto> request)
+        {
+            if (request == null || request.Count == 0)
+                return new ActorResponse
+                {
+                    Success = false,
+                    Message = "Список акторів порожній"
+                };
+
+            var actorIds = request.Select(a => a.Id).ToList();
+
+            var actors = await _context.Actors
+                .Where(a => actorIds.Contains(a.ActorId))
+                .ToListAsync();
+
+            foreach (var dto in request)
+            {
+                var actor = actors.FirstOrDefault(a => a.ActorId == dto.Id);
+                if (actor == null) continue;
+
+                if (!string.IsNullOrWhiteSpace(dto.Name))
+                    actor.FullName = dto.Name;
+
+                actor.PhotoUri = string.IsNullOrWhiteSpace(dto.PhotoUri)
+                    ? null
+                    : dto.PhotoUri;
             }
 
             await _context.SaveChangesAsync();
@@ -90,7 +126,7 @@ namespace CinemaProject.Server.Services
             return new ActorResponse
             {
                 Success = true,
-                Message = "Актор успішно оновлений"
+                Message = "Актори успішно оновлені"
             };
         }
 

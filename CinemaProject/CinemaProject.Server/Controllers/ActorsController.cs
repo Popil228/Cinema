@@ -18,7 +18,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ActorResponse>> CreateActor([FromBody] ActorDto request)
+        public async Task<ActionResult<ActorResponse>> CreateActors([FromBody] List<ActorDto> request)
         {
             if (!ModelState.IsValid)
             {
@@ -29,7 +29,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var result = await _actorService.CreateActorAsync(request);
+            var result = await _actorService.CreateActorsAsync(request);
 
             if (!result.Success)
             {
@@ -39,7 +39,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<ActorResponse>> UpdateActor([FromBody] ActorDto request)
+        public async Task<ActionResult<ActorResponse>> UpdateActors([FromBody] List<ActorDto> request)
         {
             if (!ModelState.IsValid)
             {
@@ -50,7 +50,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var result = await _actorService.UpdateActorAsync(request);
+            var result = await _actorService.UpdateActorsAsync(request);
 
             if (!result.Success)
             {

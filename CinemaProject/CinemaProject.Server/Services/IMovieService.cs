@@ -8,9 +8,9 @@ namespace CinemaProject.Server.Services
         Task<List<MovieDto>> GetAllMoviesAsync();
         Task<List<MovieDto>> GetAllRollingMoviesAsync();
         Task<MovieDto> GetMovieByIdAsync(int id);
-        Task<MovieResponse> AddMovieAsync(MovieDto request);
+        Task<MovieResponse> CreateMovieAsync(ShortMovieDto request);
         Task<MovieResponse> DeleteMovieAsync(int Id);
-        Task<MovieResponse> UpdateMovieAsync(MovieDto request);
+        Task<MovieResponse> UpdateMovieAsync(ShortMovieDto request);
         
     }
 }

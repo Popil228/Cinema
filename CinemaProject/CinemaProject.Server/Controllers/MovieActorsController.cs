@@ -17,18 +17,18 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<MovieActorResponse>> CreateMovieActor([FromBody] MovieActorDto request)
+        public async Task<ActionResult<MovieActorResponse>> CreateMovieActors([FromBody] List<MovieActorDto> request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new ActorResponse
+                return BadRequest(new MovieActorResponse
                 {
                     Success = false,
                     Message = "Невалідні дані"
                 });
             }
 
-            var result = await _movieActorService.CreateMovieActorAsync(request);
+            var result = await _movieActorService.CreateMovieActorsAsync(request);
             
             if (!result.Success)
             {
@@ -38,11 +38,11 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<MovieActorResponse>> UpdateMovieActors([FromBody] MovieActorDto request)
+        public async Task<ActionResult<MovieActorResponse>> UpdateMovieActors([FromBody] List<MovieActorDto> request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new ActorResponse
+                return BadRequest(new MovieActorResponse
                 {
                     Success = false,
                     Message = "Невалідні дані"
@@ -64,7 +64,7 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new ActorResponse
+                return BadRequest(new MovieActorResponse
                 {
                     Success = false,
                     Message = "Невалідні дані"
