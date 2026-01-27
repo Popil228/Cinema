@@ -44,18 +44,6 @@
     font-weight: 600;
   }
 
-  .staticValue {
-    font-size: var(--font-md);
-    font-weight: 700;
-    color: #1e293b;
-    margin: 0;
-    padding: 10px 0;
-  }
-
-  .bottomSection {
-    margin-top: 3px;
-  }
-
   textarea {
     background: #e2e8f0;
     border: none;
@@ -66,6 +54,7 @@
     width: 100%;
     outline-color: #1e293b;
   }
+
   .editInput {
     background: #e2e8f0;
     border: 2px solid transparent;
@@ -123,83 +112,6 @@
   font-size: 14px;
   font-weight: 700;
   color: #1e293b;
-}
-
-.actorCard {
-  display: flex;
-  align-items: center;
-  background: #cbd5e1;
-  padding: 6px 15px 6px 6px;
-  border-radius: 40px;
-  gap: 12px;
-  position: relative;
-
-  .actorPhoto {
-    width: 45px;
-    height: 55px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #94a3b8;
-  }
-
-  .actorText {
-    display: flex;
-    flex-direction: column;
-
-    .actorName {
-      font-size: 14px;
-      font-weight: 700;
-      margin: 0;
-    }
-    .actorRole {
-      font-size: 12px;
-      margin: 0;
-    }
-  }
-
-  .actorEditInputs {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    input {
-      background: #fff;
-      border: 1px solid #94a3b8;
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 13px;
-      font-weight: 500;
-      width: 140px;
-      outline-color: #1e293b;
-    }
-  }
-
-  .editActorBtn,
-  .saveActorBtn {
-    background: #475569;
-    color: white;
-    border: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-
-    &:hover {
-      background: #1e293b;
-    }
-  }
-
-  .saveActorBtn {
-    background: #22c55e;
-    &:hover {
-      background: #16a34a;
-    }
-  }
 }
 
 .sessionsBtn {
