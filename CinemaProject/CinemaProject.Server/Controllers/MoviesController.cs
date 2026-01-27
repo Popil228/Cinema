@@ -70,7 +70,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<MovieResponse>> AddMovie([FromBody] MovieDto request)
+        public async Task<ActionResult<MovieResponse>> СreateMovie([FromBody] ShortMovieDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -81,7 +81,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var result = await _movieService.AddMovieAsync(request);
+            var result = await _movieService.CreateMovieAsync(request);
 
             if (!result.Success)
             {
@@ -114,7 +114,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<MovieResponse>> UpdateMovie([FromBody] MovieDto request)
+        public async Task<ActionResult<MovieResponse>> UpdateMovie([FromBody] ShortMovieDto request)
         {
             if (!ModelState.IsValid)
             {

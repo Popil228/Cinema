@@ -1,8 +1,10 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Genre;
 using CinemaProject.Server.DTOs.Movie;
+using CinemaProject.Server.DTOs.MovieActor;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Data;
 
 namespace CinemaProject.Server.Services
@@ -189,15 +191,16 @@ namespace CinemaProject.Server.Services
         }
 
         /// <summary>
-        /// Asynchronously adds a new movie to the database if it does not already exist.
+        /// Creates a new movie record asynchronously using the specified movie details.
         /// </summary>
-        /// <param name="request">An object containing the details of the movie to add, including main information and extra metadata. Cannot
-        /// be null.</param>
+        /// <remarks>If a movie with the same identifier already exists, the operation will not create a
+        /// duplicate and will return a response indicating failure.</remarks>
+        /// <param name="request">An object containing the details of the movie to create. Cannot be null.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a MovieResponse indicating
-        /// whether the movie was successfully added and providing a relevant message.</returns>
-        public async Task<MovieResponse> AddMovieAsync(MovieDto request)
+        /// whether the movie was created successfully and includes a message describing the outcome.</returns>
+        public async Task<MovieResponse> CreateMovieAsync(ShortMovieDto request)
         {
-            if (request.MainInfo == null || request.ExtraInfo == null)
+            if (request == null)
             {
                 return new MovieResponse
                 {
@@ -206,7 +209,7 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            if (await _context.Movies.AnyAsync(m => m.MovieId == request.MainInfo.Id))
+            if (await _context.Movies.AnyAsync(m => m.MovieId == request.Id))
             {
                 return new MovieResponse
                 {
@@ -215,36 +218,18 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            // Genres
-            var resultGenres = await CreateGenresToLinkAsync(request);
-            if (!resultGenres.Success)
-                return new MovieResponse { Success = false, Message = resultGenres.Message };
-
-            // Actors
-            var resultActors = await CreateActorsToLinkAsync(request);
-            if (!resultActors.Success)
-                return new MovieResponse { Success = false, Message = resultActors.Message };
-
-            // Movie
             var movie = new Models.Entitys.Movie
             {
-                MovieId = request.MainInfo.Id,
-                Title = request.MainInfo.Title,
-                ReleaseDate = ToUtc(request.MainInfo.ReleaseDate),
-                PosterUri = request.MainInfo.PosterPath,
-                Description = request.ExtraInfo?.Overview,
-                Duration = request.ExtraInfo?.Runtime > 0 ? (short)request.ExtraInfo.Runtime : (short)0,
-
-                MovieGenres = resultGenres.Genres.Select(g => new Models.Entitys.MovieGenre { Genre = g }).ToList(),
-                MovieActors = resultActors.Actors.Select(a =>
-                {
-                    var actorDto = request.ExtraInfo.Actors.First(ad => ad.Id == a.ActorId);
-                    return new Models.Entitys.MovieActor
-                    {
-                        Actor = a,
-                        Character = actorDto.Role
-                    };
-                }).ToList()
+                MovieId = request.Id,
+                Title = request.Title,
+                ReleaseDate = ToUtc(request.ReleaseDate),
+                PosterUri = string.IsNullOrWhiteSpace(request.PosterPath)
+                    ? null
+                    : request.PosterPath,
+                Description = request?.Overview,
+                Duration = request?.Runtime > 0 
+                    ? (short)request.Runtime 
+                    : (short)0
             };
 
             _context.Movies.Add(movie);
@@ -298,9 +283,9 @@ namespace CinemaProject.Server.Services
         /// movie to update is identified by the ID in <paramref name="request.MainInfo.Id"/>.</param>
         /// <returns>A <see cref="MovieResponse"/> indicating whether the update was successful. If the movie is not found or the
         /// update fails, the response contains an appropriate error message.</returns>
-        public async Task<MovieResponse> UpdateMovieAsync(MovieDto request)
+        public async Task<MovieResponse> UpdateMovieAsync(ShortMovieDto request)
         {
-            if (request.MainInfo == null || request.ExtraInfo == null)
+            if (request == null)
             {
                 return new MovieResponse
                 {
@@ -309,7 +294,7 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            if (!await _context.Movies.AsNoTracking().AnyAsync(m => m.MovieId == request.MainInfo.Id))
+            if (!await _context.Movies.AsNoTracking().AnyAsync(m => m.MovieId == request.Id))
             {
                 return new MovieResponse
                 {
@@ -321,44 +306,17 @@ namespace CinemaProject.Server.Services
             var movie = await _context.Movies
                 .Include(m => m.MovieGenres)
                 .Include(m => m.MovieActors)
-                .FirstOrDefaultAsync(m => m.MovieId == request.MainInfo.Id);
+                .FirstOrDefaultAsync(m => m.MovieId == request.Id);
 
-            movie.Title = request.MainInfo.Title;
-            movie.ReleaseDate = ToUtc(request.MainInfo.ReleaseDate);
-            movie.PosterUri = request.MainInfo.PosterPath;
-            movie.Description = request.ExtraInfo?.Overview;
-            movie.Duration = request.ExtraInfo?.Runtime > 0 ? (short)request.ExtraInfo.Runtime : (short)0;
-
-            // Genres
-            var resultGenres = await CreateGenresToLinkAsync(request);
-            if (!resultGenres.Success)
-                return new MovieResponse { Success = false, Message = resultGenres.Message };
-
-            // Actors
-            var resultActors = await CreateActorsToLinkAsync(request);
-            if (!resultActors.Success)
-                return new MovieResponse { Success = false, Message = resultActors.Message };
-
-            // Clear existing relations
-            movie.MovieGenres.Clear();
-            movie.MovieActors.Clear();
-
-            // Add updated relations
-            movie.MovieGenres = resultGenres.Genres
-                .Select(g => new Models.Entitys.MovieGenre { Genre = g })
-                .ToList();
-
-            movie.MovieActors = resultActors.Actors
-                .Select(a =>
-                {
-                    CastDto actorDto = request.ExtraInfo.Actors.First(ad => ad.Id == a.ActorId);
-                    return new Models.Entitys.MovieActor
-                    {
-                        Actor = a,
-                        Character = actorDto.Role
-                    };
-                })
-                .ToList();
+            movie.Title = request.Title;
+            movie.ReleaseDate = ToUtc(request.ReleaseDate);
+            movie.PosterUri = string.IsNullOrWhiteSpace(request.PosterPath)
+                    ? null
+                    : request.PosterPath;
+            movie.Description = request?.Overview;
+            movie.Duration = request?.Runtime > 0 
+                ? (short)request.Runtime 
+                : (short)0;
 
             await _context.SaveChangesAsync();
             return new MovieResponse
@@ -382,94 +340,5 @@ namespace CinemaProject.Server.Services
         private static DateTime ToUtc(DateTime date)
             => DateTime.SpecifyKind(date, DateTimeKind.Utc);
 
-        /// <summary>
-        /// Attempts to find and prepare the list of genres to associate with a movie based on the provided request
-        /// data.
-        /// </summary>
-        /// <param name="request">The movie data transfer object containing genre information to be linked. Must not be null and must contain
-        /// a valid list of genres in the ExtraInfo property.</param>
-        /// <returns>A tuple containing a success flag, an optional error message, and a list of genres to link. If all genres
-        /// are found, Success is set to true, Message is null, and Genres contains the matched genres. If any genre is
-        /// not found, Success is false, Message contains an error description, and Genres is null.</returns>
-        private async Task<(bool Success, string? Message, List<Models.Entitys.Genre> Genres)> CreateGenresToLinkAsync(MovieDto request)
-        {
-            var genreIds = request.ExtraInfo.Genres
-                .Select(g => g.Id)
-                .Distinct()
-                .ToList();
-
-            var genres = await _context.Genres
-                .Where(g => genreIds.Contains(g.GenreId))
-                .ToListAsync();
-
-            if (genres.Count != genreIds.Count)
-            {
-                var missingIds = genreIds
-                    .Except(genres.Select(g => g.GenreId));
-
-                return (
-                    false,
-                    $"Жанр(и) з Id {string.Join(", ", missingIds)} не знайдено в базі даних",
-                    null
-                );
-            }
-
-            return (true, null, genres);
-        }
-
-        /// <summary>
-        /// Creates or retrieves actor entities to be linked to the specified movie based on the provided actor
-        /// information.
-        /// </summary>
-        /// <remarks>Existing actors are matched by ID or full name. New actors are created if no match is
-        /// found. The returned list includes both existing and newly created actors.</remarks>
-        /// <param name="request">A data transfer object containing details about the movie and the actors to be linked.</param>
-        /// <returns>A tuple containing a value indicating whether the operation was successful, an optional message, and a list
-        /// of actor entities to be linked to the movie.</returns>
-        private async Task<(bool Success, string? Message, List<Models.Entitys.Actor> Actors)> CreateActorsToLinkAsync(MovieDto request)
-        {
-            if (request.ExtraInfo?.Actors == null || !request.ExtraInfo.Actors.Any())
-            {
-                return (true, null, new List<Models.Entitys.Actor>());
-            }
-
-            var actorDtos = request.ExtraInfo.Actors
-                .GroupBy(a => a.Id)
-                .Select(g => g.First())
-                .ToList();
-
-            var actorIds = actorDtos.Select(a => a.Id).ToList();
-
-            var existingActors = await _context.Actors
-                .Where(a => actorIds.Contains(a.ActorId))
-                .ToListAsync();
-
-            var actorsToLink = new List<Models.Entitys.Actor>();
-
-            foreach (var actorDto in actorDtos)
-            {
-                var actor = existingActors
-                    .FirstOrDefault(a => a.ActorId == actorDto.Id);
-
-                if (actor != null)
-                {
-                    actorsToLink.Add(actor);
-                    continue;
-                }
-
-                var newActor = new Models.Entitys.Actor
-                {
-                    ActorId = actorDto.Id,
-                    FullName = actorDto.Name,
-                    PhotoUri = actorDto.PhotoUri
-                };
-
-                _context.Actors.Add(newActor);
-                actorsToLink.Add(newActor);
-            }
-
-            return (true, null, actorsToLink);
-
-        }
     }
 }
