@@ -1,5 +1,5 @@
 ﻿using CinemaProject.Server.Data;
-using CinemaProject.Server.Models.Entitys;
+using CinemaProject.Server.DTOs.Genre;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +17,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Genre>>> GetAllGenre()
+        public async Task<ActionResult<IEnumerable<GenreDto>>> GetAllGenre()
         {
             var genres = await _context.Genres.ToListAsync();
             return Ok(genres);
