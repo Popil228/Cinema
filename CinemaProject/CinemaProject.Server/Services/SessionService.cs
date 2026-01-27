@@ -14,9 +14,11 @@ namespace CinemaProject.Server.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<SessionDto>> GetAllSessionsAsync()
+        public async Task<IEnumerable<SessionDto>> GetAllSessionsAsync(bool onlyUpcoming, int? movieId)
         {
             var sessions = await _context.Sessions
+                .Where(s => onlyUpcoming ? s.StartTime.Date >= DateTime.UtcNow.Date : true)
+                .Where(s => movieId == null ? true : s.MovieId == movieId)
                 .Include(s => s.Movie)
                     .ThenInclude(m => m.MovieGenres)
                         .ThenInclude(mg => mg.Genre)

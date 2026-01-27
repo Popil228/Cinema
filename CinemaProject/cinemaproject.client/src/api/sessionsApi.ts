@@ -32,11 +32,16 @@ export interface HallDto {
   name: string;
 }
 
-export const getAllSessions = async (): Promise<SessionDto[]> => {
-  const response = await fetch(`${API_BASE_URL}/Sessions`);
+export const getAllSessions = async (onlyUpcoming:boolean = false, movieId:number|null = null): Promise<SessionDto[]> => {
+  const fetchUri = "" + `${API_BASE_URL}/Sessions`
+  + `?onlyUpcoming=${onlyUpcoming}`
+  + ((movieId===null) ? "" : `&movieId=${movieId}`);
+
+  const response = await fetch(fetchUri, {method:"GET"});
   if (!response.ok) {
     throw new Error('Помилка завантаження сесій');
   }
+
   return response.json();
 };
 

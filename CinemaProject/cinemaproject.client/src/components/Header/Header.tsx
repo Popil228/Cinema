@@ -29,7 +29,7 @@ const Header: React.FC = () => {
                         </NavLink>
                     </nav>
                 </div>
-
+                
                 <div className={styles.auth}>
                     <Link to="/login" className={styles.loginBtn}>Увійти</Link>
                     <Link to="/register" className={styles.registerBtn}>Зареєструватися</Link>

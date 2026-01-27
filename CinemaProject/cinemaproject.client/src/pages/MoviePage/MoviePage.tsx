@@ -2,25 +2,21 @@ import React, { useRef, useEffect, useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ActorCard from '../../components/Movie/ActorCard/ActorCard';
 import styles from './MoviePage.module.scss';
-import type { Session, StrictMovieInfo } from '../../types/movie';
-// Імпортуємо утиліту колеги
-import { dateToDayMonthStrUA } from '../../utilities/dateToStringUA';
+import type { StrictMovieInfo } from '../../types/movie';
 import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext';
+import { getAllSessions, type SessionDto } from '../../api/sessionsApi';
+import SessionItemMoviePage from '../../components/SessionItemMoviePage/SessionItemMoviePage';
 
 const MoviePage: React.FC = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState<StrictMovieInfo>({} as StrictMovieInfo);
+  const [sessions, setSessions] = useState<SessionDto[]>([]);
+  
   const [movieError,setMovieError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
+  const [sessionsError,setSessionsError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
+
   const userMoviesContext = useContext(UserMoviesContext);
   const carouselRef = useRef<HTMLDivElement>(null); //for actors scroll
-
-  // Сеанси для цього фільму
-  const sessions: Session[] = [
-    { id: 1, title: 'Minecraft', hall: 'A', date: new Date(2026, 3, 3), time: '13:00', imageUrl: '/Minecraft.png' },
-    { id: 2, title: 'Minecraft', hall: 'A', date: new Date(2026, 3, 3), time: '16:00', imageUrl: '/Minecraft.png' },
-    { id: 3, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '14:30', imageUrl: '/Minecraft.png' },
-    { id: 4, title: 'Minecraft', hall: 'B', date: new Date(2026, 3, 3), time: '19:00', imageUrl: '/Minecraft.png' },
-  ];
   
   useEffect(() => {
     const el = carouselRef.current;
@@ -37,6 +33,7 @@ const MoviePage: React.FC = () => {
 
   useEffect(()=>{
     const fetchData = async() => {
+      //fetching movie data
       try{
         setMovie(await userMoviesContext.getMovieById(Number.parseInt(id||"0")));
         setMovieError({is:false, text:"цього не видно"});
@@ -48,10 +45,20 @@ const MoviePage: React.FC = () => {
         return;
       }
 
+      //fetching sessions data
+      try{
+        setSessions(await getAllSessions(true, Number.parseInt(id||"0")))
+        setSessionsError({is: false, text:"цього не видно"});
+      }
+      catch(err)
+      {
+        console.error(err);
+        setSessionsError({is: true, text:"Помилка завантаження сеансів"});
+        return;
+      }
 
     }
     fetchData();
-
   },[])
 
   if(movieError.is)
@@ -96,46 +103,27 @@ const MoviePage: React.FC = () => {
         </div>
       </section>
 
+      {sessionsError.is ? <h1 className={styles.movieTitle}>{sessionsError.text}</h1>
+      : /*TODO: use a dedicated sessionItem component */
       <section className={styles.scheduleSection}>
         <h2 className={styles.sectionTitle}>Розклад сеансів</h2>
         <div className={styles.sessionsWrapper}>
-
           <div className={styles.hallColumn}>
-            <h3>ЗАЛ А</h3>
-            {sessions.filter(s => s.hall === 'A').map(session => (
-              <div key={session.id} className={styles.clientSessionCard}>
-                <img src={session.imageUrl} alt={session.title} className={styles.miniPoster} />
-                <div className={styles.cardInfo}>
-                  <p className={styles.sessionTitle}>{session.title}</p>
-                  <div className={styles.sessionTags}>
-                    <span>ЗАЛ {session.hall}</span>
-                    <span>{dateToDayMonthStrUA(session.date)}</span>
-                    <span>{session.time}</span>
-                  </div>
-                </div>
-              </div>
+            <h3>ЗАЛ A</h3>
+            {sessions.filter(s => s.hallId==1).map(session => (
+              <SessionItemMoviePage key={session.id} session={session}/>
             ))}
           </div>
 
           <div className={styles.hallColumn}>
-            <h3>ЗАЛ В</h3>
-            {sessions.filter(s => s.hall === 'B').map(session => (
-              <div key={session.id} className={styles.clientSessionCard}>
-                <img src={session.imageUrl} alt={session.title} className={styles.miniPoster} />
-                <div className={styles.cardInfo}>
-                  <p className={styles.sessionTitle}>{session.title}</p>
-                  <div className={styles.sessionTags}>
-                    <span>ЗАЛ {session.hall}</span>
-                    <span>{dateToDayMonthStrUA(session.date)}</span>
-                    <span>{session.time}</span>
-                  </div>
-                </div>
-              </div>
+            <h3>ЗАЛ B</h3>
+            {sessions.filter(s => s.hallId == 1).map(session => (
+              <SessionItemMoviePage key={session.id} session={session}/>
             ))}
           </div>
-
         </div>
       </section>
+      }
     </div>
   );
 };

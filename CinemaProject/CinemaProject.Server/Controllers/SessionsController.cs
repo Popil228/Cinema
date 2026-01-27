@@ -16,9 +16,9 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SessionDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<SessionDto>>> GetAll([FromQuery]bool onlyUpcoming = false, [FromQuery]int? movieId = null)
         {
-            var sessions = await _sessionService.GetAllSessionsAsync();
+            var sessions = await _sessionService.GetAllSessionsAsync(onlyUpcoming, movieId);
             return Ok(sessions);
         }
 
