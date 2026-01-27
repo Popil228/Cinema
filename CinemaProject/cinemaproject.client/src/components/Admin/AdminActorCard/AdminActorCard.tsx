@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from '../AdminActorCard/AdminActorCard.module.scss'; // Використовуємо ті ж стилі або винесіть в окремі
+import styles from './AdminActorCard.module.scss';
 import type { Cast } from '../../../types/movie';
 
 interface ActorCardProps {

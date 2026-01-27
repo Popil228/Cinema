@@ -6,6 +6,7 @@ import type { MovieActor } from '../../../types/movieActor';
 import type { MovieGenre } from '../../../types/movieGenre';
 import type { Actor } from '../../../types/actor';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
+import AdminActorCard from '../../../components/Admin/AdminActorCard/AdminActorCard';
 
 import * as movieApi from '../../../api/moviesApi';
 import * as actorApi from '../../../api/actorApi';
@@ -19,8 +20,6 @@ const AddMoviePage: React.FC = () => {
   const movie = movieEditContext.movieInfo;
 
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
-  const [editingActorIndex, setEditingActorIndex] = useState<number | null>(null);
-  const [tempActorData, setTempActorData] = useState<Cast>({ name: '', photoUri: '', role: '' } as Cast);
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -88,17 +87,13 @@ const AddMoviePage: React.FC = () => {
     });
   };
 
-  // Робота з акторами
-  const handleStartEditActor = (index: number, actor: Cast) => {
-    setEditingActorIndex(index);
-    setTempActorData(actor);
-  };
-
-  const handleSaveActor = (index: number) => {
-    const updatedActors = [...movie.extraInfo.actors];
-    updatedActors[index] = tempActorData;
-    movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, actors: updatedActors } });
-    setEditingActorIndex(null);
+  const handleActorUpdate = (index: number, updatedActor: Cast) => {
+    const newActors = [...movie.extraInfo.actors];
+    newActors[index] = updatedActor;
+    movieEditContext.setMovieInfo({
+      ...movie,
+      extraInfo: { ...movie.extraInfo, actors: newActors }
+    });
   };
 
   // --- ПІДТВЕРДЖЕННЯ ТА ТРАНЗАКЦІЯ ---
@@ -225,27 +220,11 @@ const AddMoviePage: React.FC = () => {
           <label>Актори</label>
           <div className={styles.actorsGrid}>
             {movie.extraInfo.actors?.map((actor, index) => (
-              <div key={index} className={styles.actorCard}>
-                <img src={`https://image.tmdb.org/t/p/w500${actor.photoUri}`} alt={actor.name} className={styles.actorPhoto} />
-                <div className={styles.actorText}>
-                  {editingActorIndex === index ? (
-                    <div className={styles.actorEditInputs}>
-                      <input value={tempActorData.name} onChange={(e) => setTempActorData({...tempActorData, name: e.target.value})} />
-                      <input value={tempActorData.role} onChange={(e) => setTempActorData({...tempActorData, role: e.target.value})} />
-                    </div>
-                  ) : (
-                    <>
-                      <p className={styles.actorName}>{actor.name}</p>
-                      <p className={styles.actorRole}>{actor.role}</p>
-                    </>
-                  )}
-                </div>
-                {editingActorIndex === index ? (
-                  <button className={styles.saveActorBtn} onClick={() => handleSaveActor(index)}>✓</button>
-                ) : (
-                  <button className={styles.editActorBtn} onClick={() => handleStartEditActor(index, actor)}>✎</button>
-                )}
-              </div>
+              <AdminActorCard 
+                key={actor.id} 
+                actor={actor} 
+                onSave={(updated) => handleActorUpdate(index, updated)} 
+              />
             ))}
           </div>
         </div>
