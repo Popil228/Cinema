@@ -1,4 +1,4 @@
-import type { MovieGenre } from "../types/moviegenre";
+import type { MovieGenre } from "../types/movieGenre";
 
 const API_BASE_URL = '/api';
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../EditMoviePage/EditMoviePage.module.scss';
 import type { Cast, StrictMovieInfo, Genre, MovieSummary } from '../../../types/movie';
 import type { MovieActor } from '../../../types/movieActor';
-import type { MovieGenre } from '../../../types/moviegenre';
+import type { MovieGenre } from '../../../types/movieGenre';
 import type { Actor } from '../../../types/actor';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
 
@@ -51,6 +51,7 @@ const AddMoviePage: React.FC = () => {
     }
   }, [movieEditContext.movieInfo]);
 
+  // Хендлери змін основної інфи
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     movieEditContext.setMovieInfo({ ...movie, mainInfo: { ...movie.mainInfo, title: e.target.value } });
   };
@@ -59,6 +60,7 @@ const AddMoviePage: React.FC = () => {
     movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, runtime: Number(e.target.value) } });
   };
 
+  // Робота з жанрами
   const handleAddGenre = (genreIdStr: string) => {
     const idToFind = Number(genreIdStr);
     const selectedGenre = availableGenres.find(g => g.id === idToFind);
@@ -70,10 +72,7 @@ const AddMoviePage: React.FC = () => {
       if (!alreadyExists) {
         movieEditContext.setMovieInfo({
           ...movie,
-          extraInfo: {
-            ...movie.extraInfo,
-            genres: [...currentGenres, selectedGenre]
-          }
+          extraInfo: { ...movie.extraInfo, genres: [...currentGenres, selectedGenre] }
         });
       }
     }
@@ -89,6 +88,7 @@ const AddMoviePage: React.FC = () => {
     });
   };
 
+  // Робота з акторами
   const handleStartEditActor = (index: number, actor: Cast) => {
     setEditingActorIndex(index);
     setTempActorData(actor);
@@ -119,6 +119,7 @@ const AddMoviePage: React.FC = () => {
       await movieApi.createMovie(movieSummary);
       isMovieCreated = true;
 
+      // Movie + Actor
       if (movie.extraInfo.actors.length > 0) {
         const actorsData: Actor[] = movie.extraInfo.actors.map(a => ({
           id: a.id,
@@ -126,6 +127,7 @@ const AddMoviePage: React.FC = () => {
           photoUri: a.photoUri
         }));
         await actorApi.createActor(actorsData);
+        await actorApi.updateActor(actorsData);
 
         const movieActors: MovieActor[] = movie.extraInfo.actors.map(a => ({
           movieId: movieId,
@@ -135,6 +137,7 @@ const AddMoviePage: React.FC = () => {
         await movieActorApi.createMovieActor(movieActors);
       }
 
+      // Movie + Genre
       if (movie.extraInfo.genres.length > 0) {
         const movieGenres: MovieGenre[] = movie.extraInfo.genres.map(g => ({
           movieId: movieId,
