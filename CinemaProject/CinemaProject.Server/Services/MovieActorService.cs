@@ -77,7 +77,7 @@ namespace CinemaProject.Server.Services
                 {
                     MovieId = r.movieId,
                     ActorId = r.actorId,
-                    Character = r.Role
+                    Character = r.Character
                 })
                 .ToList();
 
@@ -167,7 +167,7 @@ namespace CinemaProject.Server.Services
                 var existing = currentMovieActors.FirstOrDefault(ma => ma.ActorId == dto.actorId);
                 if (existing != null)
                 {
-                    existing.Character = dto.Role;
+                    existing.Character = dto.Character;
                 }
                 else
                 {
@@ -175,7 +175,7 @@ namespace CinemaProject.Server.Services
                     {
                         MovieId = movieId,
                         ActorId = dto.actorId,
-                        Character = dto.Role
+                        Character = dto.Character
                     });
                 }
             }
