@@ -1,9 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './EditMoviePage.module.scss';
-import type { Cast, StrictMovieInfo, Genre } from '../../../types/movie';
+import type { Cast, StrictMovieInfo, Genre, MovieSummary } from '../../../types/movie';
+import type { MovieActor } from '../../../types/movieActor';
+import type { MovieGenre } from '../../../types/movieGenre';
+import type { Actor } from '../../../types/actor';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
+import AdminActorCard from '../../../components/Admin/AdminActorCard/AdminActorCard';
+
 import * as movieApi from '../../../api/moviesApi';
+import * as actorApi from '../../../api/actorApi';
+import * as movieActorApi from '../../../api/movieActorApi';
+import * as movieGenreApi from '../../../api/movieGenreApi';
+import * as genresApi from '../../../api/genresApi';
+import * as tmdbApi from '../../../api/tmdbApi';
 
 const EditMoviePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,22 +21,33 @@ const EditMoviePage: React.FC = () => {
   const movieEditContext = useContext(MoveEditContext);
   const movie = movieEditContext.movieInfo;
 
-  // Список доступних жанрів (замінити на завантаження з API)
-  const [availableGenres] = useState<Genre[]>([
-    { id: 28, name: 'Бойовик' },
-    { id: 12, name: 'Пригоди' },
-    { id: 16, name: 'Мультфільм' },
-    { id: 35, name: 'Комедія' },
-    { id: 80, name: 'Кримінал' },
-    { id: 18, name: 'Драма' },
-    { id: 14, name: 'Фентезі' },
-    { id: 27, name: 'Жахи' },
-    { id: 878, name: 'Фантастика' },
-  ]);
+  const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
 
-  const [editingActorIndex, setEditingActorIndex] = useState<number | null>(null);
-  const [tempActorData, setTempActorData] = useState<Cast>({ name: '', photoUri: '', role: '' } as Cast);
+  const [initialActors, setInitialActors] = useState<Cast[]>([]);
+  const [tmdbCast, setTmdbCast] = useState<Cast[]>([]); // Всі актори з TMDB
+  const [showActorPicker, setShowActorPicker] = useState(false);
 
+  // Завантаження жанрів
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const genres = await genresApi.getAllGenres();
+        setAvailableGenres(genres.map((g: any) => ({ id: Number(g.id || g.genreId), name: g.name })));
+
+        // Завантажуємо акторів саме для цього фільму з TMDB
+        if (movie.mainInfo.id) {
+          const castData = await tmdbApi.getCastInfoByIdTMDB(movie.mainInfo.id);
+          // Припускаємо, що API повертає масив Cast безпосередньо або через поле
+          setTmdbCast(castData as any); 
+        }
+      } catch (err) {
+        console.error("Помилка завантаження додаткових даних:", err);
+      }
+    };
+    fetchData();
+  }, [movie.mainInfo.id])
+
+  // Завантаження даних фільму
   useEffect(() => {
     const loadMovie = async () => {
       if (!movieEditContext.isLoaded && id) {
@@ -35,6 +56,7 @@ const EditMoviePage: React.FC = () => {
           if (stored_text) {
             const parsedObj = JSON.parse(stored_text) as StrictMovieInfo;
             movieEditContext.setMovieInfo({ ...parsedObj });
+            setInitialActors([...parsedObj.extraInfo.actors]);
             movieEditContext.setIsLoaded(true);
           }
         } catch (err) {
@@ -51,65 +73,122 @@ const EditMoviePage: React.FC = () => {
     }
   }, [movieEditContext.movieInfo, movieEditContext.isLoaded]);
 
+  // Хендлери для фільму
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    movieEditContext.setMovieInfo({
-      ...movie,
-      mainInfo: { ...movie.mainInfo, title: e.target.value }
-    });
+    movieEditContext.setMovieInfo({ ...movie, mainInfo: { ...movie.mainInfo, title: e.target.value } });
   };
 
   const handleRuntimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    movieEditContext.setMovieInfo({
-      ...movie,
-      extraInfo: { ...movie.extraInfo, runtime: Number(e.target.value) }
-    });
+    movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, runtime: Number(e.target.value) } });
   };
 
   const handleAddGenre = (genreId: string) => {
-    const selectedGenre = availableGenres.find(g => g.id === Number(genreId));
-    if (selectedGenre && !movie.extraInfo.genres.some(g => g.id === selectedGenre.id)) {
-      movieEditContext.setMovieInfo({
-        ...movie,
-        extraInfo: { ...movie.extraInfo, genres: [...movie.extraInfo.genres, selectedGenre] }
-      });
+    const idToFind = Number(genreId);
+    const selectedGenre = availableGenres.find(g => g.id === idToFind);
+    if (selectedGenre) {
+      const currentGenres = movie.extraInfo.genres || [];
+      if (!currentGenres.some(g => Number(g.id || (g as any).genreId) === selectedGenre.id)) {
+        movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, genres: [...currentGenres, selectedGenre] } });
+      }
     }
   };
 
   const handleRemoveGenre = (id: number) => {
+    movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, genres: movie.extraInfo.genres.filter(g => Number(g.id || (g as any).genreId) !== id) } });
+  };
+
+  const handleAddActor = (selectedActor: Cast) => {
+    const currentActors = movie.extraInfo.actors || [];
+    if (!currentActors.some(a => a.id === selectedActor.id)) {
+      movieEditContext.setMovieInfo({
+        ...movie,
+        extraInfo: { ...movie.extraInfo, actors: [...currentActors, selectedActor] }
+      });
+    }
+  };
+
+  const handleActorUpdate = (index: number, updatedActor: Cast) => {
+    const newActors = [...movie.extraInfo.actors];
+    newActors[index] = updatedActor;
+    movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, actors: newActors } });
+  };
+
+  const handleRemoveActor = (actorId: number) => {
     movieEditContext.setMovieInfo({
       ...movie,
       extraInfo: {
         ...movie.extraInfo,
-        genres: movie.extraInfo.genres.filter(g => g.id !== id)
+        actors: movie.extraInfo.actors.filter(a => a.id !== actorId)
       }
     });
   };
 
-  // Актори
-  const handleStartEditActor = (index: number, actor: Cast) => {
-    setEditingActorIndex(index);
-    setTempActorData(actor);
-  };
+  const filteredTmdbCast = tmdbCast.filter(
+    tmdbA => !movie.extraInfo.actors.some(ma => ma.id === tmdbA.id)
+  );
 
-  const handleSaveActor = (index: number) => {
-    const updatedActors = [...movie.extraInfo.actors];
-    updatedActors[index] = tempActorData;
-    movieEditContext.setMovieInfo({
-      ...movie,
-      extraInfo: { ...movie.extraInfo, actors: updatedActors }
-    });
-    setEditingActorIndex(null);
-  };
-
+  // --- ГОЛОВНА ЛОГІКА ОНОВЛЕННЯ ---
   const handleConfirm = async () => {
+    const movieId = Number(id);
+    const currentActors = movie.extraInfo.actors;
+
     try {
-      await movieApi.updateMovie(movie);
+      // Оновлення фільму
+      const movieSummary: MovieSummary = {
+        id: movieId,
+        title: movie.mainInfo.title,
+        releaseDate: movie.mainInfo.releaseDate,
+        posterPath: movie.mainInfo.posterPath,
+        runtime: movie.extraInfo.runtime,
+        overview: movie.extraInfo.overview
+      };
+      await movieApi.updateMovie(movieSummary);
+
+      // Оновлення зв'язків Movie + Actor
+      const actorsToDelete = initialActors.filter(
+        ia => !currentActors.some(ca => ca.id === ia.id)
+      );
+      for (const actor of actorsToDelete) {
+        await movieActorApi.deleteMovieActor({
+          movieId: movieId,
+          actorId: actor.id,
+          character: actor.role || "Не вказано"
+        });
+      }
+
+      if (currentActors.length > 0) {
+        const actorsData: Actor[] = currentActors.map(a => ({
+          id: a.id,
+          name: a.name,
+          photoUri: a.photoUri
+        }));
+        await actorApi.createActor(actorsData);
+        await actorApi.updateActor(actorsData);
+
+        const movieActorLinks: MovieActor[] = currentActors.map(a => ({
+          movieId: movieId,
+          actorId: a.id,
+          character: a.role || "Не вказано"
+        }));
+        await movieActorApi.updateMovieActor(movieActorLinks);
+      }
+
+      // Оновлення зв'язків Movie + Genre
+      if (movie.extraInfo.genres.length > 0) {
+        const movieGenres: MovieGenre[] = movie.extraInfo.genres.map(g => ({
+          movieId: movieId,
+          genreId: Number(g.id || (g as any).genreId)
+        }));
+        await movieGenreApi.updateMovieGenre(movieGenres);
+      }
+
       localStorage.removeItem("movie_edit");
       alert("Дані фільму успішно оновлено!");
       navigate('/admin/movies');
+
     } catch (err) {
-      console.error(err);
-      alert("Помилка при оновленні фільму");
+      console.error("Помилка при оновленні фільму:", err);
+      alert(`Помилка: ${err instanceof Error ? err.message : "Невідома помилка"}`);
     }
   };
 
@@ -122,6 +201,10 @@ const EditMoviePage: React.FC = () => {
     return <h2 className={styles.noMovieInfoMsg}>Завантаження даних...</h2>;
   }
 
+  const filteredGenresForSelect = availableGenres.filter(ag => 
+    !movie.extraInfo.genres.some(mg => Number(mg.id || (mg as any).genreId) === ag.id)
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.topSection}>
@@ -132,30 +215,29 @@ const EditMoviePage: React.FC = () => {
         <div className={styles.mainInfo}>
           <div className={styles.fieldGroup}>
             <label>Назва (Редагування)</label>
-            <input 
-              className={styles.editInput} 
-              value={movie.mainInfo.title} 
-              onChange={handleTitleChange} 
-            />
+            <input className={styles.editInput} value={movie.mainInfo.title} onChange={handleTitleChange} />
           </div>
 
           <div className={styles.fieldGroup}>
             <label>Жанри</label>
             <div className={styles.tagCloud}>
-              {movie.extraInfo.genres.map(genre => (
-                <span key={genre.id} className={styles.tag}>
-                  {genre.name}
-                  <button type="button" onClick={() => handleRemoveGenre(genre.id)} className={styles.removeTagBtn}>×</button>
-                </span>
-              ))}
+              {movie.extraInfo.genres.map(genre => {
+                const gId = Number(genre.id || (genre as any).genreId);
+                return (
+                  <span key={gId} className={styles.tag}>
+                    {genre.name}
+                    <button type="button" onClick={() => handleRemoveGenre(gId)} className={styles.removeTagBtn}>×</button>
+                  </span>
+                );
+              })}
               <select 
                 className={styles.genreSelect} 
-                onChange={(e) => handleAddGenre(e.target.value)}
+                onChange={(e) => { handleAddGenre(e.target.value); e.target.value = ""; }}
                 value=""
               >
                 <option value="" disabled hidden>+ Додати</option>
-                {availableGenres.map(g => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
+                {filteredGenresForSelect.map(g => (
+                  <option key={g.id} value={g.id.toString()}>{g.name}</option>
                 ))}
               </select>
             </div>
@@ -163,12 +245,7 @@ const EditMoviePage: React.FC = () => {
 
           <div className={styles.fieldGroup}>
             <label>Тривалість (хв)</label>
-            <input 
-              type="number"
-              className={styles.editInput} 
-              value={movie.extraInfo.runtime} 
-              onChange={handleRuntimeChange} 
-            />
+            <input type="number" className={styles.editInput} value={movie.extraInfo.runtime} onChange={handleRuntimeChange} />
           </div>
 
           <button className={styles.sessionsBtn}>Редагувати Сеанси ✎</button>
@@ -177,36 +254,39 @@ const EditMoviePage: React.FC = () => {
 
       <div className={styles.bottomSection}>
         <div className={styles.fieldGroup}>
-          <label>Актори</label>
+          <div className={styles.actorsHeader}>
+            <label>Актори</label>
+            <button 
+              className={styles.addActorMainBtn} 
+              onClick={() => setShowActorPicker(!showActorPicker)}
+            >
+              {showActorPicker ? "Закрити список" : "+ Додати актора"}
+            </button>
+          </div>
+
+          {showActorPicker && (
+            <div className={styles.actorPicker}>
+              {filteredTmdbCast.length > 0 ? (
+                filteredTmdbCast.map(actor => (
+                  <div key={actor.id} className={styles.pickerItem} onClick={() => handleAddActor(actor)}>
+                    <img src={`https://image.tmdb.org/t/p/w200${actor.photoUri}`} alt="" />
+                    <span>{actor.name}</span>
+                  </div>
+                ))
+              ) : (
+                <p>Усі актори з TMDB вже додані</p>
+              )}
+            </div>
+          )}
+
           <div className={styles.actorsGrid}>
             {movie.extraInfo.actors?.map((actor, index) => (
-              <div key={index} className={styles.actorCard}>
-                <img src={`https://image.tmdb.org/t/p/w500${actor.photoUri}`} alt={actor.name} className={styles.actorPhoto} />
-                <div className={styles.actorText}>
-                  {editingActorIndex === index ? (
-                    <div className={styles.actorEditInputs}>
-                      <input 
-                        value={tempActorData.name} 
-                        onChange={(e) => setTempActorData({...tempActorData, name: e.target.value})}
-                      />
-                      <input 
-                        value={tempActorData.role} 
-                        onChange={(e) => setTempActorData({...tempActorData, role: e.target.value})}
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <p className={styles.actorName}>{actor.name}</p>
-                        <p className={styles.actorRole}>{actor.role}</p>
-                    </>
-                  )}
-                </div>
-                {editingActorIndex === index ? (
-                  <button className={styles.saveActorBtn} onClick={() => handleSaveActor(index)}>✓</button>
-                ) : (
-                  <button className={styles.editActorBtn} onClick={() => handleStartEditActor(index, actor)}>✎</button>
-                )}
-              </div>
+              <AdminActorCard 
+                key={actor.id} 
+                actor={actor} 
+                onSave={(updated) => handleActorUpdate(index, updated)}
+                onRemove={() => handleRemoveActor(actor.id)}
+              />
             ))}
           </div>
         </div>
@@ -215,10 +295,7 @@ const EditMoviePage: React.FC = () => {
           <label>Опис</label>
           <textarea 
             value={movie.extraInfo.overview} 
-            onChange={(e) => movieEditContext.setMovieInfo({
-              ...movie, 
-              extraInfo: { ...movie.extraInfo, overview: e.target.value }
-            })}
+            onChange={(e) => movieEditContext.setMovieInfo({...movie, extraInfo: { ...movie.extraInfo, overview: e.target.value }})}
             rows={6}
           />
         </div>

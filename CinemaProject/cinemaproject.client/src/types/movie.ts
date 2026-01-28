@@ -17,6 +17,15 @@ export interface Movie {
   description?: string;
 }
 
+export interface MovieSummary {
+  id: number;
+  title: string;
+  releaseDate: string;
+  posterPath:string;
+  runtime: number;
+  overview: string;
+}
+
 export interface Genre{
   id: number;
   name: string;
