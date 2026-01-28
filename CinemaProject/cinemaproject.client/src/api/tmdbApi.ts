@@ -28,4 +28,16 @@ const getMovieInfoByIdTMDB = async (movieId:number) => {
     return body as MovieInfo;
 }
 
-export {searchMovies, getMovieInfoByIdTMDB}
+const getCastInfoByIdTMDB = async (movieId:number) => {
+    const response = await fetch(`${API_BASE_URL}/Tmdb/actors/${movieId}`, {method:"GET"})
+
+    const body = await response.json();
+
+    if (!response.ok) {
+      throw new Error(body.error ?? 'Помилка сервера');
+    }
+
+    return body as MovieInfo;
+}
+
+export {searchMovies, getMovieInfoByIdTMDB, getCastInfoByIdTMDB};

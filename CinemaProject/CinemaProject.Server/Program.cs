@@ -58,6 +58,7 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IActorService, ActorService>();
 builder.Services.AddScoped<ITmdbService, TmdbService>();
 builder.Services.AddScoped<IMovieActorService, MovieActorService>();
+builder.Services.AddScoped<IMovieGenreService, MovieGenreService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 
 // Swagger / OpenAPI
