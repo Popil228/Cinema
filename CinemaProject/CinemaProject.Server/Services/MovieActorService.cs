@@ -1,6 +1,5 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.MovieActor;
-using CinemaProject.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaProject.Server.Services
@@ -159,7 +158,7 @@ namespace CinemaProject.Server.Services
                 .ToListAsync();
 
             var toRemove = currentMovieActors
-                .Where(ma => !actorIds.Contains(ma.ActorId))
+                .Where(ma => !actorIds.Contains(ma.ActorId)) 
                 .ToList();
             _context.MovieActors.RemoveRange(toRemove);
 

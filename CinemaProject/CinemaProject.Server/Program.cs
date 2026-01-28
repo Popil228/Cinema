@@ -60,6 +60,7 @@ builder.Services.AddScoped<ITmdbService, TmdbService>();
 builder.Services.AddScoped<IMovieActorService, MovieActorService>();
 builder.Services.AddScoped<IMovieGenreService, MovieGenreService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IDiscountService, DiscountService>();
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
