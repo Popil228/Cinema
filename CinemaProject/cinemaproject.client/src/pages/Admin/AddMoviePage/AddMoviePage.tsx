@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../EditMoviePage/EditMoviePage.module.scss';
-import type { Cast, StrictMovieInfo, Genre, MovieSummary } from '../../../types/movie';
+import type { Cast, Genre, MovieSummary } from '../../../types/movie';
 import type { MovieActor } from '../../../types/movieActor';
 import type { MovieGenre } from '../../../types/movieGenre';
 import type { Actor } from '../../../types/actor';
@@ -25,11 +25,7 @@ const AddMoviePage: React.FC = () => {
     const fetchGenres = async () => {
       try {
         const genres = await genresApi.getAllGenres();
-        const normalizedGenres = genres.map((g: any) => ({
-          id: Number(g.id || g.genreId),
-          name: g.name
-        }));
-        setAvailableGenres(normalizedGenres);
+        setAvailableGenres(genres);
       } catch (err) {
         console.error("Помилка завантаження жанрів:", err);
       }
@@ -39,10 +35,9 @@ const AddMoviePage: React.FC = () => {
 
   useEffect(() => {
     if (!movieEditContext.isLoaded) {
-      const stored_text = localStorage.getItem("movie_add_temp");
-      if (stored_text) {
-        const parsedObj = JSON.parse(stored_text) as StrictMovieInfo;
-        movieEditContext.setMovieInfo({ ...parsedObj });
+      const stored = localStorage.getItem("movie_add_temp");
+      if (stored) {
+        movieEditContext.setMovieInfo(JSON.parse(stored));
         movieEditContext.setIsLoaded(true);
       }
     } else {
@@ -59,34 +54,26 @@ const AddMoviePage: React.FC = () => {
   };
 
   const handleAddGenre = (genreIdStr: string) => {
-    const idToFind = Number(genreIdStr);
-    const selectedGenre = availableGenres.find(g => g.id === idToFind);
-
-    if (selectedGenre) {
-      const currentGenres = movie.extraInfo.genres || [];
-      if (!currentGenres.some(mg => Number(mg.id || (mg as any).genreId) === selectedGenre.id)) {
-        movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, genres: [...currentGenres, selectedGenre] } });
-      }
+    const genre = availableGenres.find(g => g.id === Number(genreIdStr));
+    if (genre && !movie.extraInfo.genres.some(mg => mg.id === genre.id)) {
+      movieEditContext.setMovieInfo({
+        ...movie,
+        extraInfo: { ...movie.extraInfo, genres: [...movie.extraInfo.genres, genre] }
+      });
     }
   };
 
   const handleRemoveGenre = (id: number) => {
     movieEditContext.setMovieInfo({
       ...movie,
-      extraInfo: {
-        ...movie.extraInfo,
-        genres: movie.extraInfo.genres.filter(g => Number(g.id || (g as any).genreId) !== id)
-      }
+      extraInfo: { ...movie.extraInfo, genres: movie.extraInfo.genres.filter(g => g.id !== id) }
     });
   };
 
   const handleRemoveActor = (actorId: number) => {
     movieEditContext.setMovieInfo({
       ...movie,
-      extraInfo: {
-        ...movie.extraInfo,
-        actors: movie.extraInfo.actors.filter(a => a.id !== actorId)
-      }
+      extraInfo: { ...movie.extraInfo, actors: movie.extraInfo.actors.filter(a => a.id !== actorId) }
     });
   };
 
@@ -110,7 +97,6 @@ const AddMoviePage: React.FC = () => {
         runtime: movie.extraInfo.runtime,
         overview: movie.extraInfo.overview
       };
-
       await movieApi.createMovie(movieSummary);
       isMovieCreated = true;
 
@@ -125,7 +111,7 @@ const AddMoviePage: React.FC = () => {
         await actorApi.updateActor(actorsData);
 
         const movieActors: MovieActor[] = movie.extraInfo.actors.map(a => ({
-          movieId: movieId,
+          movieId,
           actorId: a.id,
           character: a.role || "Не вказано"
         }));
@@ -135,8 +121,8 @@ const AddMoviePage: React.FC = () => {
       // Movie + Genre
       if (movie.extraInfo.genres.length > 0) {
         const movieGenres: MovieGenre[] = movie.extraInfo.genres.map(g => ({
-          movieId: movieId,
-          genreId: Number(g.id || (g as any).genreId)
+          movieId,
+          genreId: g.id
         }));
         await movieGenreApi.createMovieGenre(movieGenres);
       }
@@ -160,9 +146,9 @@ const AddMoviePage: React.FC = () => {
   };
 
   if (!movieEditContext.isLoaded) return <h2 className={styles.noMovieInfoMsg}>Завантаження...</h2>;
-
-  const filteredGenresForSelect = availableGenres.filter(ag => 
-    !movie.extraInfo.genres.some(mg => Number(mg.id || (mg as any).genreId) === ag.id)
+  
+  const filteredGenres = availableGenres.filter(ag => 
+    !movie.extraInfo.genres.some(mg => mg.id === ag.id)
   );
 
   return (
@@ -171,7 +157,6 @@ const AddMoviePage: React.FC = () => {
         <div className={styles.posterBlock}>
           <img src={`https://image.tmdb.org/t/p/w500${movie.mainInfo.posterPath}`} alt="Poster" />
         </div>
-
         <div className={styles.mainInfo}>
           <div className={styles.fieldGroup}>
             <label>Назва фільму</label>
@@ -181,25 +166,15 @@ const AddMoviePage: React.FC = () => {
           <div className={styles.fieldGroup}>
             <label>Жанри</label>
             <div className={styles.tagCloud}>
-              {movie.extraInfo.genres.map(genre => {
-                const genreId = Number(genre.id || (genre as any).genreId);
-                return (
-                  <span key={genreId} className={styles.tag}>
-                    {genre.name}
-                    <button type="button" onClick={() => handleRemoveGenre(genreId)} className={styles.removeTagBtn}>×</button>
-                  </span>
-                );
-              })}
-              <select 
-                className={styles.genreSelect} 
-                onChange={(e) => {
-                  handleAddGenre(e.target.value);
-                  e.target.value = "";
-                }}
-                value=""
-              >
+              {movie.extraInfo.genres.map(genre => (
+                <span key={genre.id} className={styles.tag}>
+                  {genre.name}
+                  <button type="button" onClick={() => handleRemoveGenre(genre.id)} className={styles.removeTagBtn}>×</button>
+                </span>
+              ))}
+              <select className={styles.genreSelect} onChange={(e) => { handleAddGenre(e.target.value); e.target.value = ""; }} value="">
                 <option value="" disabled hidden>+ Додати жанр</option>
-                {filteredGenresForSelect.map(g => (
+                {filteredGenres.map(g => (
                   <option key={g.id} value={g.id.toString()}>{g.name}</option>
                 ))}
               </select>
