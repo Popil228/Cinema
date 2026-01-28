@@ -4,6 +4,6 @@
     {
         public int movieId { get; set; }
         public int actorId { get; set; }
-        public string Character { get; set; }
+        public string Role { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.MovieActor;
-using CinemaProject.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaProject.Server.Services
@@ -78,7 +77,7 @@ namespace CinemaProject.Server.Services
                 {
                     MovieId = r.movieId,
                     ActorId = r.actorId,
-                    Character = r.Character
+                    Character = r.Role
                 })
                 .ToList();
 
@@ -159,7 +158,7 @@ namespace CinemaProject.Server.Services
                 .ToListAsync();
 
             var toRemove = currentMovieActors
-                .Where(ma => !actorIds.Contains(ma.ActorId))
+                .Where(ma => !actorIds.Contains(ma.ActorId)) 
                 .ToList();
             _context.MovieActors.RemoveRange(toRemove);
 
@@ -168,7 +167,7 @@ namespace CinemaProject.Server.Services
                 var existing = currentMovieActors.FirstOrDefault(ma => ma.ActorId == dto.actorId);
                 if (existing != null)
                 {
-                    existing.Character = dto.Character;
+                    existing.Character = dto.Role;
                 }
                 else
                 {
@@ -176,7 +175,7 @@ namespace CinemaProject.Server.Services
                     {
                         MovieId = movieId,
                         ActorId = dto.actorId,
-                        Character = dto.Character
+                        Character = dto.Role
                     });
                 }
             }
