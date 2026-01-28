@@ -21,81 +21,35 @@ namespace CinemaProject.Server.Services
         /// <summary>
         /// Asynchronously retrieves all movies, including their genres and actors, as data transfer objects.
         /// </summary>
+        /// /// <param name="onlyShowingNow">If true - will return only movies with sessions set in future,
+        /// otherwise all movies in db</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="MovieDto"/>
         /// objects, each representing a movie with its associated genres and actors. The list is empty if no movies are
         /// found.</returns>
-        public async Task<List<MovieDto>> GetAllMoviesAsync()
+        public async Task<List<MovieDto>> GetAllMoviesAsync(bool onlyShowingNow)
         {
-            var movies = await _context.Movies
-                .Include(m => m.MovieGenres)
-                    .ThenInclude(mg => mg.Genre)
-                .Include(m => m.MovieActors)
-                    .ThenInclude(ma => ma.Actor)
-                .ToListAsync();
-
-            var result = movies.Select(m => new MovieDto
+            List<int>? rollingMoviesId = null;
+            if (onlyShowingNow)
             {
-                MainInfo = new MovieMainInfoDto
+                rollingMoviesId = await _context.Sessions
+                    .Where(s => s.StartTime.Date >= DateTime.UtcNow.Date)
+                    .Select(s => s.MovieId)
+                    .Distinct()
+                    .ToListAsync();
+
+                if (!rollingMoviesId.Any())
                 {
-                    Id = m.MovieId,
-                    Title = m.Title,
-                    ReleaseDate = m.ReleaseDate,
-                    PosterPath = m.PosterUri
-                },
-                ExtraInfo = new MovieExtraInfoDto
-                {
-                    Overview = m.Description,
-                    Runtime = m.Duration,
-                    Genres = m.MovieGenres.Select(mg => new GenreDto
-                    {
-                        Id = mg.Genre.GenreId,
-                        Name = mg.Genre.Name
-                    }).ToList(),
-                    Actors = m.MovieActors.Select(ma => new CastDto
-                    {
-                        Id = ma.Actor.ActorId,
-                        Name = ma.Actor.FullName,
-                        Role = ma.Character,
-                        PhotoUri = ma.Actor.PhotoUri
-                    }).ToList()
+                    throw new Exception("В БД немає майбутніх сеансів");
                 }
-            }).ToList();
-
-            if (!result.Any())
-            {
-                throw new Exception("Фільмів в БД не знайдено");
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves all movies that have sessions assigned in the future, including their genres and actors, as data transfer objects.
-        /// </summary>
-        /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="MovieDto"/>
-        /// objects, each representing a movie with its associated genres and actors. The list is empty if no movies are
-        /// found.</returns>
-        public async Task<List<MovieDto>> GetNowShowingMoviesAsync()
-        {
-            var rollingMoviesId = await _context.Sessions
-                .Where(s => s.StartTime.Date >= DateTime.UtcNow.Date)
-                .Select(s => s.MovieId)
-                .Distinct()
-                .ToListAsync();
-            
-            if(!rollingMoviesId.Any())
-            {
-                throw new Exception("В БД немає майбутніх сеансів");
             }
 
             var movies = await _context.Movies
-                .Where(m=>rollingMoviesId.Contains(m.MovieId))
+                .Where(m => onlyShowingNow ? rollingMoviesId.Contains(m.MovieId) : true)
                 .Include(m => m.MovieGenres)
                     .ThenInclude(mg => mg.Genre)
                 .Include(m => m.MovieActors)
                     .ThenInclude(ma => ma.Actor)
                 .ToListAsync();
-            
 
             var result = movies.Select(m => new MovieDto
             {

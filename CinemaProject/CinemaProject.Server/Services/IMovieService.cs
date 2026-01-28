@@ -5,8 +5,7 @@ namespace CinemaProject.Server.Services
 {
     public interface IMovieService
     {
-        Task<List<MovieDto>> GetAllMoviesAsync();
-        Task<List<MovieDto>> GetNowShowingMoviesAsync();
+        Task<List<MovieDto>> GetAllMoviesAsync(bool onlyShowingNow = false);
         Task<MovieDto> GetMovieByIdAsync(int id);
         Task<MovieResponse> CreateMovieAsync(ShortMovieDto request);
         Task<MovieResponse> DeleteMovieAsync(int Id);

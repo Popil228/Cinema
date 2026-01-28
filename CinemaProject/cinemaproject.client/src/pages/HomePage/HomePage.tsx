@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import SessionItem from '../../components/SessionItem/SessionItem';
 import styles from './HomePage.module.scss';
-import { getAllRollingMovies } from '../../api/moviesApi';
+import { getAllNowShowingMovies } from '../../api/moviesApi';
 import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext';
 import { getAllSessions, type SessionDto } from '../../api/sessionsApi';
 
@@ -16,7 +16,7 @@ const Home: React.FC = () => {
   useEffect(()=>{
     const fetchData = async() => {
       try{
-        rollingMovies.setMovies(await getAllRollingMovies())
+        rollingMovies.setMovies(await getAllNowShowingMovies())
         setRollingMoviesError({is:false, text:"цього не повинно бути видно"});
       }
       catch(err)
