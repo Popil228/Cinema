@@ -30,6 +30,25 @@
     }
   }
 
+  .removeActorBtn {
+    position: absolute;
+    top: -5px;
+    right: -2px;
+    background: #bd5b5b9d;
+    color: white;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #b91c1c;
+    }
+  }
+
   .actorEditInputs {
     display: flex;
     flex-direction: column;

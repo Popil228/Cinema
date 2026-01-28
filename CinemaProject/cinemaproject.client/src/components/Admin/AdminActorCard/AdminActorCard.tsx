@@ -5,9 +5,10 @@ import type { Cast } from '../../../types/movie';
 interface ActorCardProps {
   actor: Cast;
   onSave: (updatedActor: Cast) => void;
+  onRemove: () => void;
 }
 
-const ActorCard: React.FC<ActorCardProps> = ({ actor, onSave }) => {
+const ActorCard: React.FC<ActorCardProps> = ({ actor, onSave, onRemove }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempData, setTempData] = useState<Cast>({ ...actor });
 
@@ -18,6 +19,7 @@ const ActorCard: React.FC<ActorCardProps> = ({ actor, onSave }) => {
 
   return (
     <div className={styles.actorCard}>
+      <button className={styles.removeActorBtn} onClick={onRemove} title="Видалити">✕</button>
       <img 
         src={`https://image.tmdb.org/t/p/w500${actor.photoUri}`} 
         alt={actor.name} 

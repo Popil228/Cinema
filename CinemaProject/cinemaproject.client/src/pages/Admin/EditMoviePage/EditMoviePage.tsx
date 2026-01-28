@@ -13,6 +13,7 @@ import * as actorApi from '../../../api/actorApi';
 import * as movieActorApi from '../../../api/movieActorApi';
 import * as movieGenreApi from '../../../api/movieGenreApi';
 import * as genresApi from '../../../api/genresApi';
+import * as tmdbApi from '../../../api/tmdbApi';
 
 const EditMoviePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,22 +23,29 @@ const EditMoviePage: React.FC = () => {
 
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
 
+  const [initialActors, setInitialActors] = useState<Cast[]>([]);
+  const [tmdbCast, setTmdbCast] = useState<Cast[]>([]); // Всі актори з TMDB
+  const [showActorPicker, setShowActorPicker] = useState(false);
+
   // Завантаження жанрів
   useEffect(() => {
-    const fetchGenres = async () => {
+    const fetchData = async () => {
       try {
         const genres = await genresApi.getAllGenres();
-        const normalized = genres.map((g: any) => ({
-          id: Number(g.id || g.genreId),
-          name: g.name
-        }));
-        setAvailableGenres(normalized);
+        setAvailableGenres(genres.map((g: any) => ({ id: Number(g.id || g.genreId), name: g.name })));
+
+        // Завантажуємо акторів саме для цього фільму з TMDB
+        if (movie.mainInfo.id) {
+          const castData = await tmdbApi.getCastInfoByIdTMDB(movie.mainInfo.id);
+          // Припускаємо, що API повертає масив Cast безпосередньо або через поле
+          setTmdbCast(castData as any); 
+        }
       } catch (err) {
-        console.error("Помилка завантаження жанрів:", err);
+        console.error("Помилка завантаження додаткових даних:", err);
       }
     };
-    fetchGenres();
-  }, []);
+    fetchData();
+  }, [movie.mainInfo.id])
 
   // Завантаження даних фільму
   useEffect(() => {
@@ -48,6 +56,7 @@ const EditMoviePage: React.FC = () => {
           if (stored_text) {
             const parsedObj = JSON.parse(stored_text) as StrictMovieInfo;
             movieEditContext.setMovieInfo({ ...parsedObj });
+            setInitialActors([...parsedObj.extraInfo.actors]);
             movieEditContext.setIsLoaded(true);
           }
         } catch (err) {
@@ -88,15 +97,40 @@ const EditMoviePage: React.FC = () => {
     movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, genres: movie.extraInfo.genres.filter(g => Number(g.id || (g as any).genreId) !== id) } });
   };
 
+  const handleAddActor = (selectedActor: Cast) => {
+    const currentActors = movie.extraInfo.actors || [];
+    if (!currentActors.some(a => a.id === selectedActor.id)) {
+      movieEditContext.setMovieInfo({
+        ...movie,
+        extraInfo: { ...movie.extraInfo, actors: [...currentActors, selectedActor] }
+      });
+    }
+  };
+
   const handleActorUpdate = (index: number, updatedActor: Cast) => {
     const newActors = [...movie.extraInfo.actors];
     newActors[index] = updatedActor;
     movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, actors: newActors } });
   };
 
+  const handleRemoveActor = (actorId: number) => {
+    movieEditContext.setMovieInfo({
+      ...movie,
+      extraInfo: {
+        ...movie.extraInfo,
+        actors: movie.extraInfo.actors.filter(a => a.id !== actorId)
+      }
+    });
+  };
+
+  const filteredTmdbCast = tmdbCast.filter(
+    tmdbA => !movie.extraInfo.actors.some(ma => ma.id === tmdbA.id)
+  );
+
   // --- ГОЛОВНА ЛОГІКА ОНОВЛЕННЯ ---
   const handleConfirm = async () => {
     const movieId = Number(id);
+    const currentActors = movie.extraInfo.actors;
 
     try {
       // Оновлення фільму
@@ -111,20 +145,32 @@ const EditMoviePage: React.FC = () => {
       await movieApi.updateMovie(movieSummary);
 
       // Оновлення зв'язків Movie + Actor
-      if (movie.extraInfo.actors.length > 0) {
-        const actorsData: Actor[] = movie.extraInfo.actors.map(a => ({
+      const actorsToDelete = initialActors.filter(
+        ia => !currentActors.some(ca => ca.id === ia.id)
+      );
+      for (const actor of actorsToDelete) {
+        await movieActorApi.deleteMovieActor({
+          movieId: movieId,
+          actorId: actor.id,
+          character: actor.role || "Не вказано"
+        });
+      }
+
+      if (currentActors.length > 0) {
+        const actorsData: Actor[] = currentActors.map(a => ({
           id: a.id,
           name: a.name,
           photoUri: a.photoUri
         }));
+        await actorApi.createActor(actorsData);
         await actorApi.updateActor(actorsData);
 
-        const movieActors: MovieActor[] = movie.extraInfo.actors.map(a => ({
+        const movieActorLinks: MovieActor[] = currentActors.map(a => ({
           movieId: movieId,
           actorId: a.id,
           character: a.role || "Не вказано"
         }));
-        await movieActorApi.updateMovieActor(movieActors);
+        await movieActorApi.updateMovieActor(movieActorLinks);
       }
 
       // Оновлення зв'язків Movie + Genre
@@ -208,13 +254,38 @@ const EditMoviePage: React.FC = () => {
 
       <div className={styles.bottomSection}>
         <div className={styles.fieldGroup}>
-          <label>Актори</label>
+          <div className={styles.actorsHeader}>
+            <label>Актори</label>
+            <button 
+              className={styles.addActorMainBtn} 
+              onClick={() => setShowActorPicker(!showActorPicker)}
+            >
+              {showActorPicker ? "Закрити список" : "+ Додати актора"}
+            </button>
+          </div>
+
+          {showActorPicker && (
+            <div className={styles.actorPicker}>
+              {filteredTmdbCast.length > 0 ? (
+                filteredTmdbCast.map(actor => (
+                  <div key={actor.id} className={styles.pickerItem} onClick={() => handleAddActor(actor)}>
+                    <img src={`https://image.tmdb.org/t/p/w200${actor.photoUri}`} alt="" />
+                    <span>{actor.name}</span>
+                  </div>
+                ))
+              ) : (
+                <p>Усі актори з TMDB вже додані</p>
+              )}
+            </div>
+          )}
+
           <div className={styles.actorsGrid}>
             {movie.extraInfo.actors?.map((actor, index) => (
               <AdminActorCard 
                 key={actor.id} 
                 actor={actor} 
-                onSave={(updated) => handleActorUpdate(index, updated)} 
+                onSave={(updated) => handleActorUpdate(index, updated)}
+                onRemove={() => handleRemoveActor(actor.id)}
               />
             ))}
           </div>

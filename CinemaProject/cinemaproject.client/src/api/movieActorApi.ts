@@ -12,7 +12,7 @@ const createMovieActor = async (movieActorData: MovieActor[]) => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    throw new Error(body.message ?? 'Помилка при створенні зв’язків акторів');
   }
 
   return body.message;
@@ -28,11 +28,25 @@ const updateMovieActor = async (movieActorData: MovieActor[]) => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    throw new Error(body.message ?? 'Помилка при оновленні зв’язків акторів');
   }
 
   return body.message;
 }
 
-export { createMovieActor, updateMovieActor };
+const deleteMovieActor = async (movieActorData: MovieActor) => {
+  const response = await fetch(`${API_BASE_URL}/MovieActors`, {
+    method: 'DELETE',
+    headers: { 'Content-type': 'application/json' },
+    body: JSON.stringify(movieActorData),
+  });
 
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.message ?? 'Помилка при видаленні зв’язку актора');
+  }
+
+  return true;
+};
+
+export { createMovieActor, updateMovieActor, deleteMovieActor };

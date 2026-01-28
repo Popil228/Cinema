@@ -50,7 +50,6 @@ const AddMoviePage: React.FC = () => {
     }
   }, [movieEditContext.movieInfo]);
 
-  // Хендлери змін основної інфи
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     movieEditContext.setMovieInfo({ ...movie, mainInfo: { ...movie.mainInfo, title: e.target.value } });
   };
@@ -59,20 +58,14 @@ const AddMoviePage: React.FC = () => {
     movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, runtime: Number(e.target.value) } });
   };
 
-  // Робота з жанрами
   const handleAddGenre = (genreIdStr: string) => {
     const idToFind = Number(genreIdStr);
     const selectedGenre = availableGenres.find(g => g.id === idToFind);
-    
+
     if (selectedGenre) {
       const currentGenres = movie.extraInfo.genres || [];
-      const alreadyExists = currentGenres.some(mg => Number(mg.id || (mg as any).genreId) === selectedGenre.id);
-
-      if (!alreadyExists) {
-        movieEditContext.setMovieInfo({
-          ...movie,
-          extraInfo: { ...movie.extraInfo, genres: [...currentGenres, selectedGenre] }
-        });
+      if (!currentGenres.some(mg => Number(mg.id || (mg as any).genreId) === selectedGenre.id)) {
+        movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, genres: [...currentGenres, selectedGenre] } });
       }
     }
   };
@@ -87,13 +80,20 @@ const AddMoviePage: React.FC = () => {
     });
   };
 
+  const handleRemoveActor = (actorId: number) => {
+    movieEditContext.setMovieInfo({
+      ...movie,
+      extraInfo: {
+        ...movie.extraInfo,
+        actors: movie.extraInfo.actors.filter(a => a.id !== actorId)
+      }
+    });
+  };
+
   const handleActorUpdate = (index: number, updatedActor: Cast) => {
     const newActors = [...movie.extraInfo.actors];
     newActors[index] = updatedActor;
-    movieEditContext.setMovieInfo({
-      ...movie,
-      extraInfo: { ...movie.extraInfo, actors: newActors }
-    });
+    movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, actors: newActors } });
   };
 
   // --- ПІДТВЕРДЖЕННЯ ТА ТРАНЗАКЦІЯ ---
@@ -159,9 +159,7 @@ const AddMoviePage: React.FC = () => {
     navigate('/admin/movies/search');
   };
 
-  if (!movieEditContext.isLoaded) {
-    return <h2 className={styles.noMovieInfoMsg}>Завантаження...</h2>;
-  }
+  if (!movieEditContext.isLoaded) return <h2 className={styles.noMovieInfoMsg}>Завантаження...</h2>;
 
   const filteredGenresForSelect = availableGenres.filter(ag => 
     !movie.extraInfo.genres.some(mg => Number(mg.id || (mg as any).genreId) === ag.id)
@@ -224,6 +222,7 @@ const AddMoviePage: React.FC = () => {
                 key={actor.id} 
                 actor={actor} 
                 onSave={(updated) => handleActorUpdate(index, updated)} 
+                onRemove={() => handleRemoveActor(actor.id)} 
               />
             ))}
           </div>
