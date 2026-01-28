@@ -1,21 +1,23 @@
-import React, { useRef, useEffect, useContext, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import ActorCard from '../../components/Movie/ActorCard/ActorCard';
 import styles from './MoviePage.module.scss';
 import type { StrictMovieInfo } from '../../types/movie';
-import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext';
-import { getAllSessions, type SessionDto } from '../../api/sessionsApi';
 import SessionItemMoviePage from '../../components/SessionItemMoviePage/SessionItemMoviePage';
+import { useFutureSessions } from '../../hooks/ReactQueryHooks';
+import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext';
 
 const MoviePage: React.FC = () => {
   const { id } = useParams();
+  const numberId = Number.parseInt(id||"0");
   const [movie, setMovie] = useState<StrictMovieInfo>({} as StrictMovieInfo);
-  const [sessions, setSessions] = useState<SessionDto[]>([]);
   
   const [movieError,setMovieError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
   const [sessionsError,setSessionsError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
 
+  const sessions = useFutureSessions();
   const userMoviesContext = useContext(UserMoviesContext);
+
   const carouselRef = useRef<HTMLDivElement>(null); //for actors scroll
   
   useEffect(() => {
@@ -33,7 +35,6 @@ const MoviePage: React.FC = () => {
 
   useEffect(()=>{
     const fetchData = async() => {
-      //fetching movie data
       try{
         setMovie(await userMoviesContext.getMovieById(Number.parseInt(id||"0")));
         setMovieError({is:false, text:"цього не видно"});
@@ -46,17 +47,16 @@ const MoviePage: React.FC = () => {
       }
 
       //fetching sessions data
-      try{
-        setSessions(await getAllSessions(true, Number.parseInt(id||"0")))
+      if(sessions.isSuccess)
+      {
         setSessionsError({is: false, text:"цього не видно"});
       }
-      catch(err)
+      else if(sessions.isError)
       {
-        console.error(err);
+        console.error(sessions.error.message);
         setSessionsError({is: true, text:"Помилка завантаження сеансів"});
         return;
       }
-
     }
     fetchData();
   },[])
@@ -103,21 +103,23 @@ const MoviePage: React.FC = () => {
         </div>
       </section>
 
-      {sessionsError.is ? <h1 className={styles.movieTitle}>{sessionsError.text}</h1>
+      {!sessions.isSuccess ? <h1 className={styles.movieTitle}>{sessionsError.text}</h1>
       : /*TODO: use a dedicated sessionItem component */
       <section className={styles.scheduleSection}>
         <h2 className={styles.sectionTitle}>Розклад сеансів</h2>
         <div className={styles.sessionsWrapper}>
           <div className={styles.hallColumn}>
             <h3>ЗАЛ A</h3>
-            {sessions.filter(s => s.hallId==1).map(session => (
+            {(sessions.data || []).filter(s=>s.movieId==numberId)
+            .filter(s => s.hallId==1).map(session => (
               <SessionItemMoviePage key={session.id} session={session}/>
             ))}
           </div>
 
           <div className={styles.hallColumn}>
             <h3>ЗАЛ B</h3>
-            {sessions.filter(s => s.hallId == 1).map(session => (
+            {(sessions.data || []).filter(s=>s.movieId==numberId)
+            .filter(s => s.hallId == 2).map(session => (
               <SessionItemMoviePage key={session.id} session={session}/>
             ))}
           </div>
