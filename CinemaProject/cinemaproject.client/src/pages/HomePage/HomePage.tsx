@@ -47,7 +47,7 @@ const Home: React.FC = () => {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>В прокаті</h2>
         { !nowShowingMovies.isSuccess ? 
-        <h2 className={styles.centeredTitle}>{nowShowingMoviesError.text}</h2> :
+        <h2 className={styles.alertMessage}>{nowShowingMoviesError.text}</h2> :
         <div className={styles.movieGrid}>
           {(nowShowingMovies.data || []).map(movie => (
             <MovieCard key={movie.mainInfo.id} movie={movie} />
@@ -57,7 +57,7 @@ const Home: React.FC = () => {
       </section>
 
       
-      {!sessions.isSuccess ? <h1 className={styles.centeredTitle}>{sessionsError.text}</h1>
+      {!sessions.isSuccess ? <h1 className={styles.alertMessage}>{sessionsError.text}</h1>
       :
       <section className={styles.section}>
         <h2 className={styles.centeredTitle}>Найближчі сеанси</h2>

@@ -65,7 +65,7 @@ const MoviePage: React.FC = () => {
   {
     return (
       <div className={styles.pageWrapper}>
-        <h1 className={styles.movieTitle}>{movieError.text}</h1>
+        <h1 className={styles.alertMessage}>{movieError.text}</h1>
       </div>
     )
   }
@@ -103,7 +103,7 @@ const MoviePage: React.FC = () => {
         </div>
       </section>
 
-      {!sessions.isSuccess ? <h1 className={styles.movieTitle}>{sessionsError.text}</h1>
+      {!sessions.isSuccess ? <h1 className={styles.alertMessage}>{sessionsError.text}</h1>
       : /*TODO: use a dedicated sessionItem component */
       <section className={styles.scheduleSection}>
         <h2 className={styles.sectionTitle}>Розклад сеансів</h2>

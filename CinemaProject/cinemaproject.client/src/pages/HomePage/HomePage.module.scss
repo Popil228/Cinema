@@ -26,6 +26,14 @@
   font-weight: var(--font-weight-bold);
 }
 
+.alertMessage {
+  font-size: var(--font-lg);
+  color: var(--color-text-muted);
+  text-align: center;      
+  margin-bottom: 40px;
+  font-weight: var(--font-weight-bold);
+}
+
 .movieGrid {
   display: flex;
   gap: 35px;
@@ -53,21 +61,7 @@
   }
 }
 
-.sessionsWrapper {
-  display: flex;
-  gap: 40px;
-  margin-top: 20px;
-  width: 100%;
 
-  max-width: 1300px;
-  margin: 20px auto 0;
-  padding: 0 25px;
-
-  @include respond(md) {
-    flex-direction: column;
-    gap: 20px;
-  }
-}
 
 .hallColumn {
   flex: 1;
