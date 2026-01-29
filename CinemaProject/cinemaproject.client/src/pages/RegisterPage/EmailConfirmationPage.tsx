@@ -8,9 +8,8 @@ const EmailConfirmationPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email = location.state?.email || 'vash-email@example.com';
+  const email = location.state?.email || 'вашу пошту';
 
-  // Логіка таймера
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => setTimer(prev => prev - 1), 1000);
@@ -21,7 +20,7 @@ const EmailConfirmationPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Імітація перевірки коду
+    // Тут має бути виклик API для перевірки коду, поки що імітація
     if (code === '123456') {
       alert('Пошту підтверджено успішно!');
       navigate('/login');
