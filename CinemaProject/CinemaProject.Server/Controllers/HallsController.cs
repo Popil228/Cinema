@@ -1,6 +1,8 @@
 using CinemaProject.Server.Data;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaProject.Server.Controllers
@@ -24,6 +26,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "ManageHalls")]
         public async Task<ActionResult<Hall>> Create([FromBody] string name)
         {
             var hall = new Hall { Name = name };
@@ -33,6 +36,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost("init")]
+        [Authorize(Policy = "ManageHalls")]
         public async Task<ActionResult> InitDefaultHalls()
         {
             var existingHalls = await _context.Halls.AnyAsync();

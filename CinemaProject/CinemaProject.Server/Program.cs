@@ -36,7 +36,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManageMovies", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageActors", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageMovieRelations", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageHalls", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageSessions", policy => policy.RequireRole("Admin", "Manager"));
+  
+});
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
