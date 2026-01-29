@@ -1,8 +1,8 @@
 export interface Cast {
   id: number;
   name: string;
-  photoUri: string;
   role: string;
+  photoUri: string;
 }
 
 export interface Movie {
