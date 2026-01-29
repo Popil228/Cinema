@@ -9,8 +9,8 @@ namespace CinemaProject.Server.Models.Entitys
         [Column(TypeName = "varchar(50)")]
         public string Code { get; set; } = null!;
 
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public int UsesLeft { get; set; }
         public short DiscountPercent { get; set; }
 
