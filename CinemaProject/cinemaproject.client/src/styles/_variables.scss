@@ -8,7 +8,15 @@
     --color-border: #334155;
     --color-error: #A21111;
 
+    --color-seat-available: var(--color-text-muted);
+    --color-seat-occupied: var(--color-border); // Робимо зайняті кольором бордера, щоб вони "зливалися"
+    --color-seat-selected: var(--color-accent);
 
+    --shadow-accent: 0 0 15px var(--color-accent);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+
+    --font-xxs: 0.875rem;
     --font-xs: 1rem;
     --font-sm: 1.125rem;
     --font-md: 1.25rem;

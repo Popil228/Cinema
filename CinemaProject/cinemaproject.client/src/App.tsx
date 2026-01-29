@@ -17,6 +17,7 @@ import EditMoviePage from "./pages/Admin/EditMoviePage/EditMoviePage.tsx";
 import AddMoviePage from "./pages/Admin/AddMoviePage/AddMoviePage.tsx";
 import SearchBarContextProvider from "./context/searchBarContext/SearchBarContextProvider.tsx";
 import SearchMoviePage from "./pages/Admin/SearchMoviePage/SearchMoviePage.tsx";
+import BookingPage from "./pages/BookingPage/BookingPage.tsx";
 
 function App() {
   return (
@@ -26,7 +27,9 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/schedule" element={<SearchBarContextProvider> <SchedulePage /> </SearchBarContextProvider>} />
+            <Route path="/booking" element={<BookingPage />} />
             <Route path="/movie/:id" element={<MoviePage />} />
+            
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/confirm-email" element={<EmailConfirmationPage />} />
