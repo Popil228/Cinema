@@ -1,6 +1,5 @@
 ﻿using Azure.Core;
 using CinemaProject.Server.DTOs.Discount;
-using CinemaProject.Server.DTOs.Movie;
 using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
