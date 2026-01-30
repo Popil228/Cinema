@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi, tokenStorage } from '../../api/authApi';
+import { UserRole } from '../../types/userRole';
 import styles from './LoginPage.module.scss';
 
 const LoginPage: React.FC = () => {
@@ -22,7 +23,11 @@ const LoginPage: React.FC = () => {
       if (response.success && response.token && response.user) {
         tokenStorage.setToken(response.token);
         tokenStorage.setUser(response.user);
-        navigate('/');
+        if (response.user.role === UserRole.Admin) {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       } else {
         setError(response.message || 'Помилка входу');
       }

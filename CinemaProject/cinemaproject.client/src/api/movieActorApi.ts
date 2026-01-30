@@ -1,12 +1,17 @@
+
 import type { MovieActor } from "../types/movieActor";
+import { tokenStorage } from "./authApi";
 
 const API_BASE_URL = '/api';
 
 const createMovieActor = async (movieActorData: MovieActor[]) => {
+    const token = tokenStorage.getToken();
+    const headers: Record<string, string> = { 'Content-type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     const response = await fetch(`${API_BASE_URL}/MovieActors`, {
         method: 'POST',
-      headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify(movieActorData),
+        headers,
+        body: JSON.stringify(movieActorData),
     })
 
   const body = await response.json();
@@ -19,9 +24,12 @@ const createMovieActor = async (movieActorData: MovieActor[]) => {
 }
 
 const updateMovieActor = async (movieActorData: MovieActor[]) => {
+  const token = tokenStorage.getToken();
+  const headers: Record<string, string> = { 'Content-type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/MovieActors`, {
     method: 'PUT',
-    headers: { 'Content-type': 'application/json' },
+    headers,
     body: JSON.stringify(movieActorData),
   })
 
@@ -35,9 +43,12 @@ const updateMovieActor = async (movieActorData: MovieActor[]) => {
 }
 
 const deleteMovieActor = async (movieActorData: MovieActor) => {
+  const token = tokenStorage.getToken();
+  const headers: Record<string, string> = { 'Content-type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/MovieActors`, {
     method: 'DELETE',
-    headers: { 'Content-type': 'application/json' },
+    headers,
     body: JSON.stringify(movieActorData),
   });
 
