@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authApi } from '../../api/authApi';
+import { authApi, tokenStorage } from '../../api/authApi';
+import { UserRole } from '../../types/userRole';
 import styles from './LoginPage.module.scss';
 import { AuthContext } from '../../context/authContext/AuthContext';
 
@@ -22,8 +23,13 @@ const LoginPage: React.FC = () => {
       const response = await authApi.login({ email, password });
 
       if (response.success && response.token && response.user) {
-        auth?.login(response.user, response.token);
-        navigate('/');
+        tokenStorage.setToken(response.token);
+        tokenStorage.setUser(response.user);
+        if (response.user.role === UserRole.Admin) {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       } else {
         setError(response.message || 'Помилка входу');
       }
