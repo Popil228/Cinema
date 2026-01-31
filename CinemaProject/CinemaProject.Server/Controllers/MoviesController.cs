@@ -18,29 +18,11 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMovies()
+        public async Task<IActionResult> GetAllMovies([FromQuery] bool onlyShowingNow = false)
         {
             try
             {
-                var movies = await _movieService.GetAllMoviesAsync();
-                return Ok(movies);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
-            }
-
-        }
-
-        [HttpGet ("rolling")]
-        public async Task<IActionResult> GetAllRollingMovies()
-        {
-            try
-            {
-                var movies = await _movieService.GetAllRollingMoviesAsync();
+                var movies = await _movieService.GetAllMoviesAsync(onlyShowingNow);
                 return Ok(movies);
             }
             catch (Exception ex)

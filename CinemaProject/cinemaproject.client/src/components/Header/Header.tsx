@@ -27,7 +27,7 @@ const Header: React.FC = () => {
                         )}
                     </nav>
                 </div>
-
+                
                 <div className={styles.auth}>
                     {auth.isAuthenticated ? (
                         <div className={styles.userSection}>

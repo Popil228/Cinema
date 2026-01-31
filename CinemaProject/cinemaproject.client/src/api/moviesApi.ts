@@ -69,8 +69,8 @@ const getAllMovies = async () => {
   return body as StrictMovieInfo[];
 }
 
-const getAllRollingMovies = async () => {
-    const response = await fetch(`${API_BASE_URL}/Movies/rolling`, {
+const getAllNowShowingMovies = async () => {
+    const response = await fetch(`${API_BASE_URL}/Movies?onlyShowingNow=true`, {
         method: 'GET',
       headers: { 'Content-type': 'application/json' },
     })
@@ -127,4 +127,4 @@ const deleteMovieById = async (movieId: number) => {
   return body;
 }
 
-export { deleteMovieById, getAllMovies, createMovie, updateMovie, getAllRollingMovies, getMovieById}
+export { deleteMovieById, getAllMovies, createMovie, updateMovie, getAllNowShowingMovies, getMovieById}
