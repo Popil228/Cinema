@@ -39,9 +39,12 @@ const createMovie = async (movieData: MovieSummary) => {
 };
 
 const updateMovie = async (movieData: MovieSummary) => {
+  const token = tokenStorage.getToken();
+  const headers: Record<string, string> = { 'Content-type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Movies`, {
     method: 'PUT',
-    headers: { 'Content-type': 'application/json' },
+    headers,
     body: JSON.stringify(movieData),
   })
 

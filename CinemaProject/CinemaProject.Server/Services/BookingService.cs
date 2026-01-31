@@ -119,14 +119,21 @@ namespace CinemaProject.Server.Services
         public async Task<BookingGetResponse> GetUserBookingsAsync(int userId)
         {
             var bookings = await _context.Bookings
-                .Where(b => b.UserId == userId)
-                .Select(b => new BookingDto
-                {
-                    BookingAt = b.BookingAt.ToString("g"),
-                    TotalPrice = b.TotalPrice,
-                    Status = b.Status.ToString()
-                })
-                .ToListAsync();
+             .AsNoTracking()
+             .Where(b => b.UserId == userId)
+             .Select(b => new BookingDto
+             {
+                 BookingAt = b.BookingAt.ToString("g"),
+                 TotalPrice = b.TotalPrice,
+                 Status = b.Status.ToString(),
+                 Title = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.Title)
+                     .FirstOrDefault(),
+                 PosterPath = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.PosterUri)
+                     .FirstOrDefault()
+             })
+             .ToListAsync();
 
             if (!bookings.Any())
             {
@@ -174,14 +181,21 @@ namespace CinemaProject.Server.Services
             var statusEnum = (BookingStatus)status;
 
             var bookings = await _context.Bookings
-                .Where(b => b.UserId == userId && b.Status == statusEnum)
-                .Select(b => new BookingDto
-                {
-                    BookingAt = b.BookingAt.ToString("g"),
-                    TotalPrice = b.TotalPrice,
-                    Status = b.Status.ToString()
-                })
-                .ToListAsync();
+             .AsNoTracking()
+             .Where(b => b.UserId == userId && b.Status == statusEnum)
+             .Select(b => new BookingDto
+             {
+                 BookingAt = b.BookingAt.ToString("g"),
+                 TotalPrice = b.TotalPrice,
+                 Status = b.Status.ToString(),
+                 Title = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.Title)
+                     .FirstOrDefault(),
+                 PosterPath = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.PosterUri)
+                     .FirstOrDefault()
+             })
+             .ToListAsync();
 
             if (!bookings.Any())
             {
@@ -224,14 +238,21 @@ namespace CinemaProject.Server.Services
             var statusEnum = (BookingStatus)status;
 
             var bookings = await _context.Bookings
-                .Where(b => b.Status == statusEnum)
-                .Select(b => new BookingDto
-                {
-                    BookingAt = b.BookingAt.ToString("g"),
-                    TotalPrice = b.TotalPrice,
-                    Status = b.Status.ToString()
-                })
-                .ToListAsync();
+             .AsNoTracking()
+             .Where(b => b.Status == statusEnum)
+             .Select(b => new BookingDto
+             {
+                 BookingAt = b.BookingAt.ToString("g"),
+                 TotalPrice = b.TotalPrice,
+                 Status = b.Status.ToString(),
+                 Title = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.Title)
+                     .FirstOrDefault(),
+                 PosterPath = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.PosterUri)
+                     .FirstOrDefault()
+             })
+             .ToListAsync();
 
             if (!bookings.Any())
             {
@@ -269,13 +290,20 @@ namespace CinemaProject.Server.Services
         public async Task<BookingGetResponse> GetAllBookingsAsync()
         {
             var bookings = await _context.Bookings
-                .Select(b => new BookingDto
-                {
-                    BookingAt = b.BookingAt.ToString("g"),
-                    TotalPrice = b.TotalPrice,
-                    Status = b.Status.ToString()
-                })
-                .ToListAsync();
+             .AsNoTracking()
+             .Select(b => new BookingDto
+             {
+                 BookingAt = b.BookingAt.ToString("g"),
+                 TotalPrice = b.TotalPrice,
+                 Status = b.Status.ToString(),
+                 Title = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.Title)
+                     .FirstOrDefault(),
+                 PosterPath = b.Tickets
+                     .Select(t => t.SessionSeat.Session.Movie.PosterUri)
+                     .FirstOrDefault()
+             })
+             .ToListAsync();
 
             if (!bookings.Any())
             {
