@@ -20,7 +20,12 @@ namespace CinemaProject.Server.Controllers
         public async Task<ActionResult<IEnumerable<GenreDto>>> GetAllGenre()
         {
             var genres = await _context.Genres.ToListAsync();
-            return Ok(genres);
+            var genreDtos = genres.Select(g => new GenreDto
+            {
+                Id = g.GenreId,
+                Name = g.Name
+            }).ToList();
+            return Ok(genreDtos);
         }
     }
 }

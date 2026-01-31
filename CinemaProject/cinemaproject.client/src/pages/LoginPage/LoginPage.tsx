@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi, tokenStorage } from '../../api/authApi';
 import { UserRole } from '../../types/userRole';
 import styles from './LoginPage.module.scss';
+import { AuthContext } from '../../context/authContext/AuthContext';
 
 const LoginPage: React.FC = () => {
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -32,7 +34,7 @@ const LoginPage: React.FC = () => {
         setError(response.message || 'Помилка входу');
       }
     } catch {
-     setError('Помилка з`єднання з сервером');
+      setError('Помилка з`єднання з сервером');
     } finally {
       setIsLoading(false);
     }

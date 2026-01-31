@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IMaskInput } from 'react-imask';
-import { authApi, tokenStorage } from '../../api/authApi';
+import { authApi, } from '../../api/authApi';
 import styles from './RegisterPage.module.scss';
+import { AuthContext } from '../../context/authContext/AuthContext';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  
+  const auth = useContext(AuthContext);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -71,10 +73,14 @@ const RegisterPage: React.FC = () => {
         confirmPassword,
       });
 
-      if (response.success && response.token && response.user) {
-        tokenStorage.setToken(response.token);
-        tokenStorage.setUser(response.user);
-        navigate('/');
+      if (response.success) {
+        if (response.token && response.user) {
+          auth?.login(response.user, response.token);
+          navigate('/');
+        }
+        else {
+          navigate('/confirm-email', { state: { email } });
+        }
       } else {
         setError(response.message || 'Помилка реєстрації');
       }
