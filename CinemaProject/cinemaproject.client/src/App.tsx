@@ -29,14 +29,22 @@ function App() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/schedule" element={<SearchBarContextProvider> <SchedulePage /> </SearchBarContextProvider>} />
+            <Route
+              path="/schedule"
+              element={
+                <SearchBarContextProvider>
+                  {" "}
+                  <SchedulePage />{" "}
+                </SearchBarContextProvider>
+              }
+            />
             <Route path="/movie/:id" element={<MoviePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/confirm-email" element={<EmailConfirmationPage />} />
 
             <Route element={<ProtectedRoute />}>
-              <Route path="/booking" element={<BookingPage />} />
+              <Route path="/booking/:id" element={<BookingPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/tickets" element={<TicketsPage />} />
             </Route>
@@ -46,13 +54,12 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminMoviesPage />} />
               <Route path="movies" element={<AdminMoviesPage />} />
-              <Route path="movies/search" element={<SearchMoviePage />} /> 
+              <Route path="movies/search" element={<SearchMoviePage />} />
               <Route path="movies/add" element={<AddMoviePage />} />
               <Route path="movies/edit/:id" element={<EditMoviePage />} />
               <Route path="sessions" element={<AdminSessionsPage />} />
             </Route>
           </Route>
-          
         </Routes>
       </BrowserRouter>
     </AuthProvider>
