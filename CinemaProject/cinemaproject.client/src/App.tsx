@@ -27,7 +27,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/schedule" element={<SearchBarContextProvider> <SchedulePage /> </SearchBarContextProvider>} />
-            <Route path="/booking" element={<BookingPage />} />
+            <Route path="/booking/:id" element={<BookingPage />} />
             <Route path="/movie/:id" element={<MoviePage />} />
             
             <Route path="/login" element={<LoginPage />} />

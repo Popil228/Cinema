@@ -1,40 +1,400 @@
-import React, { useState } from 'react';
-import styles from './BookingPage.module.scss';
-
-const PRICE_PER_SEAT = 150;
+import React, { useContext, useEffect, useState } from "react";
+import styles from "./BookingPage.module.scss";
+import { getSessionById, type SessionDto } from "../../api/sessionsApi";
+import { dateToDayMonthStrUA } from "../../utilities/dateToStringUA";
+import type { SessionSeatDtoTest } from "../../types/session";
+import { useParams } from "react-router-dom";
+import BookingPageContext from "../../context/bookingPageContext/BookingPageContext";
+import SessionSeat from "../../components/SessionSeat/SessionSeat";
 
 const BookingPage: React.FC = () => {
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const [selectedHall, setSelectedHall] = useState('Зал А');
-  const [selectedDate, setSelectedDate] = useState('3 квітня');
-  const [selectedTime, setSelectedTime] = useState('13:00');
+  const { id } = useParams();
+  const selectedSessionId = Number.parseInt(id || "0");
 
-  // Дані для вибору (заглушки)
-  const halls = ['Зал А', 'Зал B'];
-  const dates = ['3 квітня', '4 квітня', '5 квітня'];
-  const times = ['10:00', '13:00', '16:30', '19:00', '21:30'];
-  const rowsLayout = [5, 7, 9, 9]; 
-  const occupiedSeats = ["2-3", "2-4", "3-5", "4-1", "4-11"];
+  const bookingPageContext = useContext(BookingPageContext);
 
-  const handleSeatClick = (row: number, seat: number) => {
-    const seatId = `${row}-${seat}`;
-    if (occupiedSeats.includes(seatId)) return;
+  const displayDate: string = dateToDayMonthStrUA(
+    new Date(bookingPageContext.selectedSession?.startTime || "0000-01-01"),
+  );
+  const displayTime: string =
+    bookingPageContext.selectedSession?.startTime.split("T")[1].slice(0, 5) ||
+    "00:00";
+  const displayHall: string =
+    bookingPageContext.selectedSession?.hallName || "Зал _";
 
-    setSelectedSeats(prev => 
-      prev.includes(seatId) ? prev.filter(s => s !== seatId) : [...prev, seatId]
+  const [selectedSessionSeats, setSelectedSessionSeats] = useState<
+    SessionSeatDtoTest[]
+  >([]);
+
+  const defaultPrice: number =
+    bookingPageContext.selectedSession?.basePrice || 0;
+  const totalCost: number = selectedSessionSeats
+    .map((s) => Math.round(s.seatTypePricePercent * defaultPrice * 0.01))
+    .reduce((sum, singleTicketPrice) => sum + singleTicketPrice, 0);
+
+  const sessionSeatsTemplateData: SessionSeatDtoTest[] = [
+    //згенеровано жеміні
+    // --- ROW 1 (5 Seats) ---
+    {
+      id: 101,
+      rowNumber: 1,
+      seatNumber: 1,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 102,
+      rowNumber: 1,
+      seatNumber: 2,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+    {
+      id: 103,
+      rowNumber: 1,
+      seatNumber: 3,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 104,
+      rowNumber: 1,
+      seatNumber: 4,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 105,
+      rowNumber: 1,
+      seatNumber: 5,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+
+    // --- ROW 2 (7 Seats) ---
+    {
+      id: 201,
+      rowNumber: 2,
+      seatNumber: 1,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 202,
+      rowNumber: 2,
+      seatNumber: 2,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 203,
+      rowNumber: 2,
+      seatNumber: 3,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+    {
+      id: 204,
+      rowNumber: 2,
+      seatNumber: 4,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 205,
+      rowNumber: 2,
+      seatNumber: 5,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 206,
+      rowNumber: 2,
+      seatNumber: 6,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+    {
+      id: 207,
+      rowNumber: 2,
+      seatNumber: 7,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+
+    // --- ROW 3 (9 Seats) ---
+    {
+      id: 301,
+      rowNumber: 3,
+      seatNumber: 1,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+    {
+      id: 302,
+      rowNumber: 3,
+      seatNumber: 2,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 303,
+      rowNumber: 3,
+      seatNumber: 3,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 304,
+      rowNumber: 3,
+      seatNumber: 4,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 305,
+      rowNumber: 3,
+      seatNumber: 5,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+    {
+      id: 306,
+      rowNumber: 3,
+      seatNumber: 6,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 307,
+      rowNumber: 3,
+      seatNumber: 7,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 308,
+      rowNumber: 3,
+      seatNumber: 8,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+    {
+      id: 309,
+      rowNumber: 3,
+      seatNumber: 9,
+      seatTypeId: 1,
+      seatTypeName: "Standard",
+      seatTypePricePercent: 100,
+      sessionId: 1,
+      isAvailable: true,
+    },
+
+    // --- ROW 4 (9 Seats - VIP) ---
+    {
+      id: 401,
+      rowNumber: 4,
+      seatNumber: 1,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 402,
+      rowNumber: 4,
+      seatNumber: 2,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 403,
+      rowNumber: 4,
+      seatNumber: 3,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 404,
+      rowNumber: 4,
+      seatNumber: 4,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+    {
+      id: 405,
+      rowNumber: 4,
+      seatNumber: 5,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 406,
+      rowNumber: 4,
+      seatNumber: 6,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 407,
+      rowNumber: 4,
+      seatNumber: 7,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 408,
+      rowNumber: 4,
+      seatNumber: 8,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: true,
+    },
+    {
+      id: 409,
+      rowNumber: 4,
+      seatNumber: 9,
+      seatTypeId: 2,
+      seatTypeName: "VIP",
+      seatTypePricePercent: 150,
+      sessionId: 1,
+      isAvailable: false,
+    }, // Booked
+  ];
+
+  useEffect(() => {
+    const loadSessionByCurrentId = async () => {
+      const s: SessionDto = await getSessionById(selectedSessionId);
+      bookingPageContext.setSelectedSession(s);
+    };
+
+    const loadSessionsSeats = async () => {
+      //тут має бути запит в апішку по типу await getSessionSeats(selectedSessionId);
+      const loadedSessionSeats: SessionSeatDtoTest[] = sessionSeatsTemplateData;
+      bookingPageContext.setSessionSeats(loadedSessionSeats);
+    };
+
+    if (bookingPageContext.selectedSession === null) {
+      loadSessionByCurrentId();
+    } else if (bookingPageContext.selectedSession.id != selectedSessionId) {
+      loadSessionByCurrentId();
+    }
+
+    loadSessionsSeats();
+  }, []);
+
+  const handleSeatClick = (sessionSeat: SessionSeatDtoTest) => {
+    if (!sessionSeat.isAvailable) {
+      return;
+    }
+
+    setSelectedSessionSeats((prev) =>
+      prev.includes(sessionSeat)
+        ? prev.filter((s) => s.id !== sessionSeat.id)
+        : [...prev, sessionSeat],
     );
   };
 
   const formatSelectedSeats = () => {
-    return selectedSeats
-      .map(id => {
-        const [row, seat] = id.split('-');
-        return `Ряд ${row} Місце ${seat}`;
-      })
-      .join(', ');
+    return selectedSessionSeats
+      .map((s) => `Ряд ${s.rowNumber} Місце ${s.seatNumber}`)
+      .join(", ");
   };
 
-  const totalCost = selectedSeats.length * PRICE_PER_SEAT;
+  const seatsSplitByRowsObj: { [key: number]: SessionSeatDtoTest[] } = {};
+  bookingPageContext.sessionSeats.forEach((s) => {
+    if (!{}.propertyIsEnumerable.call(seatsSplitByRowsObj, s.rowNumber)) {
+      seatsSplitByRowsObj[s.rowNumber] = [];
+    }
+    seatsSplitByRowsObj[s.rowNumber].push(s);
+  });
+
+  const seatsSplitByRowsArr: SessionSeatDtoTest[][] = Object.keys(
+    seatsSplitByRowsObj,
+  )
+    .map((key) => seatsSplitByRowsObj[Number.parseInt(key)])
+    .sort((a, b) => a[0].rowNumber - b[0].rowNumber);
 
   return (
     <div className={styles.overlay}>
@@ -43,41 +403,33 @@ const BookingPage: React.FC = () => {
         <div className={styles.movieHeader}>
           <div className={styles.movieInfo}>
             <div className={styles.poster}>
-               <img src="/Minecraft.png" alt="Movie" />
+              <img
+                src={`https://image.tmdb.org/t/p/w500${bookingPageContext.selectedSession?.moviePosterPath}`}
+                alt={bookingPageContext.selectedSession?.movieTitle}
+              />
             </div>
             <div className={styles.text}>
-              <h1 className={styles.title}>Minecraft</h1>
-              <p className={styles.subtitle}>Action, Adventure, Fantasy</p>
+              <h1 className={styles.title}>
+                {bookingPageContext.selectedSession?.movieTitle}
+              </h1>
+              <p className={styles.subtitle}>
+                {bookingPageContext.selectedSession?.movieGenres?.join(", ")}
+              </p>
             </div>
           </div>
 
-          <div className={styles.controls}>
-            <div className={styles.controlGroup}>
-              <label>Зал</label>
-              <select 
-                value={selectedHall} 
-                onChange={(e) => setSelectedHall(e.target.value)}
-              >
-                {halls.map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
-            </div>
-            <div className={styles.controlGroup}>
+          <div className={styles.sessionInfo}>
+            <div className={styles.sessionProperty}>
               <label>Дата</label>
-              <select 
-                value={selectedDate} 
-                onChange={(e) => setSelectedDate(e.target.value)}
-              >
-                {dates.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
+              <h3 className={styles.propValue}>{displayDate}</h3>
             </div>
-            <div className={styles.controlGroup}>
+            <div className={styles.sessionProperty}>
               <label>Час</label>
-              <select 
-                value={selectedTime} 
-                onChange={(e) => setSelectedTime(e.target.value)}
-              >
-                {times.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <h3 className={styles.propValue}>{displayTime}</h3>
+            </div>
+            <div className={styles.sessionProperty}>
+              <label>Зал</label>
+              <h3 className={styles.propValue}>{displayHall}</h3>
             </div>
           </div>
         </div>
@@ -88,32 +440,21 @@ const BookingPage: React.FC = () => {
           <span className={styles.screenText}>ЕКРАН</span>
         </div>
 
-        {/* Побудова залу */}
+        {/* Показ сидінь в залі */}
         <div className={styles.hall}>
-          {rowsLayout.map((seatCount, rowIndex) => (
-            <div key={rowIndex} className={styles.row}>
-              <span className={styles.rowNumber}>{rowIndex + 1}</span>
+          {seatsSplitByRowsArr.map((row) => (
+            <div key={row[0].rowNumber} className={styles.row}>
+              <span className={styles.rowNumber}>{row[0].rowNumber}</span>
               <div className={styles.seatsList}>
-                {Array.from({ length: seatCount }).map((_, seatIndex) => {
-                  const seatNum = seatIndex + 1;
-                  const seatId = `${rowIndex + 1}-${seatNum}`;
-                  const isOccupied = occupiedSeats.includes(seatId);
-                  const isSelected = selectedSeats.includes(seatId);
-
-                  return (
-                    <div
-                      key={seatId}
-                      className={`${styles.seat} ${
-                        isOccupied ? styles.occupied : isSelected ? styles.selected : ''
-                      }`}
-                      onClick={() => handleSeatClick(rowIndex + 1, seatNum)}
-                    >
-                      <span className={styles.tooltip}>{seatNum}</span>
-                    </div>
-                  );
-                })}
+                {row.map((s) => (
+                  <SessionSeat
+                    sessionSeat={s}
+                    isSelected={selectedSessionSeats.includes(s)}
+                    handleClick={handleSeatClick}
+                  />
+                ))}
               </div>
-              <span className={styles.rowNumber}>{rowIndex + 1}</span>
+              <span className={styles.rowNumber}>{row[0].rowNumber}</span>
             </div>
           ))}
         </div>
@@ -137,23 +478,27 @@ const BookingPage: React.FC = () => {
         {/* Блок підсумку та Кнопка */}
         <div className={styles.footer}>
           <div className={styles.summary}>
-            {selectedSeats.length > 0 ? (
+            {selectedSessionSeats.length > 0 ? (
               <>
                 <div className={styles.seatsInfo}>
-                  <strong>Обрані місця:</strong> <span>{formatSelectedSeats()}</span>
+                  <strong>Обрані місця:</strong>{" "}
+                  <span>{formatSelectedSeats()}</span>
                 </div>
                 <div className={styles.priceInfo}>
-                  <strong>Загальна вартість:</strong> <span className={styles.totalPrice}>{totalCost} грн</span>
+                  <strong>Загальна вартість:</strong>{" "}
+                  <span className={styles.totalPrice}>{totalCost} грн</span>
                 </div>
               </>
             ) : (
-              <p className={styles.emptyMsg}>Будь ласка, оберіть місця для бронювання</p>
+              <p className={styles.emptyMsg}>
+                Будь ласка, оберіть місця для бронювання
+              </p>
             )}
           </div>
 
-          <button 
-            className={styles.bookBtn} 
-            disabled={selectedSeats.length === 0}
+          <button
+            className={styles.bookBtn}
+            disabled={selectedSessionSeats.length === 0}
           >
             Придбати квитки
           </button>
