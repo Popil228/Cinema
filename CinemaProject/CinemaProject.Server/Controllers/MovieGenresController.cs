@@ -2,6 +2,8 @@
 using CinemaProject.Server.DTOs.MovieGenre;
 using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using CinemaProject.Server.Models.Enums;
 
 namespace CinemaProject.Server.Controllers
 {
@@ -17,6 +19,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "ManageMovieRelations")]
         public async Task<ActionResult<MovieGenreResponse>> CreateMovieGenres([FromBody] List<MovieGenreDto> request)
         {
             if (!ModelState.IsValid)
@@ -39,6 +42,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "ManageMovieRelations")]
         public async Task<ActionResult<MovieGenreResponse>> UpdateMovieGenres([FromBody] List<MovieGenreDto> request)
         {
             if (!ModelState.IsValid)

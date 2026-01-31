@@ -1,22 +1,23 @@
 import React from 'react';
 import styles from './ScheduleDayDisplay.module.scss';
-import type { Session } from '../../../types/movie';
 import SessionItem from '../../../components/SessionItem/SessionItem';
 import useWindowWidth from '../../../utilities/useWindowWidth';
 import { dateToDayMonthStrUA } from '../../../utilities/dateToStringUA';
+import { type SessionDto } from '../../../api/sessionsApi';
 
 interface ScheduleDayDisplayProps{
-    sessions: Session[]
+    sessions: SessionDto[]
 }
 
-const ScheduleDayDisplay:React.FC<ScheduleDayDisplayProps> = ({sessions}: ScheduleDayDisplayProps) => {
-
-    const dateStr:string = dateToDayMonthStrUA(sessions[0].date);
+const ScheduleDayDisplay:React.FC<ScheduleDayDisplayProps> = ({sessions}: ScheduleDayDisplayProps) => 
+{
+    const sessionStartTimeDate = new Date(sessions[0].startTime);
+    const dateStr:string = dateToDayMonthStrUA(sessionStartTimeDate);
     const windowWidth = useWindowWidth();
     const overflowWidth = 768;
 
-    const sesssions_A = sessions.filter((s)=>s.hall=="A");
-    const sesssions_B = sessions.filter((s)=>s.hall=="B");
+    const sesssions_A = sessions.filter((s)=>s.hallId==1);
+    const sesssions_B = sessions.filter((s)=>s.hallId==2);
     return (
         <div>
             <h3>{dateStr}</h3>

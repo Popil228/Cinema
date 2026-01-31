@@ -22,9 +22,8 @@ const EditMoviePage: React.FC = () => {
   const movie = movieEditContext.movieInfo;
 
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
-
   const [initialActors, setInitialActors] = useState<Cast[]>([]);
-  const [tmdbCast, setTmdbCast] = useState<Cast[]>([]); // Всі актори з TMDB
+  const [tmdbCast, setTmdbCast] = useState<Cast[]>([]);
   const [showActorPicker, setShowActorPicker] = useState(false);
 
   // Завантаження жанрів
@@ -32,22 +31,20 @@ const EditMoviePage: React.FC = () => {
     const fetchData = async () => {
       try {
         const genres = await genresApi.getAllGenres();
-        setAvailableGenres(genres.map((g: any) => ({ id: Number(g.id || g.genreId), name: g.name })));
+        setAvailableGenres(genres);
 
-        // Завантажуємо акторів саме для цього фільму з TMDB
         if (movie.mainInfo.id) {
           const castData = await tmdbApi.getCastInfoByIdTMDB(movie.mainInfo.id);
-          // Припускаємо, що API повертає масив Cast безпосередньо або через поле
-          setTmdbCast(castData as any); 
+          setTmdbCast(castData as Cast[]); 
         }
       } catch (err) {
         console.error("Помилка завантаження додаткових даних:", err);
       }
     };
     fetchData();
-  }, [movie.mainInfo.id])
+  }, [movie.mainInfo.id]);
 
-  // Завантаження даних фільму
+  // Завантаження даних фільму з Context/LocalStorage
   useEffect(() => {
     const loadMovie = async () => {
       if (!movieEditContext.isLoaded && id) {
@@ -83,18 +80,20 @@ const EditMoviePage: React.FC = () => {
   };
 
   const handleAddGenre = (genreId: string) => {
-    const idToFind = Number(genreId);
-    const selectedGenre = availableGenres.find(g => g.id === idToFind);
-    if (selectedGenre) {
-      const currentGenres = movie.extraInfo.genres || [];
-      if (!currentGenres.some(g => Number(g.id || (g as any).genreId) === selectedGenre.id)) {
-        movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, genres: [...currentGenres, selectedGenre] } });
-      }
+    const genre = availableGenres.find(g => g.id === Number(genreId));
+    if (genre && !movie.extraInfo.genres.some(mg => mg.id === genre.id)) {
+      movieEditContext.setMovieInfo({
+        ...movie,
+        extraInfo: { ...movie.extraInfo, genres: [...movie.extraInfo.genres, genre] }
+      });
     }
   };
 
   const handleRemoveGenre = (id: number) => {
-    movieEditContext.setMovieInfo({ ...movie, extraInfo: { ...movie.extraInfo, genres: movie.extraInfo.genres.filter(g => Number(g.id || (g as any).genreId) !== id) } });
+    movieEditContext.setMovieInfo({
+      ...movie,
+      extraInfo: { ...movie.extraInfo, genres: movie.extraInfo.genres.filter(g => g.id !== id) }
+    });
   };
 
   const handleAddActor = (selectedActor: Cast) => {
@@ -116,16 +115,9 @@ const EditMoviePage: React.FC = () => {
   const handleRemoveActor = (actorId: number) => {
     movieEditContext.setMovieInfo({
       ...movie,
-      extraInfo: {
-        ...movie.extraInfo,
-        actors: movie.extraInfo.actors.filter(a => a.id !== actorId)
-      }
+      extraInfo: { ...movie.extraInfo, actors: movie.extraInfo.actors.filter(a => a.id !== actorId) }
     });
   };
-
-  const filteredTmdbCast = tmdbCast.filter(
-    tmdbA => !movie.extraInfo.actors.some(ma => ma.id === tmdbA.id)
-  );
 
   // --- ГОЛОВНА ЛОГІКА ОНОВЛЕННЯ ---
   const handleConfirm = async () => {
@@ -133,7 +125,7 @@ const EditMoviePage: React.FC = () => {
     const currentActors = movie.extraInfo.actors;
 
     try {
-      // Оновлення фільму
+      // Оновлення основної інфи
       const movieSummary: MovieSummary = {
         id: movieId,
         title: movie.mainInfo.title,
@@ -150,7 +142,7 @@ const EditMoviePage: React.FC = () => {
       );
       for (const actor of actorsToDelete) {
         await movieActorApi.deleteMovieActor({
-          movieId: movieId,
+          movieId,
           actorId: actor.id,
           character: actor.role || "Не вказано"
         });
@@ -166,7 +158,7 @@ const EditMoviePage: React.FC = () => {
         await actorApi.updateActor(actorsData);
 
         const movieActorLinks: MovieActor[] = currentActors.map(a => ({
-          movieId: movieId,
+          movieId,
           actorId: a.id,
           character: a.role || "Не вказано"
         }));
@@ -176,8 +168,8 @@ const EditMoviePage: React.FC = () => {
       // Оновлення зв'язків Movie + Genre
       if (movie.extraInfo.genres.length > 0) {
         const movieGenres: MovieGenre[] = movie.extraInfo.genres.map(g => ({
-          movieId: movieId,
-          genreId: Number(g.id || (g as any).genreId)
+          movieId,
+          genreId: g.id
         }));
         await movieGenreApi.updateMovieGenre(movieGenres);
       }
@@ -202,7 +194,11 @@ const EditMoviePage: React.FC = () => {
   }
 
   const filteredGenresForSelect = availableGenres.filter(ag => 
-    !movie.extraInfo.genres.some(mg => Number(mg.id || (mg as any).genreId) === ag.id)
+    !movie.extraInfo.genres.some(mg => mg.id === ag.id)
+  );
+
+  const filteredTmdbCast = tmdbCast.filter(
+    tmdbA => !movie.extraInfo.actors.some(ma => ma.id === tmdbA.id)
   );
 
   return (
@@ -221,15 +217,12 @@ const EditMoviePage: React.FC = () => {
           <div className={styles.fieldGroup}>
             <label>Жанри</label>
             <div className={styles.tagCloud}>
-              {movie.extraInfo.genres.map(genre => {
-                const gId = Number(genre.id || (genre as any).genreId);
-                return (
-                  <span key={gId} className={styles.tag}>
-                    {genre.name}
-                    <button type="button" onClick={() => handleRemoveGenre(gId)} className={styles.removeTagBtn}>×</button>
-                  </span>
-                );
-              })}
+              {movie.extraInfo.genres.map(genre => (
+                <span key={genre.id} className={styles.tag}>
+                  {genre.name}
+                  <button type="button" onClick={() => handleRemoveGenre(genre.id)} className={styles.removeTagBtn}>×</button>
+                </span>
+              ))}
               <select 
                 className={styles.genreSelect} 
                 onChange={(e) => { handleAddGenre(e.target.value); e.target.value = ""; }}

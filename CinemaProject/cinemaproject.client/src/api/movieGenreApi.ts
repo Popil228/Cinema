@@ -1,12 +1,17 @@
+
 import type { MovieGenre } from "../types/movieGenre";
+import { tokenStorage } from "./authApi";
 
 const API_BASE_URL = '/api';
 
 const createMovieGenre = async (movieGenreData: MovieGenre[]) => {
+    const token = tokenStorage.getToken();
+    const headers: Record<string, string> = { 'Content-type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     const response = await fetch(`${API_BASE_URL}/MovieGenres`, {
         method: 'POST',
-      headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify(movieGenreData),
+        headers,
+        body: JSON.stringify(movieGenreData),
     })
 
   const body = await response.json();
@@ -19,9 +24,12 @@ const createMovieGenre = async (movieGenreData: MovieGenre[]) => {
 }
 
 const updateMovieGenre = async (movieGenreData: MovieGenre[]) => {
+  const token = tokenStorage.getToken();
+  const headers: Record<string, string> = { 'Content-type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/MovieGenres`, {
     method: 'PUT',
-    headers: { 'Content-type': 'application/json' },
+    headers,
     body: JSON.stringify(movieGenreData),
   })
 

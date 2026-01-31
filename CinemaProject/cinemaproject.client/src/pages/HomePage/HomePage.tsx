@@ -1,83 +1,72 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import SessionItem from '../../components/SessionItem/SessionItem';
 import styles from './HomePage.module.scss';
-import { type Session } from '../../types/movie';
-import { getAllRollingMovies } from '../../api/moviesApi';
-import UserMoviesContext from '../../context/userMoviesContext/UserMoviesContext';
+import { useFutureSessions, useNowShowingMovies } from '../../hooks/ReactQueryHooks';
 
 const Home: React.FC = () => {
-  const rollingMovies = useContext(UserMoviesContext);
-  const [rollingMoviesError,setRollingMoviesError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
+  const nowShowingMovies = useNowShowingMovies();
+  const sessions = useFutureSessions();
+
+  const [nowShowingMoviesError,setRollingMoviesError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження..."});
+  const [sessionsError,setSessionsError] = useState<{is: boolean, text: string}>({is:true, text:"Завантаження сеансів..."});
 
   useEffect(()=>{
     const fetchData = async() => {
-      try{
-        rollingMovies.setMovies(await getAllRollingMovies())
-        setRollingMoviesError({is:false, text:"цього не повинно бути видно"});
-      }
-      catch(err)
+      //fetching movie data
+      if(nowShowingMovies.isSuccess)
       {
-        setRollingMoviesError({is:true, text:"Фільмів в прокаті не знайдено :("});
-        console.error(err);
+        setRollingMoviesError({is: false, text:"цього не видно"});
+      }
+      else if(nowShowingMovies.isError)
+      {
+        console.error(nowShowingMovies.error.message);
+        setRollingMoviesError({is: true, text:"Помилка завантаження фільмів"});
+        return;
+      }
+
+
+      //fetching sessions data
+      if(sessions.isSuccess)
+      {
+        setSessionsError({is: false, text:"цього не видно"});
+      }
+      else if(sessions.isError)
+      {
+        console.error(sessions.error.message);
+        setSessionsError({is: true, text:"Помилка завантаження сеансів"});
+        return;
       }
     }
 
     fetchData();
   },[])
-
-  const sessions: Session[] = [
-    {
-      id: 1,
-      title: "Minecraft",
-      genres: ["Комедія", "Трагедія"],
-      date: new Date("2025-04-03"),
-      time: "13:00",
-      imageUrl: "/logo.png",
-      hall: 'A'
-    },
-    {
-      id: 2,
-      title: "Дюна: Частина друга",
-      genres: ["Фантастика", "Пригоди"], 
-      date: new Date("2025-04-03"),
-      time: "13:00",
-      imageUrl: "/logo.png",
-      hall: 'B'
-    },
-    {
-      id: 3,
-      title: "Дюна: Частина друга",
-      genres: ["Фантастика", "Пригоди"], 
-      date: new Date("2025-04-03"),
-      time: "16:00",
-      imageUrl: "/logo.png",
-      hall: 'B'
-    }
-  ];
   
   return (
     <>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>В прокаті</h2>
-        { rollingMoviesError.is ? 
-        <h2 className={styles.sectionTitle}>{rollingMoviesError.text}</h2> :
+        { !nowShowingMovies.isSuccess ? 
+        <h2 className={styles.alertMessage}>{nowShowingMoviesError.text}</h2> :
         <div className={styles.movieGrid}>
-          {rollingMovies.movies.map(movie => (
+          {(nowShowingMovies.data || []).map(movie => (
             <MovieCard key={movie.mainInfo.id} movie={movie} />
           ))}
         </div>
         }
       </section>
 
+      
+      {!sessions.isSuccess ? <h1 className={styles.alertMessage}>{sessionsError.text}</h1>
+      :
       <section className={styles.section}>
         <h2 className={styles.centeredTitle}>Найближчі сеанси</h2>
         
         <div className={styles.sessionsWrapper}>
           <div className={styles.hallColumn}>
             <h3>Зал А</h3>
-            {sessions
-              .filter(s => s.hall === 'A')
+            {(sessions.data || []) //preventing undefined exceptions
+              .filter(s => s.hallId == 1)
               .map(session => (
                 <SessionItem 
                   session={session}
@@ -90,8 +79,8 @@ const Home: React.FC = () => {
           
           <div className={styles.hallColumn}>
             <h3>Зал В</h3>
-            {sessions
-              .filter(s => s.hall === 'B')
+            {(sessions.data || []) //preventing undefined exceptions
+              .filter(s => s.hallId == 2)
               .map(session => (
                 <SessionItem 
                   session={session}
@@ -103,6 +92,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+      }
     </>
   );
 };

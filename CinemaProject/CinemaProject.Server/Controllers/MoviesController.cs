@@ -1,5 +1,7 @@
 ﻿using CinemaProject.Server.DTOs.Movie;
 using CinemaProject.Server.Services;
+using Microsoft.AspNetCore.Authorization;
+using CinemaProject.Server.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaProject.Server.Controllers
@@ -16,29 +18,11 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMovies()
+        public async Task<IActionResult> GetAllMovies([FromQuery] bool onlyShowingNow = false)
         {
             try
             {
-                var movies = await _movieService.GetAllMoviesAsync();
-                return Ok(movies);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
-            }
-
-        }
-
-        [HttpGet ("rolling")]
-        public async Task<IActionResult> GetAllRollingMovies()
-        {
-            try
-            {
-                var movies = await _movieService.GetAllRollingMoviesAsync();
+                var movies = await _movieService.GetAllMoviesAsync(onlyShowingNow);
                 return Ok(movies);
             }
             catch (Exception ex)
@@ -70,6 +54,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "ManageMovies")]
         public async Task<ActionResult<MovieResponse>> СreateMovie([FromBody] ShortMovieDto request)
         {
             if (!ModelState.IsValid)
@@ -92,6 +77,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Policy = "ManageMovies")]
         public async Task<ActionResult<MovieResponse>> DeleteMovie(int id)
         {
             if (!ModelState.IsValid)
@@ -114,6 +100,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "ManageMovies")]
         public async Task<ActionResult<MovieResponse>> UpdateMovie([FromBody] ShortMovieDto request)
         {
             if (!ModelState.IsValid)

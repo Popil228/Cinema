@@ -1,4 +1,4 @@
-import type { MovieInfo } from "../types/movie";
+import type { Cast, MovieInfo } from "../types/movie";
 
 const API_BASE_URL = '/api';
 
@@ -37,7 +37,7 @@ const getCastInfoByIdTMDB = async (movieId:number) => {
       throw new Error(body.error ?? 'Помилка сервера');
     }
 
-    return body as MovieInfo;
+    return body as Cast[];
 }
 
 export {searchMovies, getMovieInfoByIdTMDB, getCastInfoByIdTMDB};

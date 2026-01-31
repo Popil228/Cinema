@@ -2,6 +2,8 @@
 using CinemaProject.Server.DTOs.MovieActor;
 using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using CinemaProject.Server.Models.Enums;
 
 namespace CinemaProject.Server.Controllers
 {
@@ -17,6 +19,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "ManageMovieRelations")]
         public async Task<ActionResult<MovieActorResponse>> CreateMovieActors([FromBody] List<MovieActorDto> request)
         {
             if (!ModelState.IsValid)
@@ -38,6 +41,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "ManageMovieRelations")]
         public async Task<ActionResult<MovieActorResponse>> UpdateMovieActors([FromBody] List<MovieActorDto> request)
         {
             if (!ModelState.IsValid)
@@ -60,6 +64,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = "ManageMovieRelations")]
         public async Task<ActionResult<MovieActorResponse>> DeleteMovieActors([FromBody] MovieActorDto request)
         {
             if (!ModelState.IsValid)

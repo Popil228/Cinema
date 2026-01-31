@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:5005/api';
+import { tokenStorage } from './authApi';
+const API_BASE_URL = '/api';
 
 export interface SessionDto {
   id: number;
@@ -32,11 +33,16 @@ export interface HallDto {
   name: string;
 }
 
-export const getAllSessions = async (): Promise<SessionDto[]> => {
-  const response = await fetch(`${API_BASE_URL}/Sessions`);
+export const getAllSessions = async (onlyUpcoming:boolean = false, movieId:number|null = null): Promise<SessionDto[]> => {
+  const fetchUri = "" + `${API_BASE_URL}/Sessions`
+  + `?onlyUpcoming=${onlyUpcoming}`
+  + ((movieId===null) ? "" : `&movieId=${movieId}`);
+
+  const response = await fetch(fetchUri, {method:"GET"});
   if (!response.ok) {
     throw new Error('Помилка завантаження сесій');
   }
+
   return response.json();
 };
 
@@ -49,9 +55,12 @@ export const getSessionById = async (id: number): Promise<SessionDto> => {
 };
 
 export const createSession = async (dto: CreateSessionDto): Promise<SessionDto> => {
+  const token = tokenStorage.getToken();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Sessions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(dto),
   });
   
@@ -79,13 +88,29 @@ export const updateSession = async (id: number, dto: UpdateSessionDto): Promise<
 };
 
 export const deleteSession = async (id: number): Promise<void> => {
+  const token = tokenStorage.getToken();
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Sessions/${id}`, {
     method: 'DELETE',
+    headers,
   });
-  
+
+  const contentType = response.headers.get('content-type');
+  let body = null;
+  if (contentType && contentType.includes('application/json')) {
+    body = await response.json();
+  } else {
+    const text = await response.text();
+    body = text ? text : null;
+  }
+
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Помилка видалення сесії');
+    if (body && typeof body === 'object' && 'message' in body) {
+      throw new Error(body.message ?? 'Помилка видалення сесії');
+    } else {
+      throw new Error('Помилка видалення сесії');
+    }
   }
 };
 
