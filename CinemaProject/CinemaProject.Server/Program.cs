@@ -36,7 +36,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManageMovies", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageActors", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageMovieRelations", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageHalls", policy => policy.RequireRole("Admin", "Manager"));
+    options.AddPolicy("ManageSessions", policy => policy.RequireRole("Admin", "Manager"));
+  
+});
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -61,6 +69,7 @@ builder.Services.AddScoped<IMovieActorService, MovieActorService>();
 builder.Services.AddScoped<IMovieGenreService, MovieGenreService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();

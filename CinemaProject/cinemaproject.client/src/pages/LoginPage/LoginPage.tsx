@@ -38,33 +38,33 @@ const LoginPage: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.authCard}>
         <h1 className={styles.title}>Логін</h1>
-        
+
         {error && <div className={styles.error}>{error}</div>}
-        
+
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
             <label>Електронна пошта</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               placeholder="example@mail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          
+
           <div className={styles.inputGroup}>
             <label>Пароль</label>
             <div className={styles.passwordWrapper}>
-              <input 
-                type={showPassword ? "text" : "password"} 
+              <input
+                type={showPassword ? "text" : "password"}
                 placeholder="Введіть пароль"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={styles.eyeIcon}
                 onClick={() => setShowPassword(!showPassword)}
               >
@@ -73,12 +73,12 @@ const LoginPage: React.FC = () => {
             </div>
             <Link to="/forgot-password" className={styles.forgotLink}>Забули пароль?</Link>
           </div>
-          
+
           <button type="submit" className={styles.submitBtn} disabled={isLoading}>
             {isLoading ? 'Вхід...' : 'Увійти'}
           </button>
         </form>
-        
+
         <p className={styles.footerText}>
           Перший раз тут? <Link to="/register">Зареєструватися</Link>
         </p>

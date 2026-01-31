@@ -1,18 +1,12 @@
 ﻿import React, { useContext } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import styles from './Header.module.scss';
 
 const Header: React.FC = () => {
     const auth = useContext(AuthContext);
-    const navigate = useNavigate();
 
     if (!auth) return null;
-
-    const handleLogout = () => {
-        auth.logout();
-        navigate('/');
-    };
 
     return (
         <header className={styles.header}>
@@ -37,8 +31,14 @@ const Header: React.FC = () => {
                 <div className={styles.auth}>
                     {auth.isAuthenticated ? (
                         <div className={styles.userSection}>
-                            <span className={styles.userEmail}>{auth.user?.email}</span>
-                            <button onClick={handleLogout} className={styles.logoutBtn}>Вийти</button>
+                            {/* Пошта тепер посилання на профілю */}
+                            <Link to="/profile" className={styles.userEmail}>
+                                {auth.user?.email}
+                            </Link>
+                            {/* Замість виходу — кнопка квитків */}
+                            <Link to="/profile/tickets" className={styles.ticketsBtn}>
+                                Квитки
+                            </Link>
                         </div>
                     ) : (
                         <>
