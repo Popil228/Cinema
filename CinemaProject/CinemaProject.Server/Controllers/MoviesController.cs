@@ -1,5 +1,7 @@
 ﻿using CinemaProject.Server.DTOs.Movie;
 using CinemaProject.Server.Services;
+using Microsoft.AspNetCore.Authorization;
+using CinemaProject.Server.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaProject.Server.Controllers
@@ -70,6 +72,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "ManageMovies")]
         public async Task<ActionResult<MovieResponse>> СreateMovie([FromBody] ShortMovieDto request)
         {
             if (!ModelState.IsValid)
@@ -92,6 +95,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Policy = "ManageMovies")]
         public async Task<ActionResult<MovieResponse>> DeleteMovie(int id)
         {
             if (!ModelState.IsValid)
@@ -114,6 +118,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "ManageMovies")]
         public async Task<ActionResult<MovieResponse>> UpdateMovie([FromBody] ShortMovieDto request)
         {
             if (!ModelState.IsValid)

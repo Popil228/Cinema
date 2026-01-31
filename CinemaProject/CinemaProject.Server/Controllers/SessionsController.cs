@@ -1,6 +1,8 @@
 using CinemaProject.Server.DTOs.Session;
 using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using CinemaProject.Server.Models.Enums;
 
 namespace CinemaProject.Server.Controllers
 {
@@ -34,6 +36,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "ManageSessions")]
         public async Task<ActionResult<SessionDto>> Create([FromBody] CreateSessionDto dto)
         {
             try
@@ -52,6 +55,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "ManageSessions")]
         public async Task<ActionResult<SessionDto>> Update(int id, [FromBody] UpdateSessionDto dto)
         {
             try
@@ -70,6 +74,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "ManageSessions")]
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _sessionService.DeleteSessionAsync(id);
