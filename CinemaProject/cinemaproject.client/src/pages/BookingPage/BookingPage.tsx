@@ -1,4 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  type ChangeEvent,
+} from "react";
 import styles from "./BookingPage.module.scss";
 import { getSessionById, type SessionDto } from "../../api/sessionsApi";
 import { dateToDayMonthStrUA } from "../../utilities/dateToStringUA";
@@ -25,6 +30,18 @@ const BookingPage: React.FC = () => {
   const [selectedSessionSeats, setSelectedSessionSeats] = useState<
     SessionSeatDtoTest[]
   >([]);
+  const [promoInput, setPromoInput] = useState<string>("");
+  const [promoSuccess, setPromoSuccess] = useState<boolean>(false);
+  const [promoFailure, setPromoFailure] = useState<boolean>(false);
+  const [promoBtnText, setPromoBtnText] = useState<string>(
+    "Активувати промокод",
+  );
+
+  const promoElementsAdditionalStyle =
+    " " +
+    (promoSuccess ? `${styles.success}` : "") +
+    " " +
+    (promoFailure ? `${styles.failure}` : "");
 
   const defaultPrice: number =
     bookingPageContext.selectedSession?.basePrice || 0;
@@ -382,6 +399,31 @@ const BookingPage: React.FC = () => {
       .join(", ");
   };
 
+  const promoBtnPress = () => {
+    if (promoInput == "promo") //success scenario
+    {
+      setPromoSuccess(!promoSuccess);
+      setPromoBtnText("Успішно активовано");
+    } else //fail scenario
+    {
+      setPromoFailure(true);
+      setPromoBtnText("Помилка");
+    }
+  };
+
+  const onPromoInputTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPromoInput(e.target.value);
+
+    if (promoSuccess) {
+      setPromoSuccess(false);
+      setPromoBtnText("Активувати промокод");
+    }
+    if (promoFailure) {
+      setPromoFailure(false);
+      setPromoBtnText("Активувати промокод");
+    }
+  };
+
   const seatsSplitByRowsObj: { [key: number]: SessionSeatDtoTest[] } = {};
   bookingPageContext.sessionSeats.forEach((s) => {
     if (!{}.propertyIsEnumerable.call(seatsSplitByRowsObj, s.rowNumber)) {
@@ -496,12 +538,33 @@ const BookingPage: React.FC = () => {
             )}
           </div>
 
-          <button
-            className={styles.bookBtn}
-            disabled={selectedSessionSeats.length === 0}
-          >
-            Придбати квитки
-          </button>
+          <div className={styles.buttonsContainer}>
+            <div className={styles.promoContainer}>
+              <input
+                type="text"
+                placeholder="Промокод"
+                className={
+                  `${styles.promoInput}` + promoElementsAdditionalStyle
+                }
+                value={promoInput}
+                onChange={onPromoInputTextChange}
+              ></input>
+              <button
+                className={`${styles.promoBtn}` + promoElementsAdditionalStyle}
+                disabled={promoInput.length === 0 || promoSuccess}
+                onClick={promoBtnPress}
+              >
+                {promoBtnText}
+              </button>
+            </div>
+
+            <button
+              className={styles.bookBtn}
+              disabled={selectedSessionSeats.length === 0}
+            >
+              Забронювати квитки
+            </button>
+          </div>
         </div>
       </div>
     </div>

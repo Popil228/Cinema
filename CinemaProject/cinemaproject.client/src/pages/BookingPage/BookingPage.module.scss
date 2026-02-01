@@ -153,7 +153,7 @@
 .footer {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  //align-items: flex-end;
   border-top: 1px solid var(--color-border);
   padding-top: 35px;
   gap: 40px;
@@ -238,18 +238,25 @@
   }
 }
 
-.bookBtn {
+@mixin confirmBtnMixin {
   background: var(--color-accent);
   color: white;
   border: none;
-  padding: 14px 48px;
+  width: 230px;
+  padding: 14px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
   white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+.bookBtn {
+  @include confirmBtnMixin;
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
 
   &:hover:not(:disabled) {
     transform: translateY(-3px);
@@ -270,12 +277,78 @@
   }
 }
 
-.controlsLoadingMsg {
-  font-size: var(--font-md);
-  color: var(--color-text-muted);
-  text-align: center;
-  margin-bottom: 40px;
-  font-weight: var(--font-weight-bold);
+.promoBtn {
+  @include confirmBtnMixin;
+
+  &:hover:not(:disabled):not(.failure) {
+    transform: translateY(-3px);
+    background: lighten(#38bdf8, 5%);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled:not(.success) {
+    background: var(--color-border);
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  &.success {
+    background: rgb(56, 248, 75);
+    box-shadow: none;
+  }
+
+  &.failure {
+    background: var(--color-error);
+    box-shadow: none;
+
+    &:hover {
+      transform: translateY(-3px);
+      background: lighten(#a21111, 5%);
+    }
+  }
+}
+
+.promoInput {
+  background: var(--color-border);
+  border: none;
+  height: 100%;
+  border-radius: 12px;
+  padding: 14px 20px;
+  color: var(--color-white);
+  font-size: 14;
+  //text-align: center;
+
+  &:focus {
+    outline: 1px solid var(--color-accent);
+  }
+
+  &.success {
+    outline: 1px solid rgb(56, 248, 75);
+  }
+
+  &.failure {
+    outline: 1px solid var(--color-error);
+  }
+}
+
+.promoContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.buttonsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  height: 100%;
+  gap: 5px;
 }
 
 // select {
