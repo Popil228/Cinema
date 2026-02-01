@@ -6,7 +6,8 @@ namespace CinemaProject.Server.DTOs.SessionSeat
         public int SessionId { get; set; }
         public int SeatId { get; set; }
         public bool IsActive { get; set; }
-        public string? SeatNumber { get; set; }
+        public short RowNumber { get; set; }
+        public short SeatNumber { get; set; }
         public string? SeatType { get; set; }
     }
 

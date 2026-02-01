@@ -6,6 +6,5 @@ namespace CinemaProject.Server.Services
     {
         Task<SessionSeatListResponse> GetAllBySessionIdAsync(int sessionId, bool? isActive = null);
         Task<SessionSeatResponse> GetByIdAsync(int id);
-        Task<SessionSeatResponse> CreateSessionSeatAsync(CreateSessionSeatDto dto);
     }
 }

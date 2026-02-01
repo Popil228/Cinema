@@ -82,78 +82,6 @@ namespace CinemaProject.Server.Services
             }
         }
 
-        public async Task<SessionSeatResponse> CreateSessionSeatAsync(CreateSessionSeatDto dto)
-        {
-            try
-            {
-                // Перевіряємо чи існує сесія
-                var session = await _context.Sessions.FindAsync(dto.SessionId);
-                if (session == null)
-                {
-                    return new SessionSeatResponse
-                    {
-                        Success = false,
-                        Message = $"Сесія з ID {dto.SessionId} не знайдена"
-                    };
-                }
-
-                // Перевіряємо чи існує місце
-                var seat = await _context.Seats.FindAsync(dto.SeatId);
-                if (seat == null)
-                {
-                    return new SessionSeatResponse
-                    {
-                        Success = false,
-                        Message = $"Місце з ID {dto.SeatId} не знайдено"
-                    };
-                }
-
-                // Перевіряємо чи вже існує таке місце для цієї сесії
-                var existing = await _context.SessionSeats
-                    .FirstOrDefaultAsync(ss => ss.SessionId == dto.SessionId && ss.SeatId == dto.SeatId);
-
-                if (existing != null)
-                {
-                    return new SessionSeatResponse
-                    {
-                        Success = false,
-                        Message = "Таке місце вже існує для цієї сесії"
-                    };
-                }
-
-                var sessionSeat = new SessionSeat
-                {
-                    SessionId = dto.SessionId,
-                    SeatId = dto.SeatId,
-                    IsAvailable = true // Нове місце доступне за замовчуванням
-                };
-
-                _context.SessionSeats.Add(sessionSeat);
-                await _context.SaveChangesAsync();
-
-                // Отримуємо створений об'єкт з включеними навігаційними властивостями
-                var created = await _context.SessionSeats
-                    .Include(ss => ss.Seat)
-                        .ThenInclude(s => s.SeatType)
-                    .FirstAsync(ss => ss.SessionSeatId == sessionSeat.SessionSeatId);
-
-                return new SessionSeatResponse
-                {
-                    Success = true,
-                    Message = "Місце сесії успішно створено",
-                    Data = MapToDto(created)
-                };
-            }
-            catch (Exception ex)
-            {
-                return new SessionSeatResponse
-                {
-                    Success = false,
-                    Message = $"Помилка при створенні місця сесії: {ex.Message}"
-                };
-            }
-        }
-
         private static SessionSeatDto MapToDto(SessionSeat sessionSeat)
         {
             return new SessionSeatDto
@@ -162,7 +90,8 @@ namespace CinemaProject.Server.Services
                 SessionId = sessionSeat.SessionId,
                 SeatId = sessionSeat.SeatId,
                 IsActive = sessionSeat.IsAvailable,
-                SeatNumber = sessionSeat.Seat?.SeatNumber.ToString(),
+                RowNumber = sessionSeat.Seat?.RowNumber ?? 0,
+                SeatNumber = sessionSeat.Seat?.SeatNumber ?? 0,
                 SeatType = sessionSeat.Seat?.SeatType?.Type
             };
         }

@@ -43,29 +43,5 @@ namespace CinemaProject.Server.Controllers
 
             return Ok(response);
         }
-
-        
-        // Створює нове місце для сесії
-        [HttpPost]
-        public async Task<ActionResult<SessionSeatResponse>> Create([FromBody] CreateSessionSeatDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new SessionSeatResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
-            }
-
-            var response = await _sessionSeatService.CreateSessionSeatAsync(dto);
-
-            if (!response.Success)
-            {
-                return BadRequest(response);
-            }
-
-            return CreatedAtAction(nameof(GetById), new { id = response.Data?.SessionSeatId }, response);
-        }
     }
 }
