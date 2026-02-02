@@ -156,3 +156,7 @@ CinemaProject/CinemaProject.Server/Controllers/TmdbImportController.cs
 CinemaProject/CinemaProject.Server/Services/TmdbImportService.cs
 CinemaProject/CinemaProject.Server/appsettings.json
 CinemaProject/CinemaProject.Server/appsettings.json
+CinemaProject/CinemaProject.Server/Migrations/20260202165059_AddGenresSeedData.Designer.cs
+CinemaProject/CinemaProject.Server/Migrations/20260202164346_InitialCreateWithData.Designer.cs
+CinemaProject/CinemaProject.Server/Migrations/20260202165059_AddGenresSeedData.cs
+CinemaProject/CinemaProject.Server/Migrations/20260202164346_InitialCreateWithData.cs
