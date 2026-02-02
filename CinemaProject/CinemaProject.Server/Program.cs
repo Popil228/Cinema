@@ -75,6 +75,7 @@ builder.Services.AddScoped<ITmdbService, TmdbService>();
 builder.Services.AddScoped<IMovieActorService, MovieActorService>();
 builder.Services.AddScoped<IMovieGenreService, MovieGenreService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<ISessionSeatService, SessionSeatService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<ITicketService, TicketService>();

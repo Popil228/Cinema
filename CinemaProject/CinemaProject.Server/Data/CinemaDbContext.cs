@@ -135,6 +135,43 @@ namespace CinemaProject.Server.Data
 
 
 
+            // Ініціалізація типів місць
+            modelBuilder.Entity<SeatType>().HasData(
+                new SeatType { SeatsTypeId = 1, Type = "Standard", PricePercent = 100 },
+                new SeatType { SeatsTypeId = 2, Type = "VIP", PricePercent = 150 }
+            );
+
+            // Ініціалізація залів
+            modelBuilder.Entity<Hall>().HasData(
+                new Hall { HallId = 1, Name = "Зал 1" },
+                new Hall { HallId = 2, Name = "Зал 2" }
+            );
+
+            // Ініціалізація місць для кожного залу
+            var seats = new List<Seat>();
+            for (int hallId = 1; hallId <= 2; hallId++)
+            {
+                for (short row = 1; row <= 5; row++)
+                {
+                    for (short seatNum = 1; seatNum <= 10; seatNum++)
+                    {
+                        int seatTypeId;
+                        if (row <= 3) seatTypeId = 1; // Standard - перші 3 ряди
+                        else seatTypeId = 2; // VIP - останні 2 ряди
+
+                        seats.Add(new Seat
+                        {
+                            SeatId = (hallId - 1) * 50 + (row - 1) * 10 + seatNum,
+                            HallId = hallId,
+                            RowNumber = row,
+                            SeatNumber = seatNum,
+                            SeatTypeId = seatTypeId
+                        });
+                    }
+                }
+            }
+            modelBuilder.Entity<Seat>().HasData(seats);
+
             base.OnModelCreating(modelBuilder);
         }
 
