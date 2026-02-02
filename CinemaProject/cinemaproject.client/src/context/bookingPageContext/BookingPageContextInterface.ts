@@ -1,13 +1,12 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { SessionDto } from "../../api/sessionsApi";
-import type { SessionSeatDtoTest } from "../../types/session";
+import type { SessionDto, SessionSeatDto } from "../../api/sessionsApi";
 
 interface BookingPageContextInterface {
     selectedSession: SessionDto | null;
     setSelectedSession: Dispatch<SetStateAction<SessionDto | null>>;
 
-    sessionSeats: SessionSeatDtoTest[];
-    setSessionSeats: Dispatch<SetStateAction<SessionSeatDtoTest[]>>;
+    sessionSeats: SessionSeatDto[];
+    setSessionSeats: Dispatch<SetStateAction<SessionSeatDto[]>>;
 }
 
 export {type BookingPageContextInterface};

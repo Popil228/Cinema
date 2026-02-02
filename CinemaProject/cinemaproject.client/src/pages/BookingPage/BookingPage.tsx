@@ -5,9 +5,13 @@ import React, {
   type ChangeEvent,
 } from "react";
 import styles from "./BookingPage.module.scss";
-import { getSessionById, type SessionDto } from "../../api/sessionsApi";
+import {
+  getSessionById,
+  getSessionSeats,
+  type SessionDto,
+  type SessionSeatDto,
+} from "../../api/sessionsApi";
 import { dateToDayMonthStrUA } from "../../utilities/dateToStringUA";
-import type { SessionSeatDtoTest } from "../../types/session";
 import { useParams } from "react-router-dom";
 import BookingPageContext from "../../context/bookingPageContext/BookingPageContext";
 import SessionSeat from "../../components/SessionSeat/SessionSeat";
@@ -28,7 +32,7 @@ const BookingPage: React.FC = () => {
     bookingPageContext.selectedSession?.hallName || "Зал _";
 
   const [selectedSessionSeats, setSelectedSessionSeats] = useState<
-    SessionSeatDtoTest[]
+    SessionSeatDto[]
   >([]);
   const [promoInput, setPromoInput] = useState<string>("");
   const [promoSuccess, setPromoSuccess] = useState<boolean>(false);
@@ -46,319 +50,10 @@ const BookingPage: React.FC = () => {
   const defaultPrice: number =
     bookingPageContext.selectedSession?.basePrice || 0;
   const totalCost: number = selectedSessionSeats
-    .map((s) => Math.round(s.seatTypePricePercent * defaultPrice * 0.01))
+    .map((s) =>
+      Math.round((s.seatType == "VIP" ? 150 : 100) * defaultPrice * 0.01),
+    ) //обрахування відсотку - заглушка
     .reduce((sum, singleTicketPrice) => sum + singleTicketPrice, 0);
-
-  const sessionSeatsTemplateData: SessionSeatDtoTest[] = [
-    //згенеровано жеміні
-    // --- ROW 1 (5 Seats) ---
-    {
-      id: 101,
-      rowNumber: 1,
-      seatNumber: 1,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 102,
-      rowNumber: 1,
-      seatNumber: 2,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-    {
-      id: 103,
-      rowNumber: 1,
-      seatNumber: 3,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 104,
-      rowNumber: 1,
-      seatNumber: 4,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 105,
-      rowNumber: 1,
-      seatNumber: 5,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-
-    // --- ROW 2 (7 Seats) ---
-    {
-      id: 201,
-      rowNumber: 2,
-      seatNumber: 1,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 202,
-      rowNumber: 2,
-      seatNumber: 2,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 203,
-      rowNumber: 2,
-      seatNumber: 3,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-    {
-      id: 204,
-      rowNumber: 2,
-      seatNumber: 4,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 205,
-      rowNumber: 2,
-      seatNumber: 5,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 206,
-      rowNumber: 2,
-      seatNumber: 6,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-    {
-      id: 207,
-      rowNumber: 2,
-      seatNumber: 7,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-
-    // --- ROW 3 (9 Seats) ---
-    {
-      id: 301,
-      rowNumber: 3,
-      seatNumber: 1,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-    {
-      id: 302,
-      rowNumber: 3,
-      seatNumber: 2,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 303,
-      rowNumber: 3,
-      seatNumber: 3,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 304,
-      rowNumber: 3,
-      seatNumber: 4,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 305,
-      rowNumber: 3,
-      seatNumber: 5,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-    {
-      id: 306,
-      rowNumber: 3,
-      seatNumber: 6,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 307,
-      rowNumber: 3,
-      seatNumber: 7,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 308,
-      rowNumber: 3,
-      seatNumber: 8,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-    {
-      id: 309,
-      rowNumber: 3,
-      seatNumber: 9,
-      seatTypeId: 1,
-      seatTypeName: "Standard",
-      seatTypePricePercent: 100,
-      sessionId: 1,
-      isAvailable: true,
-    },
-
-    // --- ROW 4 (9 Seats - VIP) ---
-    {
-      id: 401,
-      rowNumber: 4,
-      seatNumber: 1,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 402,
-      rowNumber: 4,
-      seatNumber: 2,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 403,
-      rowNumber: 4,
-      seatNumber: 3,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 404,
-      rowNumber: 4,
-      seatNumber: 4,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-    {
-      id: 405,
-      rowNumber: 4,
-      seatNumber: 5,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 406,
-      rowNumber: 4,
-      seatNumber: 6,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 407,
-      rowNumber: 4,
-      seatNumber: 7,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 408,
-      rowNumber: 4,
-      seatNumber: 8,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: true,
-    },
-    {
-      id: 409,
-      rowNumber: 4,
-      seatNumber: 9,
-      seatTypeId: 2,
-      seatTypeName: "VIP",
-      seatTypePricePercent: 150,
-      sessionId: 1,
-      isAvailable: false,
-    }, // Booked
-  ];
 
   useEffect(() => {
     const loadSessionByCurrentId = async () => {
@@ -368,7 +63,8 @@ const BookingPage: React.FC = () => {
 
     const loadSessionsSeats = async () => {
       //тут має бути запит в апішку по типу await getSessionSeats(selectedSessionId);
-      const loadedSessionSeats: SessionSeatDtoTest[] = sessionSeatsTemplateData;
+      const loadedSessionSeats: SessionSeatDto[] =
+        await getSessionSeats(selectedSessionId);
       bookingPageContext.setSessionSeats(loadedSessionSeats);
     };
 
@@ -381,14 +77,14 @@ const BookingPage: React.FC = () => {
     loadSessionsSeats();
   }, []);
 
-  const handleSeatClick = (sessionSeat: SessionSeatDtoTest) => {
-    if (!sessionSeat.isAvailable) {
+  const handleSeatClick = (sessionSeat: SessionSeatDto) => {
+    if (!sessionSeat.isActive) {
       return;
     }
 
     setSelectedSessionSeats((prev) =>
       prev.includes(sessionSeat)
-        ? prev.filter((s) => s.id !== sessionSeat.id)
+        ? prev.filter((s) => s.sessionSeatId !== sessionSeat.sessionSeatId)
         : [...prev, sessionSeat],
     );
   };
@@ -424,7 +120,7 @@ const BookingPage: React.FC = () => {
     }
   };
 
-  const seatsSplitByRowsObj: { [key: number]: SessionSeatDtoTest[] } = {};
+  const seatsSplitByRowsObj: { [key: number]: SessionSeatDto[] } = {};
   bookingPageContext.sessionSeats.forEach((s) => {
     if (!{}.propertyIsEnumerable.call(seatsSplitByRowsObj, s.rowNumber)) {
       seatsSplitByRowsObj[s.rowNumber] = [];
@@ -432,7 +128,7 @@ const BookingPage: React.FC = () => {
     seatsSplitByRowsObj[s.rowNumber].push(s);
   });
 
-  const seatsSplitByRowsArr: SessionSeatDtoTest[][] = Object.keys(
+  const seatsSplitByRowsArr: SessionSeatDto[][] = Object.keys(
     seatsSplitByRowsObj,
   )
     .map((key) => seatsSplitByRowsObj[Number.parseInt(key)])

@@ -33,6 +33,16 @@ export interface HallDto {
   name: string;
 }
 
+export interface SessionSeatDto{
+  sessionSeatId: number;
+  sessionId: number;
+  seatId: number;
+  isActive: boolean;
+  rowNumber: number;
+  seatNumber: number;
+  seatType: string;
+}
+
 export const getAllSessions = async (onlyUpcoming:boolean = false, movieId:number|null = null): Promise<SessionDto[]> => {
   const fetchUri = "" + `${API_BASE_URL}/Sessions`
   + `?onlyUpcoming=${onlyUpcoming}`
@@ -131,3 +141,21 @@ export const initHalls = async (): Promise<{ message: string }> => {
   }
   return response.json();
 };
+
+interface SessionSeatApiResponse
+{
+  success : true;
+  message : null;
+  data : SessionSeatDto[];
+}
+
+export const getSessionSeats = async(sessionId:number) : Promise<SessionSeatDto[]> => {
+  const response = await fetch(`${API_BASE_URL}/SessionSeat?sessionId=${sessionId}`, {
+    method: 'GET',
+  });
+
+  if(!response.ok) {
+    throw new Error('Помилка завантаження місць для сеансу');
+  }
+  return (await response.json() as SessionSeatApiResponse).data;
+}

@@ -1,11 +1,11 @@
 import type React from "react";
-import type { SessionSeatDtoTest } from "../../types/session";
 import styles from "./SessionSeat.module.scss";
+import type { SessionSeatDto } from "../../api/sessionsApi";
 
 interface SessionSeatComponent {
-  sessionSeat: SessionSeatDtoTest;
+  sessionSeat: SessionSeatDto;
   isSelected: boolean;
-  handleClick: (sessionSeat: SessionSeatDtoTest) => void;
+  handleClick: (sessionSeat: SessionSeatDto) => void;
 }
 
 const SessionSeat: React.FC<SessionSeatComponent> = ({
@@ -14,21 +14,19 @@ const SessionSeat: React.FC<SessionSeatComponent> = ({
   handleClick,
 }) => {
   const className =
-    `${styles.seat} ${!sessionSeat.isAvailable ? styles.occupied : ""}` +
+    `${styles.seat} ${!sessionSeat.isActive ? styles.occupied : ""}` +
     " " +
     `${isSelected ? styles.selected : ""}` +
     " " +
-    (sessionSeat.seatTypeId == 1
+    (sessionSeat.seatType == "Standard"
       ? styles.seatColor1
-      : sessionSeat.seatTypeId == 2
+      : sessionSeat.seatType == "VIP"
         ? styles.seatColor2
-        : sessionSeat.seatTypeId == 3
-          ? styles.seatColor3
-          : styles.seatColor1);
+        : styles.seatColor3);
 
   return (
     <div
-      key={sessionSeat.id}
+      key={sessionSeat.sessionSeatId}
       className={className}
       onClick={() => handleClick(sessionSeat)}
     >
