@@ -52,6 +52,15 @@ namespace CinemaProject.Server.Services
                         .ThenInclude(s => s.SeatType)
                     .ToListAsync();
 
+                if (!seats.Any())
+                {
+                    return new BookingCreateResponse
+                    {
+                        Success = false,
+                        Message = "Місце або місця відсутні"
+                    };
+                }
+
                 if (seats.Any(ss => !ss.IsAvailable))
                 {
                     return new BookingCreateResponse
@@ -64,7 +73,7 @@ namespace CinemaProject.Server.Services
                 decimal totalPrice = 0;
                 foreach (var seat in seats)
                 {
-                    var price = seat.Session.BasePrice + (seat.Session.BasePrice * (seat.Seat.SeatType.PricePercent / 100m));
+                    var price = seat.Session.BasePrice * (seat.Seat.SeatType.PricePercent / 100m);
                     totalPrice += price;
 
                     _context.Tickets.Add(new Ticket

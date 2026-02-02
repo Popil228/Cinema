@@ -32,6 +32,15 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
+            if(!request.SessionSeatIds.Any())
+            {
+                return BadRequest(new BookingCreateResponse
+                {
+                    Success = true,
+                    Message = "Бронювання неможливе, виберіть містя"
+                });
+            }
+
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(userIdStr, out var userId))

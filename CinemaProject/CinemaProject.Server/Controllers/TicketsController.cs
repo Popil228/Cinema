@@ -40,7 +40,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet("admin")]
-        [Authorize (Policy = "ManageTickets")]
+        [Authorize(Policy = "ManageTickets")]
         public async Task<ActionResult<TicketGetResponse>> AdminGetTicketsByBookingId([FromQuery] int bookingId)
         {
             var response = await _ticketService.GetTicketsByBookingIdAsync(bookingId);
@@ -56,7 +56,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpDelete("{id:int}/user")]
-        [Authorize(Policy = "UserOrAdminTickets")] 
+        [Authorize(Policy = "UserOrAdminTickets")]
         public async Task<ActionResult<TicketResponse>> DeleteTicket(int id)
         {
             var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

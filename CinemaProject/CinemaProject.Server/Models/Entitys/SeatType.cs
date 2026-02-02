@@ -6,7 +6,7 @@ namespace CinemaProject.Server.Models.Entitys
     public class SeatType
     {
         [Key]
-        public int SeatsTypeId { get; set; }
+        public int SeatTypeId { get; set; }
 
         [Column(TypeName = "varchar(50)")]
         public string Type { get; set; } = null!;

@@ -61,7 +61,7 @@ const AdminSessionsPage: React.FC = () => {
         movieId: selectedMovieId,
         hallId: selectedHallId,
         startTime: date.toISOString(),
-        ticketPrice
+        basePrice: ticketPrice,
       };
       await createSession(newSession);
       setShowModal(false);

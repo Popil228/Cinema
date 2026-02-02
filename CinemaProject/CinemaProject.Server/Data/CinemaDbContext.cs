@@ -70,19 +70,19 @@ namespace CinemaProject.Server.Data
                 .HasForeignKey(s => s.SeatTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Налагодження заборони на видалення для сеансів та сеанс-місць
+            // Налагодження каскадного видалення для сеансів та сеанс-місць
             modelBuilder.Entity<SessionSeat>()
                 .HasOne(ss => ss.Session)
                 .WithMany(s => s.SessionSeats)
                 .HasForeignKey(ss => ss.SessionId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Налагодження заборони на видалення для квитків та сеанс-місць
+            // Налагодження каскадного видалення для квитків та сеанс-місць
             modelBuilder.Entity<Ticket>()
                 .HasOne(t => t.SessionSeat)
                 .WithOne(ss => ss.Ticket)
                 .HasForeignKey<Ticket>(t => t.SessionSeatId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Налагодження заборони на видалення для знижок та бронювань
             modelBuilder.Entity<Booking>()
@@ -137,14 +137,14 @@ namespace CinemaProject.Server.Data
 
             // Ініціалізація типів місць
             modelBuilder.Entity<SeatType>().HasData(
-                new SeatType { SeatsTypeId = 1, Type = "Standard", PricePercent = 100 },
-                new SeatType { SeatsTypeId = 2, Type = "VIP", PricePercent = 150 }
+                new SeatType { SeatTypeId = 1, Type = "Standard", PricePercent = 100 },
+                new SeatType { SeatTypeId = 2, Type = "VIP", PricePercent = 150 }
             );
 
             // Ініціалізація залів
             modelBuilder.Entity<Hall>().HasData(
-                new Hall { HallId = 1, Name = "Зал 1" },
-                new Hall { HallId = 2, Name = "Зал 2" }
+                new Hall { HallId = 1, Name = "Зал A" },
+                new Hall { HallId = 2, Name = "Зал B" }
             );
 
             // Ініціалізація місць для кожного залу

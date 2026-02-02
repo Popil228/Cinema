@@ -1,4 +1,5 @@
-﻿using CinemaProject.Server.Data;
+﻿using Azure.Core;
+using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Ticket;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -143,37 +144,34 @@ namespace CinemaProject.Server.Services
         }
 
         /// <summary>
-        /// Asynchronously deletes a ticket by its ID for a specific user and marks the associated session seat as available.
+        /// Deletes a user's ticket, updates the booking total, and marks the corresponding session seat as available.
         /// </summary>
-        /// <param name="ticketId">The unique identifier of the ticket to be deleted.</param>
-        /// <param name="userId">The unique identifier of the user attempting to delete the ticket. Users can only delete their own tickets.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="TicketResponse"/>
-        /// indicating whether the deletion was successful. The deletion is only allowed if the ticket exists, the related booking exists
-        /// and is in the <see cref="BookingStatus.Pending"/> state, and the user has permission to delete the ticket.</returns>
-
+        /// <param name="ticketId">The ID of the ticket to be deleted.</param>
+        /// <param name="userId">The ID of the user attempting to delete the ticket.</param>
+        /// <returns>
+        /// A <see cref="TicketResponse"/> object containing the result of the deletion operation
+        /// and a message indicating success or failure.
+        /// </returns>
+        /// <remarks>
+        /// The method performs the following steps:
+        /// 1. Checks if the booking containing the specified ticket exists.
+        /// 2. Verifies that the user has permission to delete the ticket.
+        /// 3. Ensures the booking is in the <see cref="BookingStatus.Pending"/> status.
+        /// 4. Updates the booking's total price after removing the ticket, applying any discount.
+        /// 5. Marks the session seat associated with the ticket as available.
+        /// 6. Removes the ticket from the database.
+        /// 7. Removes the booking if it no longer contains any tickets after deletion.
+        /// </remarks>
         public async Task<TicketResponse> DeleteTicketAsync(int ticketId, int userId)
         {
-            var userIdInBooking = await _context.Bookings
-                    .Where(b => b.Tickets!.Any(t => t.TicketId == ticketId))
-                    .Select(b => b.UserId)
-                    .FirstOrDefaultAsync();
-
-            if (userId != userIdInBooking)
-            {
-                return new TicketResponse
-                {
-                    Success = false,
-                    Message = "Ви не маєте дозволу видаляти цей квиток"
-                };
-            }
-
-            var bookingStatus = await _context.Tickets
-                .AsNoTracking()
-                .Where(t => t.TicketId == ticketId)
-                .Select(t => t.Booking.Status)
+            var curentBooking = await _context.Bookings
+                .Include(b => b.Tickets)
+                    .ThenInclude(t => t.SessionSeat)
+                .Include(b => b.Discount)
+                .Where(b => b.Tickets!.Any(t => t.TicketId == ticketId))
                 .FirstOrDefaultAsync();
 
-            if (bookingStatus == default)
+            if (curentBooking == null)
             {
                 return new TicketResponse
                 {
@@ -182,7 +180,16 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            if (bookingStatus != BookingStatus.Pending)
+            if (userId != curentBooking.UserId)
+            {
+                return new TicketResponse
+                {
+                    Success = false,
+                    Message = "Ви не маєте дозволу видаляти цей квиток"
+                };
+            }
+
+            if (curentBooking.Status != BookingStatus.Pending)
             {
                 return new TicketResponse
                 {
@@ -191,8 +198,9 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            var ticket = await _context.Tickets.FindAsync(ticketId);
-            if (ticket == null)
+            var curentTicket = curentBooking.Tickets!
+                .FirstOrDefault(t => t.TicketId == ticketId);
+            if (curentTicket == null)
             {
                 return new TicketResponse
                 {
@@ -201,13 +209,26 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            await _context.SessionSeats
-                .Where(ss => ss.SessionSeatId == ticket.SessionSeatId)
-                .ExecuteUpdateAsync(s => s.SetProperty(
-                    ss => ss.IsAvailable,
-                    ss => true));
+            var totalPrice = curentBooking.Tickets!
+                .Where(t => t.TicketId != ticketId)
+                .Sum(t => t.Price);
 
-            _context.Tickets.Remove(ticket);
+            if (curentBooking.Discount != null)
+            {
+                totalPrice *= (1 - curentBooking.Discount.DiscountPercent / 100m);
+            }
+
+            curentBooking.TotalPrice = totalPrice;
+
+            curentTicket.SessionSeat.IsAvailable = true;
+
+            _context.Tickets.Remove(curentTicket);
+
+            if (!curentBooking.Tickets!.Any(t => t.TicketId != ticketId))
+            {
+                _context.Bookings.Remove(curentBooking);
+            }
+
             await _context.SaveChangesAsync();
             return new TicketResponse
             {
@@ -226,12 +247,14 @@ namespace CinemaProject.Server.Services
 
         public async Task<TicketResponse> DeleteTicketAsync(int ticketId)
         {
-            var bookingStatus = await _context.Tickets
-                .AsNoTracking()
-                .Where(t => t.TicketId == ticketId)
-                .Select(t => t.Booking.Status)
+            var curentBooking = await _context.Bookings
+                .Include(b => b.Tickets)
+                    .ThenInclude(t => t.SessionSeat)
+                .Include(b => b.Discount)
+                .Where(b => b.Tickets!.Any(t => t.TicketId == ticketId))
                 .FirstOrDefaultAsync();
-            if (bookingStatus == default)
+
+            if (curentBooking == null)
             {
                 return new TicketResponse
                 {
@@ -239,7 +262,8 @@ namespace CinemaProject.Server.Services
                     Message = "Бронювання не знайдено"
                 };
             }
-            if (bookingStatus != BookingStatus.Pending)
+
+            if (curentBooking.Status != BookingStatus.Pending)
             {
                 return new TicketResponse
                 {
@@ -247,8 +271,10 @@ namespace CinemaProject.Server.Services
                     Message = "Квиток не може бути видалено, оскільки бронювання не перебуває в статусі Pending"
                 };
             }
-            var ticket = await _context.Tickets.FindAsync(ticketId);
-            if (ticket == null)
+
+            var curentTicket = curentBooking.Tickets!
+                .FirstOrDefault(t => t.TicketId == ticketId);
+            if (curentTicket == null)
             {
                 return new TicketResponse
                 {
@@ -257,13 +283,26 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            await _context.SessionSeats
-                .Where(ss => ss.SessionSeatId == ticket.SessionSeatId)
-                .ExecuteUpdateAsync(s => s.SetProperty(
-                    ss => ss.IsAvailable,
-                    ss => true));
+            var totalPrice = curentBooking.Tickets!
+                .Where(t => t.TicketId != ticketId)
+                .Sum(t => t.Price);
 
-            _context.Tickets.Remove(ticket);
+            if (curentBooking.Discount != null)
+            {
+                totalPrice *= (1 - curentBooking.Discount.DiscountPercent / 100m);
+            }
+
+            curentBooking.TotalPrice = totalPrice;
+
+            curentTicket.SessionSeat.IsAvailable = true;
+
+            _context.Tickets.Remove(curentTicket);
+
+            if (!curentBooking.Tickets!.Any(t => t.TicketId != ticketId))
+            {
+                _context.Bookings.Remove(curentBooking);
+            }
+
             await _context.SaveChangesAsync();
             return new TicketResponse
             {
