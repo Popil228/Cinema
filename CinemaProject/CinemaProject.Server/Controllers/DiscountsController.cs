@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using CinemaProject.Server.DTOs.Discount;
+﻿using CinemaProject.Server.DTOs.Discount;
 using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +18,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "ManageDiscounts")]
         public async Task<ActionResult<DiscountResponse>> CreateDiscount([FromBody] DiscountDto request)
         {
             if (!ModelState.IsValid)
@@ -43,6 +43,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "ManageDiscounts")]
         public async Task<ActionResult<DiscountGetResponse>> GetDiscounts()
         {
             var response = await _discount.GetDiscountsAsync();
@@ -57,6 +58,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Policy = "ManageDiscounts")]
         public async Task<ActionResult<DiscountResponse>> DeleteDiscount(int id)
         {
             if (!ModelState.IsValid)
@@ -80,8 +82,8 @@ namespace CinemaProject.Server.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "User")]
         [HttpPatch("use")]
+        [Authorize(Policy = "UserOrAdminDiscounts")]
         public async Task<ActionResult<DiscountUseResponse>> UseDiscount([FromQuery]string code)
         {
             if (!ModelState.IsValid)

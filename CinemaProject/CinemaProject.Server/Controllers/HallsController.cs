@@ -2,7 +2,6 @@ using CinemaProject.Server.Data;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaProject.Server.Controllers

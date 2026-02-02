@@ -13,12 +13,18 @@ namespace CinemaProject.Server.DTOs.Booking
         public List<BookingDto> Bookings { get; set; }
     }
 
+    public class BookingCreateResponse : BookingResponse
+    {
+        public int BookingId { get; set; }
+        public decimal TotalPrice { get; set; }
+    }
+
     public class BookingDto
     {
         public string BookingAt { get; set; } 
         public decimal TotalPrice { get; set; }
         public string? Status { get; set; }
-        public string Title { get; set; }
-        public string PosterPath { get; set; }
+        public string MovieTitle { get; set; }
+        public string MoviePosterPath { get; set; }
     }
 }

@@ -18,7 +18,7 @@ export interface CreateSessionDto {
   movieId: number;
   hallId: number;
   startTime: string;
-  ticketPrice: number;
+  basePrice: number;
 }
 
 export interface UpdateSessionDto {

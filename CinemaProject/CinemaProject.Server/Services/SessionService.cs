@@ -49,7 +49,9 @@ namespace CinemaProject.Server.Services
                 .FirstOrDefaultAsync(m => m.MovieId == dto.MovieId)
                 ?? throw new ArgumentException($"Фільм з ID {dto.MovieId} не знайдено");
 
-            var hall = await _context.Halls.FindAsync(dto.HallId)
+            var hall = await _context.Halls
+                .Include(h => h.Seats)
+                .FirstOrDefaultAsync(h => h.HallId == dto.HallId)
                 ?? throw new ArgumentException($"Зал з ID {dto.HallId} не знайдено");
 
             // Конвертуємо в UTC
@@ -79,6 +81,17 @@ namespace CinemaProject.Server.Services
             };
 
             _context.Sessions.Add(session);
+            await _context.SaveChangesAsync();
+
+            // Автоматично створюємо SessionSeat для всіх місць у залі
+            var sessionSeats = hall.Seats.Select(seat => new SessionSeat
+            {
+                SessionId = session.SessionId,
+                SeatId = seat.SeatId,
+                IsAvailable = true
+            }).ToList();
+
+            _context.SessionSeats.AddRange(sessionSeats);
             await _context.SaveChangesAsync();
 
             return MapToDto(session);

@@ -70,19 +70,19 @@ namespace CinemaProject.Server.Data
                 .HasForeignKey(s => s.SeatTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Налагодження заборони на видалення для сеансів та сеанс-місць
+            // Налагодження каскадного видалення для сеансів та сеанс-місць
             modelBuilder.Entity<SessionSeat>()
                 .HasOne(ss => ss.Session)
                 .WithMany(s => s.SessionSeats)
                 .HasForeignKey(ss => ss.SessionId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Налагодження заборони на видалення для квитків та сеанс-місць
+            // Налагодження каскадного видалення для квитків та сеанс-місць
             modelBuilder.Entity<Ticket>()
                 .HasOne(t => t.SessionSeat)
                 .WithOne(ss => ss.Ticket)
                 .HasForeignKey<Ticket>(t => t.SessionSeatId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Налагодження заборони на видалення для знижок та бронювань
             modelBuilder.Entity<Booking>()
@@ -134,6 +134,43 @@ namespace CinemaProject.Server.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
 
+
+            // Ініціалізація типів місць
+            modelBuilder.Entity<SeatType>().HasData(
+                new SeatType { SeatTypeId = 1, Type = "Standard", PricePercent = 100 },
+                new SeatType { SeatTypeId = 2, Type = "VIP", PricePercent = 150 }
+            );
+
+            // Ініціалізація залів
+            modelBuilder.Entity<Hall>().HasData(
+                new Hall { HallId = 1, Name = "Зал A" },
+                new Hall { HallId = 2, Name = "Зал B" }
+            );
+
+            // Ініціалізація місць для кожного залу
+            var seats = new List<Seat>();
+            for (int hallId = 1; hallId <= 2; hallId++)
+            {
+                for (short row = 1; row <= 5; row++)
+                {
+                    for (short seatNum = 1; seatNum <= 10; seatNum++)
+                    {
+                        int seatTypeId;
+                        if (row <= 3) seatTypeId = 1; // Standard - перші 3 ряди
+                        else seatTypeId = 2; // VIP - останні 2 ряди
+
+                        seats.Add(new Seat
+                        {
+                            SeatId = (hallId - 1) * 50 + (row - 1) * 10 + seatNum,
+                            HallId = hallId,
+                            RowNumber = row,
+                            SeatNumber = seatNum,
+                            SeatTypeId = seatTypeId
+                        });
+                    }
+                }
+            }
+            modelBuilder.Entity<Seat>().HasData(seats);
 
             base.OnModelCreating(modelBuilder);
         }

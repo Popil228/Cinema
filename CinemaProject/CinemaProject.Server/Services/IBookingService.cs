@@ -4,7 +4,7 @@ namespace CinemaProject.Server.Services
 {
     public interface IBookingService
     {
-        Task<BookingResponse> CreateBookingAsync(BookingRequest request, int userId);
+        Task<BookingCreateResponse> CreateBookingAsync(BookingRequest request, int userId);
         Task<BookingResponse> DeleteBookingAsync(int id);
         Task<BookingGetResponse> GetUserBookingsAsync(int userId, int status);
         Task<BookingGetResponse> GetUserBookingsAsync(int userId);
