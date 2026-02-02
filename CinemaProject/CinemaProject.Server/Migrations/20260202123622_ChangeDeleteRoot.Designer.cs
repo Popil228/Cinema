@@ -3,6 +3,7 @@ using System;
 using CinemaProject.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaProject.Server.Migrations
 {
     [DbContext(typeof(CinemaDbContext))]
-    partial class CinemaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260202123622_ChangeDeleteRoot")]
+    partial class ChangeDeleteRoot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1314,7 +1317,7 @@ namespace CinemaProject.Server.Migrations
                     b.HasOne("CinemaProject.Server.Models.Entitys.Session", "Session")
                         .WithMany("SessionSeats")
                         .HasForeignKey("SessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Seat");
@@ -1333,7 +1336,7 @@ namespace CinemaProject.Server.Migrations
                     b.HasOne("CinemaProject.Server.Models.Entitys.SessionSeat", "SessionSeat")
                         .WithOne("Ticket")
                         .HasForeignKey("CinemaProject.Server.Models.Entitys.Ticket", "SessionSeatId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Booking");

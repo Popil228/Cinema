@@ -3,6 +3,6 @@
     public class BookingRequest
     {
         public int? DiscountId { get; set; }
-        public decimal TotalPrice { get; set; }
+        public List<int> SessionSeatIds { get; set; }
     }
 }

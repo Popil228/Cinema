@@ -1,4 +1,5 @@
 ﻿using CinemaProject.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaProject.Server.Controllers
@@ -15,6 +16,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet("search")]
+        [Authorize(Policy = "ManageTMDBs")]
         public async Task<IActionResult> Search([FromQuery] string query)
         {
             try
@@ -32,6 +34,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet("details/{id:int}")]
+        [Authorize(Policy = "ManageTMDBs")]
         public async Task<IActionResult> GetDetails(int id)
         {
             try
@@ -49,6 +52,7 @@ namespace CinemaProject.Server.Controllers
         }
 
         [HttpGet("actors/{id:int}")]
+        [Authorize(Policy = "ManageTMDBs")]
         public async Task<IActionResult> GetCast(int id)
         {
             try

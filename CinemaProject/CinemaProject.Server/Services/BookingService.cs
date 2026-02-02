@@ -16,58 +16,105 @@ namespace CinemaProject.Server.Services
         }
 
         /// <summary>
-        /// Creates a new booking for the specified user based on the provided booking request.
+        /// Asynchronously creates a new booking for a user, along with tickets for the specified session seats, 
+        /// calculates the total price, applies a discount if provided, and ensures transactional integrity.
         /// </summary>
-        /// <remarks>If the booking request specifies a discount, the discount must exist; otherwise, the
-        /// booking will not be created. The method returns a response with success status and a descriptive message for
-        /// both successful and failed booking attempts.</remarks>
-        /// <param name="request">The booking request containing details such as total price and optional discount to apply. Must have a
-        /// positive total price.</param>
-        /// <param name="userId">The identifier of the user for whom the booking is being created.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains a BookingResponse indicating
-        /// whether the booking was successfully created and includes a message describing the outcome.</returns>
-        public async Task<BookingResponse> CreateBookingAsync(BookingRequest request, int userId)
+        /// <param name="request">An object containing the list of session seat IDs to book and an optional discount ID.</param>
+        /// <param name="userId">The unique identifier of the user creating the booking.</param>
+        /// <returns>
+        /// A <see cref="BookingCreateResponse"/> containing the result of the booking operation:
+        /// - <c>Success = true</c> if the booking and tickets were successfully created, including the <c>BookingId</c> and total price.
+        /// - <c>Success = false</c> if some seats are already taken, a discount is invalid, or any server error occurs.
+        /// </returns>
+        /// <remarks>
+        /// This method uses a database transaction to ensure that all changes (booking creation, ticket creation, seat availability updates, and total price calculation)
+        /// are committed only if every step succeeds. If any step fails, all changes are rolled back.
+        /// </remarks>
+        public async Task<BookingCreateResponse> CreateBookingAsync(BookingRequest request, int userId)
         {
-            if (request.TotalPrice <= 0)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                return new BookingResponse
-                {
-                    Success = false,
-                    Message = "Некоректна сума бронювання"
+                var booking = new Booking 
+                { 
+                    UserId = userId,
+                    DiscountId = request.DiscountId,
+                    Status = BookingStatus.Pending,
+                    TotalPrice = 0
                 };
-            }
+                _context.Bookings.Add(booking);
+                await _context.SaveChangesAsync();
 
-            if (request.DiscountId.HasValue)
-            {
-                var discount = await _context.Discounts
-                    .FirstOrDefaultAsync(d => d.DiscountId == request.DiscountId);
+                var seats = await _context.SessionSeats
+                    .Where(ss => request.SessionSeatIds.Contains(ss.SessionSeatId))
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Seat)
+                        .ThenInclude(s => s.SeatType)
+                    .ToListAsync();
 
-                if (discount == null)
+                if (!seats.Any())
                 {
-                    return new BookingResponse
+                    return new BookingCreateResponse
                     {
                         Success = false,
-                        Message = "Знижку не знайдено"
+                        Message = "Місце або місця відсутні"
                     };
                 }
+
+                if (seats.Any(ss => !ss.IsAvailable))
+                {
+                    return new BookingCreateResponse
+                    {
+                        Success = false,
+                        Message = "Деякі місця вже зайняті"
+                    };
+                }
+
+                decimal totalPrice = 0;
+                foreach (var seat in seats)
+                {
+                    var price = seat.Session.BasePrice * (seat.Seat.SeatType.PricePercent / 100m);
+                    totalPrice += price;
+
+                    _context.Tickets.Add(new Ticket
+                    {
+                        BookingId = booking.BookingId,
+                        SessionSeatId = seat.SessionSeatId,
+                        Price = price
+                    });
+
+                    seat.IsAvailable = false;
+                }
+
+                if (request.DiscountId.HasValue)
+                {
+                    var discount = await _context.Discounts.FindAsync(request.DiscountId.Value);
+                    if (discount != null)
+                        totalPrice *= (1 - discount.DiscountPercent / 100m);
+                }
+
+                booking.TotalPrice = totalPrice;
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new BookingCreateResponse 
+                { 
+                    Success = true,
+                    Message = "Бронювання успішно створено", 
+                    BookingId = booking.BookingId,
+                    TotalPrice = totalPrice 
+                };
             }
-
-                var booking = new Booking
+            catch
             {
-                UserId = userId,
-                DiscountId = request.DiscountId,
-                TotalPrice = request.TotalPrice,
-                Status = BookingStatus.Pending
-            };
-
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
-
-            return new BookingResponse
-            {
-                Success = true,
-                Message = "Бронювання успішно створено"
-            };
+                await transaction.RollbackAsync();
+                return new BookingCreateResponse
+                {
+                    Success = false,
+                    Message = "Помилка сервера"
+                };
+            }
         }
 
         /// <summary>
@@ -80,7 +127,10 @@ namespace CinemaProject.Server.Services
         /// whether the deletion was successful and providing a relevant message.</returns>
         public async Task<BookingResponse> DeleteBookingAsync(int id)
         {
-            var currentBooking = await _context.Bookings.FindAsync(id);
+            var currentBooking = await _context.Bookings
+                .Include(b => b.Tickets)
+                .ThenInclude(t => t.SessionSeat)
+                .FirstOrDefaultAsync(b => b.BookingId == id);
 
             if (currentBooking == null)
             {
@@ -98,6 +148,11 @@ namespace CinemaProject.Server.Services
                     Success = false,
                     Message = "Неможливо видалити підтверджене бронювання"
                 };
+            }
+
+            foreach (var ticket in currentBooking.Tickets)
+            {
+                ticket.SessionSeat.IsAvailable = true;
             }
 
             _context.Bookings.Remove(currentBooking);
@@ -126,10 +181,10 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
-                 Title = b.Tickets
+                 MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
-                 PosterPath = b.Tickets
+                 MoviePosterPath = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.PosterUri)
                      .FirstOrDefault()
              })
@@ -188,10 +243,10 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
-                 Title = b.Tickets
+                 MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
-                 PosterPath = b.Tickets
+                 MoviePosterPath = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.PosterUri)
                      .FirstOrDefault()
              })
@@ -245,10 +300,10 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
-                 Title = b.Tickets
+                 MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
-                 PosterPath = b.Tickets
+                 MoviePosterPath = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.PosterUri)
                      .FirstOrDefault()
              })
@@ -296,10 +351,10 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
-                 Title = b.Tickets
+                 MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
-                 PosterPath = b.Tickets
+                 MoviePosterPath = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.PosterUri)
                      .FirstOrDefault()
              })
