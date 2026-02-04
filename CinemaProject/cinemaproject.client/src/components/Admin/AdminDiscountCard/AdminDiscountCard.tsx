@@ -130,6 +130,7 @@ const AdminDiscountCard: React.FC<AdminDiscountCardInterface> = ({
     }
 
     const d_new: DiscountDto = {
+      id: 0, //not needed, syntax fix
       code: codeInput,
       startDate: startDateInput + "T00:00:00Z",
       endDate: endDateInput + "T00:00:00Z",
@@ -155,12 +156,16 @@ const AdminDiscountCard: React.FC<AdminDiscountCardInterface> = ({
       <div className={styles.discountInfoContainer}>
         {isEditing ? (
           <div className={styles.discountInfoGrid}>
-            <input
-              type="text"
-              value={codeInput}
-              onChange={handleCodeInput}
-              onSelect={onEditFieldSelect}
-            ></input>
+            {isNew ? (
+              <input
+                type="text"
+                value={codeInput}
+                onChange={handleCodeInput}
+                onSelect={onEditFieldSelect}
+              ></input>
+            ) : (
+              <p className={styles.codeDisplay}>{discount.code}</p>
+            )}
             <input
               className={styles.dateEdit}
               type="date"

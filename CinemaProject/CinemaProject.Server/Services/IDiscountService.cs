@@ -4,7 +4,7 @@ namespace CinemaProject.Server.Services
 {
     public interface IDiscountService
     {
-        Task<DiscountResponse> CreateDiscountAsync(DiscountDto request);
+        Task<DiscountResponse> CreateDiscountAsync(DiscountCreateRequest request);
         Task<DiscountGetResponse> GetDiscountsAsync();
         Task<DiscountResponse> DeleteDiscountAsync(int id);
         Task<DiscountUseResponse> UseDiscountAsync(string code, int userId);

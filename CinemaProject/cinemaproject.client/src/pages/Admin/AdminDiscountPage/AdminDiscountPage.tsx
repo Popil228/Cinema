@@ -1,9 +1,6 @@
 import styles from "./AdminDiscountPage.module.scss";
-import {
-  createDiscount,
-  getDiscounts,
-  type DiscountDto,
-} from "../../../api/discountApi";
+import { type DiscountDto } from "../../../api/discountApi";
+import * as discountApi from "../../../api/discountApi";
 import AdminDiscountCard from "../../../components/Admin/AdminDiscountCard/AdminDiscountCard";
 import { useEffect, useState } from "react";
 
@@ -11,7 +8,7 @@ const AdminDiscountPage: React.FC = () => {
   const [discounts, setDiscounts] = useState<DiscountDto[]>([]);
 
   const fetchDiscounts = async () => {
-    const fetchedDiscounts = await getDiscounts();
+    const fetchedDiscounts = await discountApi.getDiscounts();
     setDiscounts(fetchedDiscounts);
   };
 
@@ -23,13 +20,22 @@ const AdminDiscountPage: React.FC = () => {
     fetchData();
   }, []);
 
+  const checkDifference = (d1: DiscountDto, d2: DiscountDto) => {
+    return (
+      d1.discountPercentage != d2.discountPercentage ||
+      d1.startDate != d2.startDate ||
+      d1.endDate != d2.endDate ||
+      d1.usesLeft != d2.usesLeft
+    );
+  };
+
   const handleDiscountEditConfirm = async (
     d_old: DiscountDto,
     d_new: DiscountDto,
   ) => {
-    const idOld = discounts.findIndex((d) => d.code == d_old.code); // should not be -1
+    const idOld = discounts.findIndex((d) => d.id == d_old.id); // should not be -1
     const idNew = discounts
-      .filter((d) => d.code != d_old.code)
+      .filter((d) => d.id != d_old.id)
       .findIndex((d) => d.code == d_new.code); // should be -1
 
     if (idOld == -1) {
@@ -41,30 +47,41 @@ const AdminDiscountPage: React.FC = () => {
       return false;
     }
 
-    //important api putpost or whatever call
-    if (d_old.code == "") // identifier for newly created
+    if (d_old.id == -1) // identifier for newly created
     {
-      await createDiscount(d_new);
+      await discountApi.createDiscount(d_new);
       fetchDiscounts();
+    } else {
+      if (
+        checkDifference(d_old, d_new) //check for any changes made (if unchanged then no need to update)
+      ) {
+        await discountApi.updateDiscount(d_old.id, d_new); //old id and new data
+        fetchDiscounts();
+      }
     }
 
     console.log("editing success");
     return true;
   };
 
-  const handleDiscountDelete = (d: DiscountDto) => {
-    const indexOfElement = discounts.findIndex((dc) => dc.code == d.code);
+  const handleDiscountDelete = async (d: DiscountDto) => {
+    const indexOfElement = discounts.findIndex((dc) => dc.id == d.id);
     if (indexOfElement == -1) {
-      console.log("editing error");
+      console.log("no element found for deletion");
       return;
     }
 
     //important api delete call
-    setDiscounts(discounts.filter((dc) => dc.code != d.code));
+    await discountApi.deleteDiscount(d.id);
+    await fetchDiscounts();
+
+    //refetch instead
+    //setDiscounts(discounts.filter((dc) => dc.id != d.id));
   };
 
   const handleAddBtnPress = () => {
-    if (discounts.findIndex((d) => d.code == "") != -1) {
+    if (discounts.findIndex((d) => d.id == -1) != -1) {
+      //id -1 for newly created
       return;
     }
 
@@ -74,6 +91,7 @@ const AdminDiscountPage: React.FC = () => {
     newEndDate.setDate(10);
 
     const newDiscount: DiscountDto = {
+      id: -1,
       code: "",
       startDate: newStartDate.toISOString(),
       endDate: newEndDate.toISOString(),
@@ -100,7 +118,7 @@ const AdminDiscountPage: React.FC = () => {
             discount={d}
             handleDiscountEditConfirm={handleDiscountEditConfirm}
             handleDiscountDelete={handleDiscountDelete}
-            isNew={d.code == ""}
+            isNew={d.id == -1}
           />
         ))}
       </div>
