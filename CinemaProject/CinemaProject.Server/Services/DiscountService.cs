@@ -150,7 +150,7 @@ namespace CinemaProject.Server.Services
         /// <param name="userId">The unique identifier of the user attempting to use the discount code.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a DiscountResponse indicating
         /// whether the discount was successfully applied and providing a relevant message.</returns>
-        public async Task<DiscountUseResponse> UseDiscountAsync(string code, int userId)
+        public async Task<DiscountUseResponse> CheckDiscountAsync(string code, int userId)
         {
             var discount = await _context.Discounts
                 .FirstOrDefaultAsync(d => d.Code == code);
@@ -184,12 +184,11 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            discount.UsesLeft--;
             await _context.SaveChangesAsync();
             return new DiscountUseResponse
             {
                 Success = true,
-                Message = "Код на знижку успішно використано",
+                Message = "Код на знижку успішно перевірений",
                 Id = discount.DiscountId
             };
 
