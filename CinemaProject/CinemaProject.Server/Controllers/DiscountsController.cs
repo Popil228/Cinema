@@ -117,5 +117,27 @@ namespace CinemaProject.Server.Controllers
             }
             return Ok(response);
         }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = "ManageDiscounts")]
+        public async Task<ActionResult<DiscountResponse>> UpdateDiscount([FromRoute] int id, [FromBody] DiscountRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Невалідні дані"
+                });
+            }
+            var response = await _discount.UpdateDiscountAsync(id, request);
+            if(!response.Success)
+            {
+                return response.Message == "Код на знижку не знайдено"
+                    ? NotFound(response)
+                    : BadRequest(response);
+            }
+            return Ok(response);
+        }
     }
 }
