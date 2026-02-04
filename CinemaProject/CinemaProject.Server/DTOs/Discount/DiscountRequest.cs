@@ -7,4 +7,9 @@
         public int UsesLeft { get; set; }
         public short DiscountPercentage { get; set; }
     }
+
+    public class DiscountCreateRequest : DiscountRequest
+    {
+        public string Code { get; set; }
+    }
 }

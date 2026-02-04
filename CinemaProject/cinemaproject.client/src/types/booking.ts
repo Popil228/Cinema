@@ -1,5 +1,5 @@
 export interface BookingRequest {
-  discountId?: number;
+  discountId: number | null;
   sessionSeatIds: number[];
 }
 
@@ -10,7 +10,7 @@ export interface BookingResponse {
 
 export interface BookingDto {
   id: number;
-  bookingAt: string; 
+  bookingAt: string;
   totalPrice: number;
   status?: string;
   movieTitle: string;
