@@ -178,6 +178,7 @@ namespace CinemaProject.Server.Services
              .Where(b => b.UserId == userId)
              .Select(b => new BookingDto
              {
+                 Id = b.BookingId,
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
@@ -240,6 +241,7 @@ namespace CinemaProject.Server.Services
              .Where(b => b.UserId == userId && b.Status == statusEnum)
              .Select(b => new BookingDto
              {
+                 Id = b.BookingId,
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
@@ -297,6 +299,7 @@ namespace CinemaProject.Server.Services
              .Where(b => b.Status == statusEnum)
              .Select(b => new BookingDto
              {
+                 Id = b.BookingId,
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
@@ -348,6 +351,7 @@ namespace CinemaProject.Server.Services
              .AsNoTracking()
              .Select(b => new BookingDto
              {
+                 Id = b.BookingId,
                  BookingAt = b.BookingAt.ToString("g"),
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
