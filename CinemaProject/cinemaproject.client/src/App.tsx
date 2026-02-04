@@ -21,6 +21,7 @@ import SearchMoviePage from "./pages/Admin/SearchMoviePage/SearchMoviePage.tsx";
 
 import ProtectedRoute from "./components/Common/ProtectedRoute.tsx";
 import AuthProvider from "./context/authContext/AuthContext";
+import AdminDiscountPage from "./pages/Admin/AdminDiscountPage/AdminDiscountPage.tsx";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
               <Route path="movies/add" element={<AddMoviePage />} />
               <Route path="movies/edit/:id" element={<EditMoviePage />} />
               <Route path="sessions" element={<AdminSessionsPage />} />
+              <Route path="discounts" element={<AdminDiscountPage />} />
             </Route>
           </Route>
         </Routes>

@@ -1,23 +1,29 @@
-import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import styles from './AdminSidebar.module.scss';
+import React from "react";
+import { NavLink, Link } from "react-router-dom";
+import styles from "./AdminSidebar.module.scss";
 
 const AdminSidebar: React.FC = () => {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.topSection}>
         <nav className={styles.nav}>
-          <NavLink 
-            to="/admin/movies" 
-            className={({ isActive }) => isActive ? styles.active : ''}
+          <NavLink
+            to="/admin/movies"
+            className={({ isActive }) => (isActive ? styles.active : "")}
           >
             Фільми
           </NavLink>
-          <NavLink 
-            to="/admin/sessions" 
-            className={({ isActive }) => isActive ? styles.active : ''}
+          <NavLink
+            to="/admin/sessions"
+            className={({ isActive }) => (isActive ? styles.active : "")}
           >
             Сеанси
+          </NavLink>
+          <NavLink
+            to="/admin/discounts"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
+            Промокоди
           </NavLink>
         </nav>
       </div>
