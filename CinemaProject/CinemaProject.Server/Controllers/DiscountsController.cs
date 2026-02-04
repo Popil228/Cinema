@@ -82,9 +82,9 @@ namespace CinemaProject.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPatch("use")]
+        [HttpGet("check")]
         [Authorize(Policy = "UserOrAdminDiscounts")]
-        public async Task<ActionResult<DiscountUseResponse>> UseDiscount([FromQuery]string code)
+        public async Task<ActionResult<DiscountUseResponse>> CheckDiscount([FromQuery]string code)
         {
             if (!ModelState.IsValid)
             {
@@ -106,7 +106,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var response = await _discount.UseDiscountAsync(code, userId);
+            var response = await _discount.CheckDiscountAsync(code, userId);
 
             if (!response.Success)
             {

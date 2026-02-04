@@ -90,7 +90,10 @@ namespace CinemaProject.Server.Services
                 {
                     var discount = await _context.Discounts.FindAsync(request.DiscountId.Value);
                     if (discount != null)
+                    {
                         totalPrice *= (1 - discount.DiscountPercent / 100m);
+                        discount.UsesLeft--;
+                    }
                 }
 
                 booking.TotalPrice = totalPrice;
