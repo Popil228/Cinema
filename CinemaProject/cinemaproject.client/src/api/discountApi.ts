@@ -22,15 +22,19 @@ interface DiscountCreateRequst extends DiscountRequest {
 
 const API_BASE_URL = "/api";
 
-const createDiscount = async (discountData: DiscountCreateRequst) => {
+const getHeaders = () => {
   const token = tokenStorage.getToken();
   const headers: Record<string, string> = {
     "Content-type": "application/json",
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
+  return headers;
+};
+
+const createDiscount = async (discountData: DiscountCreateRequst) => {
   const response = await fetch(`${API_BASE_URL}/Discounts`, {
     method: "POST",
-    headers: headers,
+    headers: getHeaders(),
     body: JSON.stringify(discountData),
   });
 
@@ -44,14 +48,9 @@ const createDiscount = async (discountData: DiscountCreateRequst) => {
 };
 
 const getDiscounts = async () => {
-  const token = tokenStorage.getToken();
-  const headers: Record<string, string> = {
-    "Content-type": "application/json",
-  };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Discounts`, {
     method: "GET",
-    headers: headers,
+    headers: getHeaders(),
   });
 
   const body = await response.json();
@@ -64,14 +63,9 @@ const getDiscounts = async () => {
 };
 
 const deleteDiscount = async (id: number) => {
-  const token = tokenStorage.getToken();
-  const headers: Record<string, string> = {
-    "Content-type": "application/json",
-  };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Discounts/${id}`, {
     method: "DELETE",
-    headers: headers,
+    headers: getHeaders(),
   });
 
   console.log(response);
@@ -85,14 +79,9 @@ const deleteDiscount = async (id: number) => {
 };
 
 const updateDiscount = async (id: number, request: DiscountRequest) => {
-  const token = tokenStorage.getToken();
-  const headers: Record<string, string> = {
-    "Content-type": "application/json",
-  };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Discounts/${id}`, {
     method: "PUT",
-    headers: headers,
+    headers: getHeaders(),
     body: JSON.stringify(request),
   });
 
@@ -106,10 +95,27 @@ const updateDiscount = async (id: number, request: DiscountRequest) => {
   return body.success;
 };
 
+const checkDiscount = async (code: string) => {
+  const response = await fetch(`${API_BASE_URL}/Discounts/check?code=${code}`, {
+    method: "GET",
+    headers: getHeaders(),
+  });
+
+  console.log(response);
+  const body = await response.json();
+
+  if (!response.ok) {
+    throw new Error(body.error ?? "Помилка сервера");
+  }
+
+  return body.id;
+};
+
 export {
   type DiscountDto,
   createDiscount,
   getDiscounts,
   deleteDiscount,
   updateDiscount,
+  checkDiscount,
 };

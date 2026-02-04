@@ -12,15 +12,19 @@ import {
   type SessionSeatDto,
 } from "../../api/sessionsApi";
 import { dateToDayMonthStrUA } from "../../utilities/dateToStringUA";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BookingPageContext from "../../context/bookingPageContext/BookingPageContext";
 import SessionSeat from "../../components/SessionSeat/SessionSeat";
+import { checkDiscount } from "../../api/discountApi";
+import { type BookingRequest } from "../../types/booking";
+import { createBooking } from "../../api/bookingApi";
 
 const BookingPage: React.FC = () => {
   const { id } = useParams();
   const selectedSessionId = Number.parseInt(id || "0");
 
   const bookingPageContext = useContext(BookingPageContext);
+  const navigate = useNavigate();
 
   const displayDate: string = dateToDayMonthStrUA(
     new Date(bookingPageContext.selectedSession?.startTime || "0000-01-01"),
@@ -40,6 +44,7 @@ const BookingPage: React.FC = () => {
   const [promoBtnText, setPromoBtnText] = useState<string>(
     "Активувати промокод",
   );
+  const [discountId, setDiscountId] = useState<number | null>(null);
 
   const promoElementsAdditionalStyle =
     " " +
@@ -95,16 +100,46 @@ const BookingPage: React.FC = () => {
       .join(", ");
   };
 
-  const promoBtnPress = () => {
-    if (promoInput == "promo") //success scenario
+  const promoBtnPress = async () => {
+    let newDiscountId: number | null = null;
+    let isCodeUsable: boolean;
+    let errorText: string = "";
+    try {
+      newDiscountId = await checkDiscount(promoInput);
+      isCodeUsable = true;
+    } catch (err) {
+      if (err instanceof Error) {
+        errorText = err.message;
+      } else {
+        errorText = "Помилка";
+      }
+      isCodeUsable = false;
+      newDiscountId = null;
+      console.error(err);
+    }
+
+    if (isCodeUsable) //success scenario
     {
-      setPromoSuccess(!promoSuccess);
-      setPromoBtnText("Успішно активовано");
+      setPromoSuccess(true);
+      setPromoBtnText("Промокод активовано");
+      setDiscountId(newDiscountId);
     } else //fail scenario
     {
       setPromoFailure(true);
-      setPromoBtnText("Помилка");
+      setPromoBtnText(errorText);
+      setDiscountId(newDiscountId);
     }
+  };
+
+  const confirtBookingBtnPress = async () => {
+    const createBookingRequest: BookingRequest = {
+      discountId: discountId,
+      sessionSeatIds: selectedSessionSeats.map((s) => s.sessionSeatId),
+    };
+
+    await createBooking(createBookingRequest);
+
+    navigate("/");
   };
 
   const onPromoInputTextChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -257,6 +292,7 @@ const BookingPage: React.FC = () => {
             <button
               className={styles.bookBtn}
               disabled={selectedSessionSeats.length === 0}
+              onClick={confirtBookingBtnPress}
             >
               Забронювати квитки
             </button>

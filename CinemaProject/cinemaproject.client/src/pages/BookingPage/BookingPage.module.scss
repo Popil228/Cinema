@@ -279,6 +279,7 @@
 
 .promoBtn {
   @include confirmBtnMixin;
+  text-wrap: initial;
 
   &:hover:not(:disabled):not(.failure) {
     transform: translateY(-3px);

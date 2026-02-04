@@ -71,12 +71,8 @@ const AdminDiscountPage: React.FC = () => {
       return;
     }
 
-    //important api delete call
     await discountApi.deleteDiscount(d.id);
     await fetchDiscounts();
-
-    //refetch instead
-    //setDiscounts(discounts.filter((dc) => dc.id != d.id));
   };
 
   const handleAddBtnPress = () => {
