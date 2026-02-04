@@ -16,4 +16,9 @@
     {
         public int Id { get; set; }
     }
+
+    public class DiscountGetPercentageResponse : DiscountResponse
+    {
+        public short DiscountPercentage { get; set; }
+    }
 }

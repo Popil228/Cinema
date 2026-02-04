@@ -62,6 +62,21 @@ const getDiscounts = async () => {
   return body.discounts;
 };
 
+const getDiscountPercentage = async (id: number) => {
+  const response = await fetch(`${API_BASE_URL}/Discounts/percentage/${id}`, {
+    method: "GET",
+    headers: getHeaders(),
+  });
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    throw new Error(body.message ?? "Помилка сервера");
+  }
+
+  return body.discountPercentage;
+};
+
 const deleteDiscount = async (id: number) => {
   const response = await fetch(`${API_BASE_URL}/Discounts/${id}`, {
     method: "DELETE",
@@ -115,6 +130,7 @@ export {
   type DiscountDto,
   createDiscount,
   getDiscounts,
+  getDiscountPercentage,
   deleteDiscount,
   updateDiscount,
   checkDiscount,

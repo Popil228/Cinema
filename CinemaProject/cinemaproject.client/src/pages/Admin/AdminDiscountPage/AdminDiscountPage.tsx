@@ -6,10 +6,23 @@ import { useEffect, useState } from "react";
 
 const AdminDiscountPage: React.FC = () => {
   const [discounts, setDiscounts] = useState<DiscountDto[]>([]);
+  const [discountsError, setDiscountsError] = useState<{
+    is: boolean;
+    message: string;
+  }>({ is: false, message: "Помилка відсутня" });
 
   const fetchDiscounts = async () => {
-    const fetchedDiscounts = await discountApi.getDiscounts();
-    setDiscounts(fetchedDiscounts);
+    try {
+      const fetchedDiscounts = await discountApi.getDiscounts();
+      setDiscounts(fetchedDiscounts);
+      setDiscountsError({ is: false, message: "Помилка відсутня" });
+    } catch (err) {
+      if (err instanceof Error) {
+        setDiscountsError({ is: true, message: err.message });
+      } else {
+        setDiscountsError({ is: true, message: "Discounts fetch error" });
+      }
+    }
   };
 
   useEffect(() => {
@@ -49,14 +62,30 @@ const AdminDiscountPage: React.FC = () => {
 
     if (d_old.id == -1) // identifier for newly created
     {
-      await discountApi.createDiscount(d_new);
-      fetchDiscounts();
+      try {
+        await discountApi.createDiscount(d_new);
+        fetchDiscounts();
+      } catch (err) {
+        if (err instanceof Error) {
+          setDiscountsError({ is: true, message: err.message });
+        } else {
+          setDiscountsError({ is: true, message: "Discounta create error" });
+        }
+      }
     } else {
       if (
         checkDifference(d_old, d_new) //check for any changes made (if unchanged then no need to update)
       ) {
-        await discountApi.updateDiscount(d_old.id, d_new); //old id and new data
-        fetchDiscounts();
+        try {
+          await discountApi.updateDiscount(d_old.id, d_new); //old id and new data
+          fetchDiscounts();
+        } catch (err) {
+          if (err instanceof Error) {
+            setDiscountsError({ is: true, message: err.message });
+          } else {
+            setDiscountsError({ is: true, message: "Discount update error" });
+          }
+        }
       }
     }
 
@@ -71,8 +100,16 @@ const AdminDiscountPage: React.FC = () => {
       return;
     }
 
-    await discountApi.deleteDiscount(d.id);
-    await fetchDiscounts();
+    try {
+      await discountApi.deleteDiscount(d.id);
+      await fetchDiscounts();
+    } catch (err) {
+      if (err instanceof Error) {
+        setDiscountsError({ is: true, message: err.message });
+      } else {
+        setDiscountsError({ is: true, message: "Discount delete error" });
+      }
+    }
   };
 
   const handleAddBtnPress = () => {
@@ -102,22 +139,35 @@ const AdminDiscountPage: React.FC = () => {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.pageTitle}>Промокоди</h1>
-        <button className={styles.addBtn} onClick={handleAddBtnPress}>
-          +
-        </button>
+        {discountsError.is ? (
+          <></>
+        ) : (
+          <button className={styles.addBtn} onClick={handleAddBtnPress}>
+            +
+          </button>
+        )}
       </header>
 
-      <div className={styles.discountList}>
-        {discounts?.map((d) => (
-          <AdminDiscountCard
-            key={d.code}
-            discount={d}
-            handleDiscountEditConfirm={handleDiscountEditConfirm}
-            handleDiscountDelete={handleDiscountDelete}
-            isNew={d.id == -1}
-          />
-        ))}
-      </div>
+      {discountsError.is ? (
+        <>
+          <h3 className={styles.errorMsg}>{discountsError.message}</h3>
+          <button className={styles.retryBtn} onClick={fetchDiscounts}>
+            Перезавантажити список промокодів
+          </button>
+        </>
+      ) : (
+        <div className={styles.discountList}>
+          {discounts?.map((d) => (
+            <AdminDiscountCard
+              key={d.code}
+              discount={d}
+              handleDiscountEditConfirm={handleDiscountEditConfirm}
+              handleDiscountDelete={handleDiscountDelete}
+              isNew={d.id == -1}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

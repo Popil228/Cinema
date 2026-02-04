@@ -112,6 +112,32 @@ namespace CinemaProject.Server.Services
         }
 
         /// <summary>
+        /// Returns DiscountPercentage for specified discount.
+        /// </summary>
+        /// <param name="id">The unique identifier of the discount.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a DiscountGetPercentageResponse 
+        /// containing percentage value.</returns>
+        public async Task<DiscountGetPercentageResponse> GetDiscountPercentageAsync(int id)
+        {
+            var discount = await _context.Discounts.FindAsync(id);
+            if (discount == null)
+            {
+                return new DiscountGetPercentageResponse
+                {
+                    Success = false,
+                    Message = "Код на знижку не знайдено"
+                };
+            }
+
+            return new DiscountGetPercentageResponse
+            {
+                Success = true,
+                Message = "Код на знижку успішно знайдено",
+                DiscountPercentage = discount.DiscountPercent
+            };
+        }
+
+        /// <summary>
         /// Deletes the discount with the specified identifier asynchronously.
         /// </summary>
         /// <param name="id">The unique identifier of the discount to delete.</param>
