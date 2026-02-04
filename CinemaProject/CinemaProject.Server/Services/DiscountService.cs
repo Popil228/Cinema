@@ -100,6 +100,7 @@ namespace CinemaProject.Server.Services
                 Message = "Коди на знижки успішно повернуті",
                 Discounts = discounts.Select(d => new DiscountDto
                 {
+                    Id = d.DiscountId,
                     Code = d.Code,
                     StartDate = d.StartDate,
                     EndDate = d.EndDate,
