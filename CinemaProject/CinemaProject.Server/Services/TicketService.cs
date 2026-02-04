@@ -58,6 +58,7 @@ namespace CinemaProject.Server.Services
                 .SelectMany(b => b.Tickets!)
                 .Select(t => new TicketDto
                 {
+                    Id = t.TicketId,
                     SeatNumber = t.SessionSeat.Seat.SeatNumber,
                     RowNumber = t.SessionSeat.Seat.RowNumber,
                     HallName = t.SessionSeat.Session.Hall.Name,
@@ -115,6 +116,7 @@ namespace CinemaProject.Server.Services
                 .SelectMany(b => b.Tickets!)
                 .Select(t => new TicketDto
                 {
+                    Id = t.TicketId,
                     SeatNumber = t.SessionSeat.Seat.SeatNumber,
                     RowNumber = t.SessionSeat.Seat.RowNumber,
                     HallName = t.SessionSeat.Session.Hall.Name,
