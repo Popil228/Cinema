@@ -1,6 +1,7 @@
-﻿using CinemaProject.Server.Data;
+using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.MovieGenre;
 using Microsoft.EntityFrameworkCore;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {

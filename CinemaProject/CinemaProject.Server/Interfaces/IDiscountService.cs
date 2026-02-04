@@ -1,6 +1,6 @@
-﻿using CinemaProject.Server.DTOs.Discount;
+using CinemaProject.Server.DTOs.Discount;
 
-namespace CinemaProject.Server.Services
+namespace CinemaProject.Server.Interfaces
 {
     public interface IDiscountService
     {

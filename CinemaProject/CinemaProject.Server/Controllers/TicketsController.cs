@@ -1,7 +1,7 @@
-﻿using Azure;
+using Azure;
 using CinemaProject.Server.DTOs.Ticket;
 using CinemaProject.Server.Models.Entitys;
-using CinemaProject.Server.Services;
+using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

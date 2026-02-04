@@ -1,9 +1,10 @@
 ﻿using CinemaProject.Server.DTOs.MovieActor;
 using CinemaProject.Server.DTOs.MovieGenre;
-using CinemaProject.Server.Services;
+using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using CinemaProject.Server.Models.Enums;
+
 
 namespace CinemaProject.Server.Controllers
 {

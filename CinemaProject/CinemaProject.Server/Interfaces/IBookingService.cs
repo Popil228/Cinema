@@ -1,6 +1,6 @@
-﻿using CinemaProject.Server.DTOs.Booking;
+using CinemaProject.Server.DTOs.Booking;
 
-namespace CinemaProject.Server.Services
+namespace CinemaProject.Server.Interfaces
 {
     public interface IBookingService
     {

@@ -1,5 +1,6 @@
 using CinemaProject.Server.Data;
 using CinemaProject.Server.Services;
+using CinemaProject.Server.Interfaces;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

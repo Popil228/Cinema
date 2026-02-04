@@ -1,5 +1,6 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Actor;
+using CinemaProject.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaProject.Server.Services
