@@ -8,5 +8,6 @@ namespace CinemaProject.Server.Services
         Task<DiscountGetResponse> GetDiscountsAsync();
         Task<DiscountResponse> DeleteDiscountAsync(int id);
         Task<DiscountUseResponse> UseDiscountAsync(string code, int userId);
+        Task<DiscountResponse> UpdateDiscountAsync(int id, DiscountRequest request);
     }
 }
