@@ -194,5 +194,52 @@ namespace CinemaProject.Server.Services
             };
 
         }
+
+
+        public async Task<DiscountResponse> UpdateDiscountAsync(int id, DiscountRequest request)
+        {
+            var discount = await _context.Discounts.FindAsync(id);
+
+            if (discount == null)
+            {
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Код на знижку не знайдено"
+                };
+            }
+            if (request.EndDate <= request.StartDate)
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Некоректний період дії"
+                };
+            if (request.DiscountPercentage <= 0 || request.DiscountPercentage > 100)
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Некоректний відсоток знижки"
+                };
+            if (request.UsesLeft < 0)
+            {
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Кількість використань не може бути від'ємною"
+                };
+            }
+
+            discount.StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
+            discount.EndDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc);
+            discount.UsesLeft = request.UsesLeft;
+            discount.DiscountPercent = request.DiscountPercentage;
+
+            await _context.SaveChangesAsync();
+            return new DiscountResponse
+            {
+                Success = true,
+                Message = "Код на знижку успішно оновлено"
+            };
+        }
     }
 }
