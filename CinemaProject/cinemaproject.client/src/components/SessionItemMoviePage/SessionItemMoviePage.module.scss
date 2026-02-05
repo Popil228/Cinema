@@ -19,8 +19,8 @@
 }
 
 .miniPoster {
-  width: 55px;
-  height: 55px;
+  width: 50px;
+  height: 75px;
   border-radius: 8px;
   object-fit: cover;
 }
@@ -49,4 +49,8 @@
     font-weight: 600;
     text-transform: uppercase;
   }
+}
+
+.muteLinkEffect {
+  text-decoration: none;
 }

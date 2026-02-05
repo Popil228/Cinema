@@ -3,13 +3,13 @@
     --color-bg-card: #1E293B;
     --color-primary: #3B82F6;
     --color-accent: #38BDF8;
-    --color-text-main: #E5E7EB;
+    --color-text-main: #ffffff;
     --color-text-muted: #94A3B8;
     --color-border: #334155;
     --color-error: #A21111;
 
     --color-seat-available: var(--color-text-muted);
-    --color-seat-occupied: var(--color-border); // Робимо зайняті кольором бордера, щоб вони "зливалися"
+    --color-seat-occupied: var(--color-border);
     --color-seat-selected: var(--color-accent);
 
     --shadow-accent: 0 0 15px var(--color-accent);
