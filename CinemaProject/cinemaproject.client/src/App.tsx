@@ -19,6 +19,7 @@ import EditMoviePage from "./pages/Admin/EditMoviePage/EditMoviePage.tsx";
 import AddMoviePage from "./pages/Admin/AddMoviePage/AddMoviePage.tsx";
 import SearchBarContextProvider from "./context/searchBarContext/SearchBarContextProvider.tsx";
 import SearchMoviePage from "./pages/Admin/SearchMoviePage/SearchMoviePage.tsx";
+import AdminBookingsPage from "./pages/Admin/AdminBookingsPage/AdminBookingsPage.tsx";
 
 import ProtectedRoute from "./components/Common/ProtectedRoute.tsx";
 import AuthProvider from "./context/authContext/AuthContext";
@@ -63,6 +64,7 @@ function App() {
               <Route path="movies/edit/:id" element={<EditMoviePage />} />
               <Route path="sessions" element={<AdminSessionsPage />} />
               <Route path="discounts" element={<AdminDiscountPage />} />
+              <Route path="bookings" element={<AdminBookingsPage />} />
             </Route>
           </Route>
           

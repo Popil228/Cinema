@@ -17,8 +17,17 @@ export interface BookingDto {
   moviePosterPath: string;
 }
 
+export interface BookingDtoAdmin extends BookingDto {
+  email: string;
+  phoneNum: string;
+}
+
 export interface BookingGetResponse extends BookingResponse {
   bookings: BookingDto[];
+}
+
+export interface BookingGetResponseAdmin extends BookingResponse {
+  bookings: BookingDtoAdmin[];
 }
 
 export interface BookingCreateResponse extends BookingResponse {

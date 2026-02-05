@@ -3,7 +3,8 @@ import type {
   BookingRequest, 
   BookingResponse, 
   BookingGetResponse, 
-  BookingCreateResponse 
+  BookingCreateResponse,
+  BookingGetResponseAdmin
 } from "../types/booking";
 
 const API_BASE_URL = '/api/Bookings';
@@ -59,7 +60,7 @@ const getUserBookings = async (status?: number) => {
   return body as BookingGetResponse;
 };
 
-const getAllBookings = async (status?: number) => {
+const getAllBookings = async (status?: number): Promise<BookingGetResponseAdmin> => {
   const url = status !== undefined 
     ? `${API_BASE_URL}/admin?status=${status}` 
     : `${API_BASE_URL}/admin`;
@@ -73,7 +74,7 @@ const getAllBookings = async (status?: number) => {
   if (!response.ok) {
     throw new Error(body.error || body.message || 'Помилка сервера');
   }
-  return body as BookingGetResponse;
+  return body as BookingGetResponseAdmin;
 };
 
 const updateBookingStatus = async (id: number, status: number) => {
