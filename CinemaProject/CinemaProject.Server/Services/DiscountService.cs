@@ -3,7 +3,6 @@ using CinemaProject.Server.DTOs.Discount;
 using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
-using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {
