@@ -58,21 +58,6 @@ namespace CinemaProject.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("percentage/{id:int}")]
-        [Authorize(Policy = "UserOrAdminDiscounts")]
-        public async Task<ActionResult<DiscountGetPercentageResponse>> GetDiscountPercentage(int id)
-        {
-            var response = await _discount.GetDiscountPercentageAsync(id);
-            if (!response.Success)
-            {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
-            }
-            return Ok(response);
-        }
-
         [HttpDelete("{id:int}")]
         [Authorize(Policy = "ManageDiscounts")]
         public async Task<ActionResult<DiscountResponse>> DeleteDiscount(int id)

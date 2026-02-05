@@ -15,7 +15,7 @@ import { dateToDayMonthStrUA } from "../../utilities/dateToStringUA";
 import { useNavigate, useParams } from "react-router-dom";
 import BookingPageContext from "../../context/bookingPageContext/BookingPageContext";
 import SessionSeat from "../../components/SessionSeat/SessionSeat";
-import { checkDiscount, getDiscountPercentage } from "../../api/discountApi";
+import { checkDiscount } from "../../api/discountApi";
 import { type BookingRequest } from "../../types/booking";
 import { createBooking } from "../../api/bookingApi";
 
@@ -29,9 +29,11 @@ const BookingPage: React.FC = () => {
   const displayDate: string = dateToDayMonthStrUA(
     new Date(bookingPageContext.selectedSession?.startTime || "0000-01-01"),
   );
-  const displayTime: string =
-    bookingPageContext.selectedSession?.startTime.split("T")[1].slice(0, 5) ||
-    "00:00";
+  const displayTime: string = new Date(
+    bookingPageContext.selectedSession?.startTime || "0000-01-01",
+  )
+    .toTimeString()
+    .slice(0, 5);
   const displayHall: string =
     bookingPageContext.selectedSession?.hallName || "Зал _";
 
@@ -108,7 +110,9 @@ const BookingPage: React.FC = () => {
     let isCodeUsable: boolean;
     let errorText: string = "";
     try {
-      newDiscountId = await checkDiscount(promoInput);
+      const discountCheckResponse = await checkDiscount(promoInput);
+      newDiscountId = discountCheckResponse.id;
+      setDiscountPercentage(discountCheckResponse.discountPercentage);
       isCodeUsable = true;
     } catch (err) {
       if (err instanceof Error) {
@@ -123,10 +127,6 @@ const BookingPage: React.FC = () => {
 
     if (isCodeUsable) //success scenario
     {
-      if (newDiscountId !== null) {
-        setDiscountPercentage(await getDiscountPercentage(newDiscountId));
-      }
-
       setPromoSuccess(true);
       setPromoBtnText("Промокод активовано");
       setDiscountId(newDiscountId);
@@ -145,9 +145,10 @@ const BookingPage: React.FC = () => {
       sessionSeatIds: selectedSessionSeats.map((s) => s.sessionSeatId),
     };
 
-    await createBooking(createBookingRequest);
+    const createdBookingId = (await createBooking(createBookingRequest))
+      .bookingId;
 
-    navigate("/");
+    navigate(`/profile/tickets?bookingId=${createdBookingId}`);
   };
 
   const onPromoInputTextChange = (e: ChangeEvent<HTMLInputElement>) => {

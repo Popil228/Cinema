@@ -20,6 +20,11 @@ interface DiscountCreateRequst extends DiscountRequest {
   code: string;
 }
 
+interface DiscountCheckResponse {
+  id: number;
+  discountPercentage: number;
+}
+
 const API_BASE_URL = "/api";
 
 const getHeaders = () => {
@@ -60,21 +65,6 @@ const getDiscounts = async () => {
   }
 
   return body.discounts;
-};
-
-const getDiscountPercentage = async (id: number) => {
-  const response = await fetch(`${API_BASE_URL}/Discounts/percentage/${id}`, {
-    method: "GET",
-    headers: getHeaders(),
-  });
-
-  const body = await response.json();
-
-  if (!response.ok) {
-    throw new Error(body.message ?? "Помилка сервера");
-  }
-
-  return body.discountPercentage;
 };
 
 const deleteDiscount = async (id: number) => {
@@ -123,14 +113,13 @@ const checkDiscount = async (code: string) => {
     throw new Error(body.error ?? "Помилка сервера");
   }
 
-  return body.id;
+  return body as DiscountCheckResponse;
 };
 
 export {
   type DiscountDto,
   createDiscount,
   getDiscounts,
-  getDiscountPercentage,
   deleteDiscount,
   updateDiscount,
   checkDiscount,
