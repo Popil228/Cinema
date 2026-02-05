@@ -1,8 +1,8 @@
 ﻿using CinemaProject.Server.DTOs.Booking;
 using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Enums;
+using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

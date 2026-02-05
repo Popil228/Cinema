@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.DTOs.Movie;
+using CinemaProject.Server.DTOs.Movie;
 
 
 namespace CinemaProject.Server.Interfaces
