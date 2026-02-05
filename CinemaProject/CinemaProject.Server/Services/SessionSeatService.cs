@@ -1,7 +1,9 @@
 using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.SessionSeat;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {

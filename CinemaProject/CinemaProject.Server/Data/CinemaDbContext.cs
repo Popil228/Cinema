@@ -34,7 +34,7 @@ namespace CinemaProject.Server.Data
                 .HasIndex(u => u.PhoneNum).IsUnique();
 
             // Унікальність квитка для сеанс-місця
-            modelBuilder.Entity<Ticket>().HasIndex(t => t.SessionSeatId).IsUnique();
+            //modelBuilder.Entity<Ticket>().HasIndex(t => t.SessionSeatId).IsUnique();
 
             // Унікальність крісел у залі
             modelBuilder.Entity<Seat>()

@@ -1,0 +1,141 @@
+@use "../../styles/variables" as *;
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.backLink {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--font-xs);
+  margin-bottom: 20px;
+  display: inline-block;
+  transition: color 0.2s;
+  &:hover { color: var(--color-accent); }
+}
+
+.mainCard {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+  display: flex;
+  padding: 30px;
+  gap: 30px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--color-border);
+
+  @media (max-width: 600px) { flex-direction: column; align-items: center; text-align: center; }
+}
+
+.poster {
+  width: 140px;
+  height: 210px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.movieDetails {
+  flex: 1;
+  .bookingId { font-size: var(--font-xxs); color: var(--color-accent); font-weight: bold; text-transform: uppercase; }
+  .movieTitle { font-size: var(--font-lg); color: white; margin: 10px 0 20px; }
+}
+
+.sessionHighlight {
+  display: flex;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: var(--border-radius);
+  padding: 15px 20px;
+  gap: 20px;
+  align-items: center;
+
+  .infoBlock {
+    .label { font-size: 11px; color: var(--color-accent); text-transform: uppercase; letter-spacing: 1px; }
+    .value { font-size: var(--font-sm); color: white; font-weight: 600; margin-top: 4px; letter-spacing: 1px;}
+  }
+
+  .divider { width: 1px; height: 35px; background: rgba(56, 189, 248, 0.3); }
+}
+
+.ticketsSection { padding: 30px; }
+.sectionTitle { color: white; font-size: 18px; margin-bottom: 20px; }
+
+.ticketsList { display: grid; gap: 15px; }
+
+.ticketItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px 25px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+
+  &:hover { border-color: var(--color-border); background: rgba(255, 255, 255, 0.08); }
+}
+
+.seatInfo {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex: 1;
+  .place {
+    display: flex; gap: 20px; color: var(--color-text-main); font-size: var(--font-sm);
+    b { color: var(--color-accent); margin-left: 5px; }
+  }
+  .price { color: var(--color-text-main); font-weight: 500; }
+}
+
+.cancelBtn {
+  background: color-mix(in srgb, var(--color-error) 20%, transparent);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:hover { background: var(--color-error); color: white; }
+}
+
+.loaderContainer, .errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: white;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(56, 189, 248, 0.1);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.error { color: var(--color-error); background: rgba(239, 68, 68, 0.1); padding: 15px 30px; border-radius: 10px; margin-bottom: 20px; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.backBtn {
+  background: var(--color-accent);
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+}

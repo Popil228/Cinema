@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.Data;
+using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Genre;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

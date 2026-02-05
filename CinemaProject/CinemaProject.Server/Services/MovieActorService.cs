@@ -1,6 +1,8 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.MovieActor;
+using CinemaProject.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {
