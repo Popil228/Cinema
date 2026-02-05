@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Додаємо імпорт Link
+import { Link } from 'react-router-dom';
 import type { StrictMovieInfo } from '../../types/movie';
 import styles from './MovieCard.module.scss';
 

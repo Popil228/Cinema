@@ -31,13 +31,11 @@ const Header: React.FC = () => {
                 <div className={styles.auth}>
                     {auth.isAuthenticated ? (
                         <div className={styles.userSection}>
-                            {/* Пошта тепер посилання на профілю */}
                             <Link to="/profile" className={styles.userEmail}>
                                 {auth.user?.email}
                             </Link>
-                            {/* Замість виходу — кнопка квитків */}
-                            <Link to="/profile/tickets" className={styles.ticketsBtn}>
-                                Квитки
+                            <Link to="/profile/my-bookings" className={styles.ticketsBtn}>
+                                Мої бронювання
                             </Link>
                         </div>
                     ) : (

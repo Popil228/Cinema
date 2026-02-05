@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllNowShowingMovies } from "../api/moviesApi";
-import { getAllSessions } from "../api/sessionsApi";
+import { getAllSessions, getHalls } from "../api/sessionsApi";
 
 const useNowShowingMovies = () => {
     return useQuery({
@@ -25,4 +25,13 @@ const useFutureSessions = () =>
     staleTime: 1000 * 60 // 1 minute
 })}
 
-export {useNowShowingMovies, useSessions, useFutureSessions};
+const useHalls = () =>
+  {
+    return useQuery({
+    queryKey: ["future-sessions"],
+    queryFn: () => getHalls,
+    staleTime: 1000 * 60 // 1 minute
+  })}  
+
+
+export {useNowShowingMovies, useSessions, useFutureSessions, useHalls};

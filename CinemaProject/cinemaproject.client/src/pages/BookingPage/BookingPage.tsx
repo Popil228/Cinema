@@ -1,40 +1,173 @@
-import React, { useState } from 'react';
-import styles from './BookingPage.module.scss';
-
-const PRICE_PER_SEAT = 150;
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  type ChangeEvent,
+} from "react";
+import styles from "./BookingPage.module.scss";
+import {
+  getSessionById,
+  getSessionSeats,
+  type SessionDto,
+  type SessionSeatDto,
+} from "../../api/sessionsApi";
+import { dateToDayMonthStrUA } from "../../utilities/dateToStringUA";
+import { useNavigate, useParams } from "react-router-dom";
+import BookingPageContext from "../../context/bookingPageContext/BookingPageContext";
+import SessionSeat from "../../components/SessionSeat/SessionSeat";
+import { checkDiscount } from "../../api/discountApi";
+import { type BookingRequest } from "../../types/booking";
+import { createBooking } from "../../api/bookingApi";
 
 const BookingPage: React.FC = () => {
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const [selectedHall, setSelectedHall] = useState('Зал А');
-  const [selectedDate, setSelectedDate] = useState('3 квітня');
-  const [selectedTime, setSelectedTime] = useState('13:00');
+  const { id } = useParams();
+  const selectedSessionId = Number.parseInt(id || "0");
 
-  // Дані для вибору (заглушки)
-  const halls = ['Зал А', 'Зал B'];
-  const dates = ['3 квітня', '4 квітня', '5 квітня'];
-  const times = ['10:00', '13:00', '16:30', '19:00', '21:30'];
-  const rowsLayout = [5, 7, 9, 9]; 
-  const occupiedSeats = ["2-3", "2-4", "3-5", "4-1", "4-11"];
+  const bookingPageContext = useContext(BookingPageContext);
+  const navigate = useNavigate();
 
-  const handleSeatClick = (row: number, seat: number) => {
-    const seatId = `${row}-${seat}`;
-    if (occupiedSeats.includes(seatId)) return;
+  const displayDate: string = dateToDayMonthStrUA(
+    new Date(bookingPageContext.selectedSession?.startTime || "0000-01-01"),
+  );
+  const displayTime: string =
+    bookingPageContext.selectedSession?.startTime.split("T")[1].slice(0, 5) ||
+    "00:00";
+  const displayHall: string =
+    bookingPageContext.selectedSession?.hallName || "Зал _";
 
-    setSelectedSeats(prev => 
-      prev.includes(seatId) ? prev.filter(s => s !== seatId) : [...prev, seatId]
+  const [selectedSessionSeats, setSelectedSessionSeats] = useState<
+    SessionSeatDto[]
+  >([]);
+  const [promoInput, setPromoInput] = useState<string>("");
+  const [promoSuccess, setPromoSuccess] = useState<boolean>(false);
+  const [promoFailure, setPromoFailure] = useState<boolean>(false);
+  const [promoBtnText, setPromoBtnText] = useState<string>(
+    "Активувати промокод",
+  );
+  const [discountId, setDiscountId] = useState<number | null>(null);
+
+  const promoElementsAdditionalStyle =
+    " " +
+    (promoSuccess ? `${styles.success}` : "") +
+    " " +
+    (promoFailure ? `${styles.failure}` : "");
+
+  const defaultPrice: number =
+    bookingPageContext.selectedSession?.basePrice || 0;
+  const totalCost: number = selectedSessionSeats
+    .map((s) =>
+      Math.round((s.seatType == "VIP" ? 150 : 100) * defaultPrice * 0.01),
+    ) //обрахування відсотку - заглушка
+    .reduce((sum, singleTicketPrice) => sum + singleTicketPrice, 0);
+
+  useEffect(() => {
+    const loadSessionByCurrentId = async () => {
+      const s: SessionDto = await getSessionById(selectedSessionId);
+      bookingPageContext.setSelectedSession(s);
+    };
+
+    const loadSessionsSeats = async () => {
+      //тут має бути запит в апішку по типу await getSessionSeats(selectedSessionId);
+      const loadedSessionSeats: SessionSeatDto[] =
+        await getSessionSeats(selectedSessionId);
+      bookingPageContext.setSessionSeats(loadedSessionSeats);
+    };
+
+    if (bookingPageContext.selectedSession === null) {
+      loadSessionByCurrentId();
+    } else if (bookingPageContext.selectedSession.id != selectedSessionId) {
+      loadSessionByCurrentId();
+    }
+
+    loadSessionsSeats();
+  }, []);
+
+  const handleSeatClick = (sessionSeat: SessionSeatDto) => {
+    if (!sessionSeat.isActive) {
+      return;
+    }
+
+    setSelectedSessionSeats((prev) =>
+      prev.includes(sessionSeat)
+        ? prev.filter((s) => s.sessionSeatId !== sessionSeat.sessionSeatId)
+        : [...prev, sessionSeat],
     );
   };
 
   const formatSelectedSeats = () => {
-    return selectedSeats
-      .map(id => {
-        const [row, seat] = id.split('-');
-        return `Ряд ${row} Місце ${seat}`;
-      })
-      .join(', ');
+    return selectedSessionSeats
+      .map((s) => `Ряд ${s.rowNumber} Місце ${s.seatNumber}`)
+      .join(", ");
   };
 
-  const totalCost = selectedSeats.length * PRICE_PER_SEAT;
+  const promoBtnPress = async () => {
+    let newDiscountId: number | null = null;
+    let isCodeUsable: boolean;
+    let errorText: string = "";
+    try {
+      newDiscountId = await checkDiscount(promoInput);
+      isCodeUsable = true;
+    } catch (err) {
+      if (err instanceof Error) {
+        errorText = err.message;
+      } else {
+        errorText = "Помилка";
+      }
+      isCodeUsable = false;
+      newDiscountId = null;
+      console.error(err);
+    }
+
+    if (isCodeUsable) //success scenario
+    {
+      setPromoSuccess(true);
+      setPromoBtnText("Промокод активовано");
+      setDiscountId(newDiscountId);
+    } else //fail scenario
+    {
+      setPromoFailure(true);
+      setPromoBtnText(errorText);
+      setDiscountId(newDiscountId);
+    }
+  };
+
+  const confirtBookingBtnPress = async () => {
+    const createBookingRequest: BookingRequest = {
+      discountId: discountId,
+      sessionSeatIds: selectedSessionSeats.map((s) => s.sessionSeatId),
+    };
+
+    await createBooking(createBookingRequest);
+
+    navigate("/");
+  };
+
+  const onPromoInputTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPromoInput(e.target.value);
+
+    if (promoSuccess) {
+      setPromoSuccess(false);
+      setPromoBtnText("Активувати промокод");
+    }
+    if (promoFailure) {
+      setPromoFailure(false);
+      setPromoBtnText("Активувати промокод");
+    }
+  };
+
+  const seatsSplitByRowsObj: { [key: number]: SessionSeatDto[] } = {};
+  bookingPageContext.sessionSeats.forEach((s) => {
+    if (!{}.propertyIsEnumerable.call(seatsSplitByRowsObj, s.rowNumber)) {
+      seatsSplitByRowsObj[s.rowNumber] = [];
+    }
+    seatsSplitByRowsObj[s.rowNumber].push(s);
+  });
+
+  const seatsSplitByRowsArr: SessionSeatDto[][] = Object.keys(
+    seatsSplitByRowsObj,
+  )
+    .map((key) => seatsSplitByRowsObj[Number.parseInt(key)])
+    .sort((a, b) => a[0].rowNumber - b[0].rowNumber);
 
   return (
     <div className={styles.overlay}>
@@ -43,41 +176,33 @@ const BookingPage: React.FC = () => {
         <div className={styles.movieHeader}>
           <div className={styles.movieInfo}>
             <div className={styles.poster}>
-               <img src="/Minecraft.png" alt="Movie" />
+              <img
+                src={`https://image.tmdb.org/t/p/w500${bookingPageContext.selectedSession?.moviePosterPath}`}
+                alt={bookingPageContext.selectedSession?.movieTitle}
+              />
             </div>
             <div className={styles.text}>
-              <h1 className={styles.title}>Minecraft</h1>
-              <p className={styles.subtitle}>Action, Adventure, Fantasy</p>
+              <h1 className={styles.title}>
+                {bookingPageContext.selectedSession?.movieTitle}
+              </h1>
+              <p className={styles.subtitle}>
+                {bookingPageContext.selectedSession?.movieGenres?.join(", ")}
+              </p>
             </div>
           </div>
 
-          <div className={styles.controls}>
-            <div className={styles.controlGroup}>
-              <label>Зал</label>
-              <select 
-                value={selectedHall} 
-                onChange={(e) => setSelectedHall(e.target.value)}
-              >
-                {halls.map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
-            </div>
-            <div className={styles.controlGroup}>
+          <div className={styles.sessionInfo}>
+            <div className={styles.sessionProperty}>
               <label>Дата</label>
-              <select 
-                value={selectedDate} 
-                onChange={(e) => setSelectedDate(e.target.value)}
-              >
-                {dates.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
+              <h3 className={styles.propValue}>{displayDate}</h3>
             </div>
-            <div className={styles.controlGroup}>
+            <div className={styles.sessionProperty}>
               <label>Час</label>
-              <select 
-                value={selectedTime} 
-                onChange={(e) => setSelectedTime(e.target.value)}
-              >
-                {times.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <h3 className={styles.propValue}>{displayTime}</h3>
+            </div>
+            <div className={styles.sessionProperty}>
+              <label>Зал</label>
+              <h3 className={styles.propValue}>{displayHall}</h3>
             </div>
           </div>
         </div>
@@ -88,32 +213,21 @@ const BookingPage: React.FC = () => {
           <span className={styles.screenText}>ЕКРАН</span>
         </div>
 
-        {/* Побудова залу */}
+        {/* Показ сидінь в залі */}
         <div className={styles.hall}>
-          {rowsLayout.map((seatCount, rowIndex) => (
-            <div key={rowIndex} className={styles.row}>
-              <span className={styles.rowNumber}>{rowIndex + 1}</span>
+          {seatsSplitByRowsArr.map((row) => (
+            <div key={row[0].rowNumber} className={styles.row}>
+              <span className={styles.rowNumber}>{row[0].rowNumber}</span>
               <div className={styles.seatsList}>
-                {Array.from({ length: seatCount }).map((_, seatIndex) => {
-                  const seatNum = seatIndex + 1;
-                  const seatId = `${rowIndex + 1}-${seatNum}`;
-                  const isOccupied = occupiedSeats.includes(seatId);
-                  const isSelected = selectedSeats.includes(seatId);
-
-                  return (
-                    <div
-                      key={seatId}
-                      className={`${styles.seat} ${
-                        isOccupied ? styles.occupied : isSelected ? styles.selected : ''
-                      }`}
-                      onClick={() => handleSeatClick(rowIndex + 1, seatNum)}
-                    >
-                      <span className={styles.tooltip}>{seatNum}</span>
-                    </div>
-                  );
-                })}
+                {row.map((s) => (
+                  <SessionSeat
+                    sessionSeat={s}
+                    isSelected={selectedSessionSeats.includes(s)}
+                    handleClick={handleSeatClick}
+                  />
+                ))}
               </div>
-              <span className={styles.rowNumber}>{rowIndex + 1}</span>
+              <span className={styles.rowNumber}>{row[0].rowNumber}</span>
             </div>
           ))}
         </div>
@@ -137,26 +251,52 @@ const BookingPage: React.FC = () => {
         {/* Блок підсумку та Кнопка */}
         <div className={styles.footer}>
           <div className={styles.summary}>
-            {selectedSeats.length > 0 ? (
+            {selectedSessionSeats.length > 0 ? (
               <>
                 <div className={styles.seatsInfo}>
-                  <strong>Обрані місця:</strong> <span>{formatSelectedSeats()}</span>
+                  <strong>Обрані місця:</strong>{" "}
+                  <span>{formatSelectedSeats()}</span>
                 </div>
                 <div className={styles.priceInfo}>
-                  <strong>Загальна вартість:</strong> <span className={styles.totalPrice}>{totalCost} грн</span>
+                  <strong>Загальна вартість:</strong>{" "}
+                  <span className={styles.totalPrice}>{totalCost} грн</span>
                 </div>
               </>
             ) : (
-              <p className={styles.emptyMsg}>Будь ласка, оберіть місця для бронювання</p>
+              <p className={styles.emptyMsg}>
+                Будь ласка, оберіть місця для бронювання
+              </p>
             )}
           </div>
 
-          <button 
-            className={styles.bookBtn} 
-            disabled={selectedSeats.length === 0}
-          >
-            Придбати квитки
-          </button>
+          <div className={styles.buttonsContainer}>
+            <div className={styles.promoContainer}>
+              <input
+                type="text"
+                placeholder="Промокод"
+                className={
+                  `${styles.promoInput}` + promoElementsAdditionalStyle
+                }
+                value={promoInput}
+                onChange={onPromoInputTextChange}
+              ></input>
+              <button
+                className={`${styles.promoBtn}` + promoElementsAdditionalStyle}
+                disabled={promoInput.length === 0 || promoSuccess}
+                onClick={promoBtnPress}
+              >
+                {promoBtnText}
+              </button>
+            </div>
+
+            <button
+              className={styles.bookBtn}
+              disabled={selectedSessionSeats.length === 0}
+              onClick={confirtBookingBtnPress}
+            >
+              Забронювати квитки
+            </button>
+          </div>
         </div>
       </div>
     </div>
