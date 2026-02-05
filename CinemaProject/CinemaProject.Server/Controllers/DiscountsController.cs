@@ -1,5 +1,5 @@
 ﻿using CinemaProject.Server.DTOs.Discount;
-using CinemaProject.Server.Services;
+using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

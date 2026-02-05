@@ -1,6 +1,6 @@
 ﻿using CinemaProject.Server.DTOs.Ticket;
 
-namespace CinemaProject.Server.Services
+namespace CinemaProject.Server.Interfaces
 {
     public interface ITicketService
     {

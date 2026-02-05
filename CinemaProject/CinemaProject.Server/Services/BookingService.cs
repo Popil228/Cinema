@@ -1,5 +1,6 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Booking;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;

@@ -1,9 +1,9 @@
 ﻿using Azure.Core;
 using CinemaProject.Server.DTOs.Actor;
-using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using CinemaProject.Server.Models.Enums;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Controllers
 {

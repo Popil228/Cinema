@@ -1,7 +1,7 @@
 ﻿using CinemaProject.Server.DTOs.Actor;
 
 
-namespace CinemaProject.Server.Services
+namespace CinemaProject.Server.Interfaces
 {
     public interface IActorService
     {

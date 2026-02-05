@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Ticket;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
