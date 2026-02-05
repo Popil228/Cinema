@@ -3,7 +3,6 @@ using CinemaProject.Server.DTOs.Discount;
 using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
-using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {
@@ -191,7 +190,8 @@ namespace CinemaProject.Server.Services
             {
                 Success = true,
                 Message = "Код на знижку успішно перевірений",
-                Id = discount.DiscountId
+                Id = discount.DiscountId,
+                DiscountPercentage = discount.DiscountPercent
             };
 
         }
