@@ -67,7 +67,7 @@ namespace CinemaProject.Server.Services
                     Price = t.Price,
                     MovieTitle = t.SessionSeat.Session.Movie.Title,
                     MoviePosterPath = t.SessionSeat.Session.Movie.PosterUri,
-                    ShowTime = t.SessionSeat.Session.StartTime.ToString("g")
+                    ShowTime = t.SessionSeat.Session.StartTime
                 })
                 .ToListAsync();
 
@@ -125,7 +125,7 @@ namespace CinemaProject.Server.Services
                     Price = t.Price,
                     MovieTitle = t.SessionSeat.Session.Movie.Title,
                     MoviePosterPath = t.SessionSeat.Session.Movie.PosterUri,
-                    ShowTime = t.SessionSeat.Session.StartTime.ToString("g")
+                    ShowTime = t.SessionSeat.Session.StartTime
                 })
                 .ToListAsync();
 

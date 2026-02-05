@@ -20,6 +20,6 @@
         public decimal Price { get; set; }
         public string MovieTitle { get; set; }
         public string MoviePosterPath { get; set; }
-        public string ShowTime { get; set; }
+        public DateTime ShowTime { get; set; }
     }
 }

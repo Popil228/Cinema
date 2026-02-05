@@ -183,7 +183,7 @@ namespace CinemaProject.Server.Services
              .Select(b => new BookingDto
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
@@ -246,7 +246,7 @@ namespace CinemaProject.Server.Services
              .Select(b => new BookingDto
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
@@ -304,7 +304,7 @@ namespace CinemaProject.Server.Services
              .Select(b => new BookingDto
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
@@ -356,7 +356,7 @@ namespace CinemaProject.Server.Services
              .Select(b => new BookingDto
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
