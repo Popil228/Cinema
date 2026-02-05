@@ -4,6 +4,13 @@ import { getUserBookings, updateBookingStatus } from '../../api/bookingApi';
 import type { BookingDto } from '../../types/booking';
 import styles from './MyBookingsPage.module.scss';
 
+const formatBookingDate = (dateStr: string) => {
+    const [datePart, timePart] = dateStr.split(' ');
+    const [day, month, year] = datePart.split('.');
+    const isoDate = `${year}-${month}-${day}T${timePart}:00Z`;
+    return new Date(isoDate);
+  };
+
 const MyBookingsPage: React.FC = () => {
   const [bookings, setBookings] = useState<BookingDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,7 +25,10 @@ const MyBookingsPage: React.FC = () => {
       setIsLoading(true);
       const response = await getUserBookings();
       if (response.success) {
-        setBookings(response.bookings);
+        const sortedBookings = [...response.bookings].sort((a, b) => {
+          return formatBookingDate(b.bookingAt).getTime() - formatBookingDate(a.bookingAt).getTime();
+        });
+        setBookings(sortedBookings);
       }
     } catch (err) {
       setError('Не вдалося завантажити бронювання');
@@ -39,7 +49,7 @@ const MyBookingsPage: React.FC = () => {
     }
   };
 
-  if (isLoading) return <div className={styles.loader}>Завантаження...</div>;
+  if (isLoading) return <div className={styles.loader}>Завантаження ваших бронювань...</div>;
 
   return (
     <div className={styles.container}>
@@ -52,56 +62,62 @@ const MyBookingsPage: React.FC = () => {
 
       {bookings.length > 0 ? (
         <div className={styles.grid}>
-          {bookings.map((booking) => (
-            <div key={booking.id} className={styles.card}>
-              <img 
-                src={`https://image.tmdb.org/t/p/w500${booking.moviePosterPath}`}
-                alt={booking.movieTitle}
-                className={styles.poster}
-             />
-              
-              <div className={styles.content}>
-                <div className={styles.topRow}>
-                  <h2 className={styles.movieTitle}>{booking.movieTitle}</h2>
-                  <span className={`${styles.statusBadge} ${styles[booking.status?.toLowerCase() || '']}`}>
-                    {booking.status}
-                  </span>
-                </div>
+          {bookings.map((booking) => {
+            const dateObj = formatBookingDate(booking.bookingAt);
 
-                <div className={styles.info}>
-                  <div className={styles.item}>
-                    <span className={styles.label}>Дата замовлення</span>
-                    <p>{new Date(booking.bookingAt).toLocaleDateString()} • {new Date(booking.bookingAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+            return (
+              <div key={booking.id} className={styles.card}>
+                <img 
+                  src={`https://image.tmdb.org/t/p/w500${booking.moviePosterPath}`}
+                  alt={booking.movieTitle}
+                  className={styles.poster}
+                />
+                
+                <div className={styles.content}>
+                  <div className={styles.topRow}>
+                    <h2 className={styles.movieTitle}>{booking.movieTitle}</h2>
+                    <span className={`${styles.statusBadge} ${styles[booking.status?.toLowerCase() || '']}`}>
+                      {booking.status}
+                    </span>
                   </div>
-                  <div className={styles.item}>
-                    <span className={styles.label}>Номер замовлення</span>
-                    <p># {booking.id}</p>
-                  </div>
-                </div>
 
-                <div className={styles.footer}>
-                  <div className={styles.priceInfo}>
-                    <span className={styles.label}>Загальна сума</span>
-                    <p className={styles.price}>{booking.totalPrice} грн</p>
+                  <div className={styles.info}>
+                    <div className={styles.item}>
+                      <span className={styles.label}>Дата замовлення</span>
+                      <p>
+                        {dateObj.toLocaleDateString('uk-UA')} • {dateObj.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                    <div className={styles.item}>
+                      <span className={styles.label}>Номер замовлення</span>
+                      <p># {booking.id}</p>
+                    </div>
                   </div>
-                  <div className={styles.actions}>
-                    <Link
-                      to={`/profile/tickets?bookingId=${booking.id}`}
-                      state={{status: booking.status}}
-                      className={styles.detailsBtn}
-                    >
-                      Деталі квитків
-                    </Link>
-                    {booking.status !== 'Cancelled' && (
-                      <button onClick={() => handleCancel(booking.id)} className={styles.cancelBtn}>
-                        Скасувати
-                      </button>
-                    )}
+
+                  <div className={styles.footer}>
+                    <div className={styles.priceInfo}>
+                      <span className={styles.label}>Загальна сума</span>
+                      <p className={styles.price}>{booking.totalPrice} грн</p>
+                    </div>
+                    <div className={styles.actions}>
+                      <Link
+                        to={`/profile/tickets?bookingId=${booking.id}`}
+                        state={{status: booking.status}}
+                        className={styles.detailsBtn}
+                      >
+                        Деталі квитків
+                      </Link>
+                      {booking.status !== 'Cancelled' && (
+                        <button onClick={() => handleCancel(booking.id)} className={styles.cancelBtn}>
+                          Скасувати
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className={styles.emptyState}>
