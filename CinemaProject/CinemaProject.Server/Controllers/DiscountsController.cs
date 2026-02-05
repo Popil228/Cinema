@@ -19,7 +19,7 @@ namespace CinemaProject.Server.Controllers
 
         [HttpPost]
         [Authorize(Policy = "ManageDiscounts")]
-        public async Task<ActionResult<DiscountResponse>> CreateDiscount([FromBody] DiscountDto request)
+        public async Task<ActionResult<DiscountResponse>> CreateDiscount([FromBody] DiscountCreateRequest request)
         {
             if (!ModelState.IsValid)
             {

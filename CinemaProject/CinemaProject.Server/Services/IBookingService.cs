@@ -1,4 +1,5 @@
 ﻿using CinemaProject.Server.DTOs.Booking;
+using CinemaProject.Server.Models.Enums;
 
 namespace CinemaProject.Server.Services
 {
@@ -10,7 +11,7 @@ namespace CinemaProject.Server.Services
         Task<BookingGetResponse> GetUserBookingsAsync(int userId);
         Task<BookingGetResponse> GetAllBookingsAsync(int status);
         Task<BookingGetResponse> GetAllBookingsAsync();
-        Task<BookingResponse> UpdateBookingStatusAsync(int id, int status);
+        Task<BookingResponse> UpdateBookingStatusAsync(int id, BookingStatus status);
 
     }
 }
