@@ -6,15 +6,25 @@ import { useEffect, useState } from "react";
 
 const AdminDiscountPage: React.FC = () => {
   const [discounts, setDiscounts] = useState<DiscountDto[]>([]);
+  const [newDiscount, setNewDiscount] = useState<DiscountDto | null>(null);
   const [discountsError, setDiscountsError] = useState<{
     is: boolean;
     message: string;
   }>({ is: false, message: "Помилка відсутня" });
 
+  const [codeSorting, setCodeSorting] = useState<number>(0);
+  const [startDateSorting, setStartDateSorting] = useState<number>(0);
+  const [endDateSorting, setEndDateSorting] = useState<number>(0);
+  const [percentSorting, setPercentSorting] = useState<number>(0);
+  const [usesLeftSorting, setUsesLeftSorting] = useState<number>(0);
+
+  //const [sortedDiscounts, setSortedDiscounts] = useState<DiscountDto[]>([]);
+
   const fetchDiscounts = async () => {
     try {
       const fetchedDiscounts = await discountApi.getDiscounts();
       setDiscounts(fetchedDiscounts);
+      //setSortedDiscounts(fetchedDiscounts);
       setDiscountsError({ is: false, message: "Помилка відсутня" });
     } catch (err) {
       if (err instanceof Error) {
@@ -46,6 +56,23 @@ const AdminDiscountPage: React.FC = () => {
     d_old: DiscountDto,
     d_new: DiscountDto,
   ) => {
+    if (d_old.id == -1) // identifier for newly created
+    {
+      try {
+        await discountApi.createDiscount(d_new);
+        fetchDiscounts();
+      } catch (err) {
+        if (err instanceof Error) {
+          setDiscountsError({ is: true, message: err.message });
+        } else {
+          setDiscountsError({ is: true, message: "Discount create error" });
+        }
+      }
+
+      setNewDiscount(null);
+      return true;
+    }
+
     const idOld = discounts.findIndex((d) => d.id == d_old.id); // should not be -1
     const idNew = discounts
       .filter((d) => d.id != d_old.id)
@@ -60,40 +87,30 @@ const AdminDiscountPage: React.FC = () => {
       return false;
     }
 
-    if (d_old.id == -1) // identifier for newly created
-    {
+    if (
+      checkDifference(d_old, d_new) //check for any changes made (if unchanged then no need to update)
+    ) {
       try {
-        await discountApi.createDiscount(d_new);
+        await discountApi.updateDiscount(d_old.id, d_new); //old id and new data
         fetchDiscounts();
       } catch (err) {
         if (err instanceof Error) {
           setDiscountsError({ is: true, message: err.message });
         } else {
-          setDiscountsError({ is: true, message: "Discounta create error" });
-        }
-      }
-    } else {
-      if (
-        checkDifference(d_old, d_new) //check for any changes made (if unchanged then no need to update)
-      ) {
-        try {
-          await discountApi.updateDiscount(d_old.id, d_new); //old id and new data
-          fetchDiscounts();
-        } catch (err) {
-          if (err instanceof Error) {
-            setDiscountsError({ is: true, message: err.message });
-          } else {
-            setDiscountsError({ is: true, message: "Discount update error" });
-          }
+          setDiscountsError({ is: true, message: "Discount update error" });
         }
       }
     }
 
-    console.log("editing success");
     return true;
   };
 
   const handleDiscountDelete = async (d: DiscountDto) => {
+    if (d.id == -1) {
+      setNewDiscount(null);
+      return;
+    }
+
     const indexOfElement = discounts.findIndex((dc) => dc.id == d.id);
     if (indexOfElement == -1) {
       console.log("no element found for deletion");
@@ -113,8 +130,7 @@ const AdminDiscountPage: React.FC = () => {
   };
 
   const handleAddBtnPress = () => {
-    if (discounts.findIndex((d) => d.id == -1) != -1) {
-      //id -1 for newly created
+    if (newDiscount !== null) {
       return;
     }
 
@@ -123,17 +139,94 @@ const AdminDiscountPage: React.FC = () => {
     const newEndDate = new Date();
     newEndDate.setDate(10);
 
-    const newDiscount: DiscountDto = {
+    setNewDiscount({
       id: -1,
       code: "",
       startDate: newStartDate.toISOString(),
       endDate: newEndDate.toISOString(),
       usesLeft: NaN,
       discountPercentage: NaN,
-    };
-
-    setDiscounts((prev) => [newDiscount, ...prev]);
+    });
   };
+
+  const handleSortingBtnPress = async (sortingParameter: string) => {
+    switch (
+      sortingParameter //handling sorting crideria
+    ) {
+      case "code":
+        setCodeSorting((prev: number) => (prev == 0 ? 1 : prev == 1 ? -1 : 0));
+        setStartDateSorting(0);
+        setEndDateSorting(0);
+        setPercentSorting(0);
+        setUsesLeftSorting(0);
+        break;
+      case "startDate":
+        setStartDateSorting((prev: number) =>
+          prev == 0 ? 1 : prev == 1 ? -1 : 0,
+        );
+        setCodeSorting(0);
+        setEndDateSorting(0);
+        setPercentSorting(0);
+        setUsesLeftSorting(0);
+        break;
+      case "endDate":
+        setEndDateSorting((prev: number) =>
+          prev == 0 ? 1 : prev == 1 ? -1 : 0,
+        );
+        setCodeSorting(0);
+        setStartDateSorting(0);
+        setPercentSorting(0);
+        setUsesLeftSorting(0);
+        break;
+      case "percent":
+        setPercentSorting((prev: number) =>
+          prev == 0 ? 1 : prev == 1 ? -1 : 0,
+        );
+        setCodeSorting(0);
+        setStartDateSorting(0);
+        setEndDateSorting(0);
+        setUsesLeftSorting(0);
+        break;
+      case "usesLeft":
+        setUsesLeftSorting((prev: number) =>
+          prev == 0 ? 1 : prev == 1 ? -1 : 0,
+        );
+        setCodeSorting(0);
+        setStartDateSorting(0);
+        setEndDateSorting(0);
+        setPercentSorting(0);
+        break;
+    }
+  };
+
+  const sortedDiscounts =
+    codeSorting != 0
+      ? [...discounts].sort((a, b) => {
+          if (a.code > b.code) return codeSorting;
+          else return -codeSorting;
+        })
+      : startDateSorting != 0
+        ? [...discounts].sort((a, b) => {
+            if (a.startDate > b.startDate) return startDateSorting;
+            else return -startDateSorting;
+          })
+        : endDateSorting != 0
+          ? [...discounts].sort((a, b) => {
+              if (a.endDate > b.endDate) return endDateSorting;
+              else return -endDateSorting;
+            })
+          : percentSorting != 0
+            ? [...discounts].sort(
+                (a, b) =>
+                  (a.discountPercentage - b.discountPercentage) *
+                  percentSorting,
+              )
+            : usesLeftSorting != 0
+              ? [...discounts].sort((a, b) => {
+                  if (a.usesLeft > b.usesLeft) return usesLeftSorting;
+                  else return -usesLeftSorting;
+                })
+              : discounts;
 
   return (
     <div className={styles.container}>
@@ -156,17 +249,87 @@ const AdminDiscountPage: React.FC = () => {
           </button>
         </>
       ) : (
-        <div className={styles.discountList}>
-          {discounts?.map((d) => (
-            <AdminDiscountCard
-              key={d.code}
-              discount={d}
-              handleDiscountEditConfirm={handleDiscountEditConfirm}
-              handleDiscountDelete={handleDiscountDelete}
-              isNew={d.id == -1}
-            />
-          ))}
-        </div>
+        <>
+          <div className={styles.discountHeader}>
+            <div className={styles.discountHeaderGrid}>
+              <button
+                className={styles.discountHeaderColumnTitle}
+                onClick={() => handleSortingBtnPress("code")}
+              >
+                <p className={styles.discountHeaderText}>Код</p>
+                <p className={styles.discountHeaderButton}>
+                  {codeSorting == 0 ? "-" : codeSorting == 1 ? "▲" : "▼"}
+                </p>
+              </button>
+              <button
+                className={styles.discountHeaderColumnTitle}
+                onClick={() => handleSortingBtnPress("startDate")}
+              >
+                <p className={styles.discountHeaderText}>Початок дії</p>
+                <p className={styles.discountHeaderButton}>
+                  {startDateSorting == 0
+                    ? "-"
+                    : startDateSorting == 1
+                      ? "▲"
+                      : "▼"}
+                </p>
+              </button>
+              <button
+                className={styles.discountHeaderColumnTitle}
+                onClick={() => handleSortingBtnPress("endDate")}
+              >
+                <p className={styles.discountHeaderText}>Кінець дії</p>
+                <p className={styles.discountHeaderButton}>
+                  {endDateSorting == 0 ? "-" : endDateSorting == 1 ? "▲" : "▼"}
+                </p>
+              </button>
+              <button
+                className={styles.discountHeaderColumnTitle}
+                onClick={() => handleSortingBtnPress("percent")}
+              >
+                <p className={styles.discountHeaderText}>% знижки</p>
+                <p className={styles.discountHeaderButton}>
+                  {percentSorting == 0 ? "-" : percentSorting == 1 ? "▲" : "▼"}
+                </p>
+              </button>
+              <button
+                className={styles.discountHeaderColumnTitle}
+                onClick={() => handleSortingBtnPress("usesLeft")}
+              >
+                <p className={styles.discountHeaderText}>К-ть використань</p>
+                <p className={styles.discountHeaderButton}>
+                  {usesLeftSorting == 0
+                    ? "-"
+                    : usesLeftSorting == 1
+                      ? "▲"
+                      : "▼"}
+                </p>
+              </button>
+            </div>
+          </div>
+          <div className={styles.discountList}>
+            {newDiscount === null ? (
+              <></>
+            ) : (
+              <AdminDiscountCard
+                key={newDiscount.id}
+                discount={newDiscount}
+                handleDiscountEditConfirm={handleDiscountEditConfirm}
+                handleDiscountDelete={handleDiscountDelete}
+                isNew={true}
+              />
+            )}
+            {sortedDiscounts?.map((d) => (
+              <AdminDiscountCard
+                key={d.id}
+                discount={d}
+                handleDiscountEditConfirm={handleDiscountEditConfirm}
+                handleDiscountDelete={handleDiscountDelete}
+                isNew={d.id == -1}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
