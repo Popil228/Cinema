@@ -20,7 +20,7 @@ namespace CinemaProject.Server.Services
         /// <param name="request">The details of the discount to create. Cannot be null.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a DiscountResponse indicating
         /// whether the discount was successfully created.</returns>
-        public async Task<DiscountResponse> CreateDiscountAsync(DiscountDto request)
+        public async Task<DiscountResponse> CreateDiscountAsync(DiscountCreateRequest request)
         {
             if (request == null)
                 return new DiscountResponse
