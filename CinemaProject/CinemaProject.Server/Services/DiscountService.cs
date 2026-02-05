@@ -216,7 +216,8 @@ namespace CinemaProject.Server.Services
             {
                 Success = true,
                 Message = "Код на знижку успішно перевірений",
-                Id = discount.DiscountId
+                Id = discount.DiscountId,
+                DiscountPercentage = discount.DiscountPercent
             };
 
         }
