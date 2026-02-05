@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.Interfaces;
+using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

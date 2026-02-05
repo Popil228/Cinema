@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.Data;
+using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Genre;
 using CinemaProject.Server.DTOs.Movie;
 using CinemaProject.Server.DTOs.MovieActor;
@@ -7,6 +7,7 @@ using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Data;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {

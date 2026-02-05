@@ -83,17 +83,21 @@ export const createSession = async (dto: CreateSessionDto): Promise<SessionDto> 
 };
 
 export const updateSession = async (id: number, dto: UpdateSessionDto): Promise<SessionDto> => {
+  const token = tokenStorage.getToken();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
   const response = await fetch(`${API_BASE_URL}/Sessions/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(dto),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Помилка оновлення сесії');
   }
-  
+
   return response.json();
 };
 
