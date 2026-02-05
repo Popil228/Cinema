@@ -1,14 +1,15 @@
-﻿using System.ComponentModel;
-
-namespace CinemaProject.Server.DTOs.Discount
+﻿namespace CinemaProject.Server.DTOs.Discount
 {
-    public class DiscountDto
+    public class DiscountRequest
     {
-        public int Id { get; set; }
-        public string Code { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int UsesLeft { get; set; }
         public short DiscountPercentage { get; set; }
+    }
+
+    public class DiscountCreateRequest : DiscountRequest
+    {
+        public string Code { get; set; }
     }
 }

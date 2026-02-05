@@ -1,5 +1,6 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Discount;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
 using CinemaProject.Server.Interfaces;
@@ -20,7 +21,7 @@ namespace CinemaProject.Server.Services
         /// <param name="request">The details of the discount to create. Cannot be null.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a DiscountResponse indicating
         /// whether the discount was successfully created.</returns>
-        public async Task<DiscountResponse> CreateDiscountAsync(DiscountDto request)
+        public async Task<DiscountResponse> CreateDiscountAsync(DiscountCreateRequest request)
         {
             if (request == null)
                 return new DiscountResponse
@@ -101,6 +102,7 @@ namespace CinemaProject.Server.Services
                 Message = "Коди на знижки успішно повернуті",
                 Discounts = discounts.Select(d => new DiscountDto
                 {
+                    Id = d.DiscountId,
                     Code = d.Code,
                     StartDate = d.StartDate,
                     EndDate = d.EndDate,
@@ -150,7 +152,7 @@ namespace CinemaProject.Server.Services
         /// <param name="userId">The unique identifier of the user attempting to use the discount code.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a DiscountResponse indicating
         /// whether the discount was successfully applied and providing a relevant message.</returns>
-        public async Task<DiscountUseResponse> UseDiscountAsync(string code, int userId)
+        public async Task<DiscountUseResponse> CheckDiscountAsync(string code, int userId)
         {
             var discount = await _context.Discounts
                 .FirstOrDefaultAsync(d => d.Code == code);
@@ -184,15 +186,61 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            discount.UsesLeft--;
             await _context.SaveChangesAsync();
             return new DiscountUseResponse
             {
                 Success = true,
-                Message = "Код на знижку успішно використано",
+                Message = "Код на знижку успішно перевірений",
                 Id = discount.DiscountId
             };
 
+        }
+
+
+        public async Task<DiscountResponse> UpdateDiscountAsync(int id, DiscountRequest request)
+        {
+            var discount = await _context.Discounts.FindAsync(id);
+
+            if (discount == null)
+            {
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Код на знижку не знайдено"
+                };
+            }
+            if (request.EndDate <= request.StartDate)
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Некоректний період дії"
+                };
+            if (request.DiscountPercentage <= 0 || request.DiscountPercentage > 100)
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Некоректний відсоток знижки"
+                };
+            if (request.UsesLeft < 0)
+            {
+                return new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Кількість використань не може бути від'ємною"
+                };
+            }
+
+            discount.StartDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
+            discount.EndDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc);
+            discount.UsesLeft = request.UsesLeft;
+            discount.DiscountPercent = request.DiscountPercentage;
+
+            await _context.SaveChangesAsync();
+            return new DiscountResponse
+            {
+                Success = true,
+                Message = "Код на знижку успішно оновлено"
+            };
         }
     }
 }

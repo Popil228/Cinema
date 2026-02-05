@@ -20,7 +20,7 @@ namespace CinemaProject.Server.Controllers
 
         [HttpPost]
         [Authorize(Policy = "ManageDiscounts")]
-        public async Task<ActionResult<DiscountResponse>> CreateDiscount([FromBody] DiscountDto request)
+        public async Task<ActionResult<DiscountResponse>> CreateDiscount([FromBody] DiscountCreateRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -83,9 +83,9 @@ namespace CinemaProject.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPatch("use")]
+        [HttpGet("check")]
         [Authorize(Policy = "UserOrAdminDiscounts")]
-        public async Task<ActionResult<DiscountUseResponse>> UseDiscount([FromQuery]string code)
+        public async Task<ActionResult<DiscountUseResponse>> CheckDiscount([FromQuery]string code)
         {
             if (!ModelState.IsValid)
             {
@@ -107,7 +107,7 @@ namespace CinemaProject.Server.Controllers
                 });
             }
 
-            var response = await _discount.UseDiscountAsync(code, userId);
+            var response = await _discount.CheckDiscountAsync(code, userId);
 
             if (!response.Success)
             {
@@ -115,6 +115,28 @@ namespace CinemaProject.Server.Controllers
                 {
                     error = response.Message
                 });
+            }
+            return Ok(response);
+        }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = "ManageDiscounts")]
+        public async Task<ActionResult<DiscountResponse>> UpdateDiscount([FromRoute] int id, [FromBody] DiscountRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new DiscountResponse
+                {
+                    Success = false,
+                    Message = "Невалідні дані"
+                });
+            }
+            var response = await _discount.UpdateDiscountAsync(id, request);
+            if(!response.Success)
+            {
+                return response.Message == "Код на знижку не знайдено"
+                    ? NotFound(response)
+                    : BadRequest(response);
             }
             return Ok(response);
         }

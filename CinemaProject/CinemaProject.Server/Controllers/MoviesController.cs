@@ -3,6 +3,7 @@ using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Controllers
 {

@@ -1,5 +1,6 @@
 using Azure;
 using CinemaProject.Server.DTOs.Ticket;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaProject.Server.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class TicketsController : Controller
     {
         private readonly ITicketService _ticketService;

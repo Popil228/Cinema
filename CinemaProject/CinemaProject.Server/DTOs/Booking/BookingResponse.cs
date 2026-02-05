@@ -21,6 +21,7 @@ namespace CinemaProject.Server.DTOs.Booking
 
     public class BookingDto
     {
+        public int Id { get; set; }
         public string BookingAt { get; set; } 
         public decimal TotalPrice { get; set; }
         public string? Status { get; set; }

@@ -1,4 +1,5 @@
 ﻿using CinemaProject.Server.DTOs.Booking;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Enums;
 using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -139,7 +140,7 @@ namespace CinemaProject.Server.Controllers
 
         [HttpPatch("{id:int}")]
         [Authorize(Policy = "UserOrAdminBookings")]
-        public async Task<ActionResult<BookingResponse>> UpdateBookingStatus([FromRoute] int id, [FromQuery] int status)
+        public async Task<ActionResult<BookingResponse>> UpdateBookingStatus([FromRoute] int id, [FromQuery] BookingStatus status)
         {
             if (!Enum.IsDefined(typeof(BookingStatus), status))
             {
