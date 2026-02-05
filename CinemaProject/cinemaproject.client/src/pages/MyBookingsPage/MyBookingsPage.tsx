@@ -4,13 +4,6 @@ import { getUserBookings, updateBookingStatus } from '../../api/bookingApi';
 import type { BookingDto } from '../../types/booking';
 import styles from './MyBookingsPage.module.scss';
 
-const formatBookingDate = (dateStr: string) => {
-    const [datePart, timePart] = dateStr.split(' ');
-    const [day, month, year] = datePart.split('.');
-    const isoDate = `${year}-${month}-${day}T${timePart}:00Z`;
-    return new Date(isoDate);
-  };
-
 const MyBookingsPage: React.FC = () => {
   const [bookings, setBookings] = useState<BookingDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +19,7 @@ const MyBookingsPage: React.FC = () => {
       const response = await getUserBookings();
       if (response.success) {
         const sortedBookings = [...response.bookings].sort((a, b) => {
-          return formatBookingDate(b.bookingAt).getTime() - formatBookingDate(a.bookingAt).getTime();
+          return new Date(b.bookingAt).getTime() - new Date(a.bookingAt).getTime();
         });
         setBookings(sortedBookings);
       }
@@ -63,7 +56,7 @@ const MyBookingsPage: React.FC = () => {
       {bookings.length > 0 ? (
         <div className={styles.grid}>
           {bookings.map((booking) => {
-            const dateObj = formatBookingDate(booking.bookingAt);
+            const dateObj = new Date(booking.bookingAt);
 
             return (
               <div key={booking.id} className={styles.card}>
@@ -85,7 +78,8 @@ const MyBookingsPage: React.FC = () => {
                     <div className={styles.item}>
                       <span className={styles.label}>Дата замовлення</span>
                       <p>
-                        {dateObj.toLocaleDateString('uk-UA')} • {dateObj.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
+                        {dateObj.toLocaleDateString('uk-UA')} • 
+                        {dateObj.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                     <div className={styles.item}>
@@ -107,7 +101,7 @@ const MyBookingsPage: React.FC = () => {
                       >
                         Деталі квитків
                       </Link>
-                      {booking.status == 'Pending' && (
+                      {booking.status === 'Pending' && (
                         <button onClick={() => handleCancel(booking.id)} className={styles.cancelBtn}>
                           Скасувати
                         </button>

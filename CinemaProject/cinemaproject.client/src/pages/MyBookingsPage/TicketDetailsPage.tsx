@@ -109,7 +109,13 @@ const TicketDetailsPage: React.FC = () => {
               <div className={styles.divider}></div>
               <div className={styles.infoBlock}>
                 <span className={styles.label}>Дата та час сеансу</span>
-                <p className={styles.value}>{movie.showTime}</p>
+                <p className={styles.value}>{new Date(movie.showTime).toLocaleString('uk-UA', { 
+                  year: 'numeric', 
+                  month: 'numeric', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</p>
               </div>
             </div>
           </div>
