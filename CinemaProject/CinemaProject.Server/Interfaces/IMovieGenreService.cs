@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.DTOs.MovieGenre;
+using CinemaProject.Server.DTOs.MovieGenre;
 
 namespace CinemaProject.Server.Interfaces
 {

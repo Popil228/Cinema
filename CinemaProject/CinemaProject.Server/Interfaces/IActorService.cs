@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.DTOs.Actor;
+using CinemaProject.Server.DTOs.Actor;
 
 
 namespace CinemaProject.Server.Interfaces

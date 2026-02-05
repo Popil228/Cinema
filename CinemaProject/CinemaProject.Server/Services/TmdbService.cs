@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.DTOs.Genre;
+using CinemaProject.Server.DTOs.Genre;
 using CinemaProject.Server.DTOs.Movie;
 using CinemaProject.Server.Models.Tmdb;
 using CinemaProject.Server.Models.Entitys;
@@ -228,3 +228,4 @@ namespace CinemaProject.Server.Services
         }
     }
 }
+

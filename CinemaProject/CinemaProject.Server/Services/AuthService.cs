@@ -6,6 +6,7 @@ using CinemaProject.Server.DTOs.Auth;
 using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using CinemaProject.Server.Models.Enums;
+using CinemaProject.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -160,3 +161,4 @@ namespace CinemaProject.Server.Services
         }
     }
 }
+

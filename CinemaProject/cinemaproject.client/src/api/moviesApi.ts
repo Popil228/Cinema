@@ -12,6 +12,13 @@ const createMovie = async (movieData: MovieSummary) => {
     headers,
     body: JSON.stringify(movieData),
   });
+  // Handle common auth-related statuses explicitly to give clearer errors
+  if (response.status === 401) {
+    throw new Error('Неавторизовано. Будь ласка, увійдіть у систему.');
+  }
+  if (response.status === 403) {
+    throw new Error('Недостатньо прав для цієї операції.');
+  }
 
   let body = null;
   const contentType = response.headers.get('content-type');
@@ -48,13 +55,29 @@ const updateMovie = async (movieData: MovieSummary) => {
     body: JSON.stringify(movieData),
   })
 
-  const body = await response.json();
-
-  if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+  let body = null;
+  const contentType = response.headers.get('content-type');
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      body = await response.json();
+    } else {
+      // Try to get text for debugging
+      const text = await response.text();
+      if (text) {
+        throw new Error('Некоректна відповідь сервера (не JSON): ' + text);
+      } else {
+        throw new Error('Порожня відповідь сервера');
+      }
+    }
+  } catch (e) {
+    throw new Error('Некоректна відповідь сервера (не JSON): ' + (e instanceof Error ? e.message : ''));
   }
 
-  return body.message;
+  if (!response.ok) {
+    throw new Error(body?.message ?? 'Помилка сервера');
+  }
+
+  return body?.message;
 }
 
 const getAllMovies = async () => {
@@ -63,10 +86,26 @@ const getAllMovies = async () => {
       headers: { 'Content-type': 'application/json' },
     })
 
-  const body = await response.json();
+  let body = null;
+  const contentType = response.headers.get('content-type');
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      body = await response.json();
+    } else {
+      // Try to get text for debugging
+      const text = await response.text();
+      if (text) {
+        throw new Error('Некоректна відповідь сервера (не JSON): ' + text);
+      } else {
+        throw new Error('Порожня відповідь сервера');
+      }
+    }
+  } catch (e) {
+    throw new Error('Некоректна відповідь сервера (не JSON): ' + (e instanceof Error ? e.message : ''));
+  }
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    throw new Error(body?.message ?? 'Помилка сервера');
   }
 
   return body as StrictMovieInfo[];
@@ -78,10 +117,26 @@ const getAllNowShowingMovies = async () => {
       headers: { 'Content-type': 'application/json' },
     })
 
-  const body = await response.json();
+  let body = null;
+  const contentType = response.headers.get('content-type');
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      body = await response.json();
+    } else {
+      // Try to get text for debugging
+      const text = await response.text();
+      if (text) {
+        throw new Error('Некоректна відповідь сервера (не JSON): ' + text);
+      } else {
+        throw new Error('Порожня відповідь сервера');
+      }
+    }
+  } catch (e) {
+    throw new Error('Некоректна відповідь сервера (не JSON): ' + (e instanceof Error ? e.message : ''));
+  }
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    throw new Error(body?.message ?? 'Помилка сервера');
   }
 
   return body as StrictMovieInfo[];
@@ -93,10 +148,26 @@ const getMovieById = async (id: number) => {
       headers: { 'Content-type': 'application/json' },
     })
 
-  const body = await response.json();
+  let body = null;
+  const contentType = response.headers.get('content-type');
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      body = await response.json();
+    } else {
+      // Try to get text for debugging
+      const text = await response.text();
+      if (text) {
+        throw new Error('Некоректна відповідь сервера (не JSON): ' + text);
+      } else {
+        throw new Error('Порожня відповідь сервера');
+      }
+    }
+  } catch (e) {
+    throw new Error('Некоректна відповідь сервера (не JSON): ' + (e instanceof Error ? e.message : ''));
+  }
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    throw new Error(body?.message ?? 'Помилка сервера');
   }
 
   return body as StrictMovieInfo;

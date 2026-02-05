@@ -1,4 +1,4 @@
-﻿using CinemaProject.Server.DTOs.Ticket;
+using CinemaProject.Server.DTOs.Ticket;
 
 namespace CinemaProject.Server.Interfaces
 {

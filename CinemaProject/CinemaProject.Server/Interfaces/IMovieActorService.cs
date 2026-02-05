@@ -1,4 +1,4 @@
-﻿using Azure.Core;
+using Azure.Core;
 using CinemaProject.Server.DTOs.MovieActor;
 
 namespace CinemaProject.Server.Interfaces

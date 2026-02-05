@@ -2,7 +2,8 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SearchMoviePage.module.scss';
 import * as tmdbApi from '../../../api/tmdbApi';
-import { type MovieInfo, type StrictMovieInfo } from '../../../types/movie';
+import * as genresApi from '../../../api/genresApi';
+import { type MovieInfo, type StrictMovieInfo, type Genre } from '../../../types/movie';
 import MoveEditContext from '../../../context/movieEditContext/MovieEditContext';
 
 const SearchMoviePage: React.FC = () => {
@@ -72,6 +73,24 @@ const SearchMoviePage: React.FC = () => {
           console.error(err);
         }
       return;
+    }
+
+    // Map TMDB genres to local genres
+    try {
+      const localGenres = await genresApi.getAllGenres();
+      const mapped: (Genre | null)[] = movie.extraInfo.genres.map(g => {
+        const found = localGenres.find(lg => lg.name.toLowerCase() === g.name.toLowerCase());
+        return found ? { id: found.id, name: found.name } : null;
+      });
+
+      const missing = mapped.filter(m => m === null).map((_, i) => movie.extraInfo.genres[i].name);
+      if (missing.length > 0) {
+        console.warn('Some TMDB genres were not found in local DB and will be omitted:', missing);
+      }
+      movie.extraInfo.genres = mapped.filter(m => m !== null) as Genre[];
+    } catch (err) {
+      console.error('Genre mapping failed', err);
+      movie.extraInfo.genres = movie.extraInfo.genres.map(g => ({ id: 0, name: g.name }));
     }
 
     movieEditContext.setMovieInfo({mainInfo:movie.mainInfo, extraInfo: movie.extraInfo} as StrictMovieInfo);
