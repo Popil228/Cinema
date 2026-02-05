@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using CinemaProject.Server.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

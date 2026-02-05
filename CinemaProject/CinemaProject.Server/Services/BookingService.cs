@@ -4,7 +4,6 @@ using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;
-using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {
