@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaProject.Server.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class TicketsController : Controller
     {
         private readonly ITicketService _ticketService;

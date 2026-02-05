@@ -10,7 +10,8 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage.tsx";
 import EmailConfirmationPage from "./pages/RegisterPage/EmailConfirmationPage.tsx";
 import BookingPage from "./pages/BookingPage/BookingPage.tsx";
 import ProfilePage from "./pages/ProfilePage/ProfilePage.tsx";
-import TicketsPage from "./pages/TicketsPage/TicketsPage.tsx";
+import MyBookingsPage from "./pages/MyBookingsPage/MyBookingsPage.tsx";
+import TicketDetailsPage from "./pages/MyBookingsPage/TicketDetailsPage.tsx";
 
 import AdminMoviesPage from "./pages/Admin/AdminMoviesPage/AdminMoviesPage.tsx";
 import AdminSessionsPage from "./pages/Admin/AdminSessionsPage/AdminSessionsPage.tsx";
@@ -28,6 +29,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route
@@ -47,7 +49,8 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/booking/:id" element={<BookingPage />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/profile/tickets" element={<TicketsPage />} />
+              <Route path="/profile/my-bookings" element={<MyBookingsPage />} />
+              <Route path="/profile/tickets" element={<TicketDetailsPage />} />
             </Route>
           </Route>
 
@@ -62,6 +65,7 @@ function App() {
               <Route path="discounts" element={<AdminDiscountPage />} />
             </Route>
           </Route>
+          
         </Routes>
       </BrowserRouter>
     </AuthProvider>
