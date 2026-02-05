@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Auth;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;

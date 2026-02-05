@@ -1,5 +1,5 @@
 using CinemaProject.Server.DTOs.SessionSeat;
-using CinemaProject.Server.Services;
+using CinemaProject.Server.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaProject.Server.Controllers

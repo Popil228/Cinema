@@ -4,6 +4,7 @@ using CinemaProject.Server.Models.Tmdb;
 using CinemaProject.Server.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Services
 {

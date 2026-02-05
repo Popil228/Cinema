@@ -1,5 +1,6 @@
 ﻿using CinemaProject.Server.Data;
 using CinemaProject.Server.DTOs.Booking;
+using CinemaProject.Server.Interfaces;
 using CinemaProject.Server.Models.Entitys;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -399,9 +400,13 @@ namespace CinemaProject.Server.Services
         /// successfully updated. If the booking is not found, the response indicates failure
         /// and contains an appropriate message.
         /// </returns>
-        public async Task<BookingResponse> UpdateBookingStatusAsync(int id, int status)
+        public async Task<BookingResponse> UpdateBookingStatusAsync(int id, BookingStatus status)
         {
-            var currentBooking = await _context.Bookings.FindAsync(id);
+            var currentBooking = await _context.Bookings
+                .Include(b => b.Tickets)
+                    .ThenInclude(t => t.SessionSeat)
+                .Where(b => b.BookingId == id)
+                .FirstOrDefaultAsync();
 
             if(currentBooking == null)
             {
@@ -412,7 +417,42 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            currentBooking.Status = (BookingStatus)status;
+            if (currentBooking.Status == status)
+            {
+                return new BookingResponse
+                {
+                    Success = false,
+                    Message = "Бронювання вже має цей статус"
+                };
+            }
+
+            if (currentBooking.Status == BookingStatus.Completed || currentBooking.Status == BookingStatus.Cancelled)
+            {
+                return new BookingResponse
+                {
+                    Success = false,
+                    Message = "Неможливо змінити статус завершеного або скасованого бронювання"
+                };
+            }
+
+            if (currentBooking.Status == BookingStatus.Confirmed && status == BookingStatus.Pending)
+            {
+                return new BookingResponse
+                {
+                    Success = false,
+                    Message = "Неможливо в підтверджений букінг поставити статус в очікуванні"
+                };
+            }
+
+            if (status == BookingStatus.Cancelled && currentBooking.Tickets != null)
+            {
+                foreach (var ticket in currentBooking.Tickets)
+                {
+                    ticket.SessionSeat.IsAvailable = true;
+                }
+            }
+
+            currentBooking.Status = status;
 
             await _context.SaveChangesAsync();
 

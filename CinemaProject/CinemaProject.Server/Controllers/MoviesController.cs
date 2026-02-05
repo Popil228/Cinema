@@ -1,8 +1,8 @@
 ﻿using CinemaProject.Server.DTOs.Movie;
-using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using CinemaProject.Server.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
+using CinemaProject.Server.Interfaces;
 
 namespace CinemaProject.Server.Controllers
 {
