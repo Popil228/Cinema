@@ -32,7 +32,11 @@
   background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid var(--color-border);
 
-  @media (max-width: 600px) { flex-direction: column; align-items: center; text-align: center; }
+  @media (max-width: 600px) { 
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+  }
 }
 
 .poster {
@@ -40,13 +44,44 @@
   height: 210px;
   object-fit: cover;
   border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .movieDetails {
   flex: 1;
-  .bookingId { font-size: var(--font-xxs); color: var(--color-accent); font-weight: bold; text-transform: uppercase; }
-  .movieTitle { font-size: var(--font-lg); color: white; margin: 10px 0 20px; }
+  
+  .titleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .bookingId { 
+    font-size: var(--font-xxs); 
+    color: var(--color-accent); 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+  }
+
+  .movieTitle { 
+    font-size: var(--font-lg); 
+    color: white; 
+    margin: 0 0 20px 0; 
+    line-height: 1.2;
+  }
+}
+
+.cancelledBadge {
+  background: color-mix(in srgb, var(--color-error) 20%, transparent);
+  color: #ef4444;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 1px solid color-mix(in srgb, var(--color-error) 40%, transparent);
 }
 
 .sessionHighlight {
@@ -59,15 +94,31 @@
   align-items: center;
 
   .infoBlock {
-    .label { font-size: 11px; color: var(--color-accent); text-transform: uppercase; letter-spacing: 1px; }
-    .value { font-size: var(--font-sm); color: white; font-weight: 600; margin-top: 4px; letter-spacing: 1px;}
+    .label { 
+      font-size: 11px; 
+      color: var(--color-accent); 
+      text-transform: uppercase; 
+      letter-spacing: 1px; 
+    }
+    .value { 
+      font-size: var(--font-sm); 
+      color: white; 
+      font-weight: 600; 
+      margin-top: 4px; 
+      letter-spacing: 1px; 
+    }
   }
 
   .divider { width: 1px; height: 35px; background: rgba(56, 189, 248, 0.3); }
 }
 
 .ticketsSection { padding: 30px; }
-.sectionTitle { color: white; font-size: 18px; margin-bottom: 20px; }
+.sectionTitle { 
+  color: white; 
+  font-size: var(--font-md); 
+  margin-bottom: 20px; 
+  font-weight: 600;
+}
 
 .ticketsList { display: grid; gap: 15px; }
 
@@ -89,23 +140,40 @@
   align-items: center;
   gap: 40px;
   flex: 1;
+
   .place {
-    display: flex; gap: 20px; color: var(--color-text-main); font-size: var(--font-sm);
+    display: flex; 
+    gap: 20px; 
+    color: var(--color-text-main); 
+    font-size: var(--font-sm);
     b { color: var(--color-accent); margin-left: 5px; }
   }
-  .price { color: var(--color-text-main); font-weight: 500; }
+
+  .price { 
+    color: var(--color-text-main); 
+    font-weight: 500; 
+  }
 }
 
 .cancelBtn {
   background: color-mix(in srgb, var(--color-error) 20%, transparent);
   color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
   width: 32px;
   height: 32px;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s;
-  &:hover { background: var(--color-error); color: white; }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+
+  &:hover { 
+    background: var(--color-error); 
+    color: white; 
+    transform: scale(1.1);
+  }
 }
 
 .loaderContainer, .errorContainer {
@@ -113,8 +181,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  min-height: 400px;
   color: white;
+  text-align: center;
 }
 
 .loader {
@@ -127,15 +196,26 @@
   margin-bottom: 15px;
 }
 
-.error { color: var(--color-error); background: rgba(239, 68, 68, 0.1); padding: 15px 30px; border-radius: 10px; margin-bottom: 20px; }
+.error { 
+  color: var(--color-error); 
+  background: color-mix(in srgb, var(--color-error) 10%, transparent); 
+  padding: 15px 30px; 
+  border-radius: 10px; 
+  margin-bottom: 20px;
+  border: 1px solid color-mix(in srgb, var(--color-error) 20%, transparent);
+}
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin { 
+  to { transform: rotate(360deg); } 
+}
 
 .backBtn {
   background: var(--color-accent);
   color: white;
   text-decoration: none;
-  padding: 10px 20px;
+  padding: 10px 24px;
   border-radius: 8px;
   font-weight: 600;
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.9; }
 }

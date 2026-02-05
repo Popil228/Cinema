@@ -1,22 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useLocation } from 'react-router-dom';
 import { getTicketsByUser, deleteTicketByUser } from '../../api/ticketsApi';
 import type { TicketDto } from '../../types/ticket';
 import styles from './TicketDetailsPage.module.scss';
 
 const TicketDetailsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const bookingId = searchParams.get('bookingId');
   
   const [tickets, setTickets] = useState<TicketDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [bookingStatus, setBookingStatus] = useState<string>(() => {
+    const stateStatus = location.state?.status;
+    const savedStatus = localStorage.getItem(`status_${bookingId}`);
+    
+    if (stateStatus) {
+      localStorage.setItem(`status_${bookingId}`, stateStatus);
+      return stateStatus;
+    }
+    
+    return savedStatus || '';
+  });
+
   useEffect(() => {
     if (bookingId) {
       fetchTickets(Number(bookingId));
     }
   }, [bookingId]);
+
+  useEffect(() => {
+    if (location.state?.status && bookingId) {
+      setBookingStatus(location.state.status);
+      localStorage.setItem(`status_${bookingId}`, location.state.status);
+    }
+  }, [location.state, bookingId]);
 
   const fetchTickets = async (id: number) => {
     try {
@@ -61,6 +81,7 @@ const TicketDetailsPage: React.FC = () => {
   );
 
   const movie = tickets[0];
+  const isCancelled = bookingStatus === 'Cancelled';
 
   return (
     <div className={styles.container}>
@@ -74,7 +95,10 @@ const TicketDetailsPage: React.FC = () => {
             className={styles.poster} 
           />
           <div className={styles.movieDetails}>
-            <span className={styles.bookingId}>Бронювання #{bookingId}</span>
+            <div className={styles.titleRow}>
+              <span className={styles.bookingId}>Бронювання #{bookingId}</span>
+              {isCancelled && <span className={styles.cancelledBadge}>Скасовано</span>}
+            </div>
             <h1 className={styles.movieTitle}>{movie.movieTitle}</h1>
             
             <div className={styles.sessionHighlight}>
@@ -103,13 +127,9 @@ const TicketDetailsPage: React.FC = () => {
                   </div>
                   <span className={styles.price}>{ticket.price} грн</span>
                 </div>
-                <button 
-                  className={styles.cancelBtn}
-                  onClick={() => handleCancelTicket(ticket.id)}
-                  title="Скасувати квиток"
-                >
-                  ✕
-                </button>
+                {!isCancelled && (
+                  <button className={styles.cancelBtn} onClick={() => handleCancelTicket(ticket.id)}>✕</button>
+                )}
               </div>
             ))}
           </div>
