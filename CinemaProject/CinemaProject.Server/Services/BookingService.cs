@@ -183,7 +183,7 @@ namespace CinemaProject.Server.Services
              .Select(b => new BookingDto
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
@@ -246,7 +246,7 @@ namespace CinemaProject.Server.Services
              .Select(b => new BookingDto
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
@@ -284,15 +284,15 @@ namespace CinemaProject.Server.Services
         /// <returns>A task that represents the asynchronous operation. The task result contains a BookingGetResponse object with
         /// the list of bookings matching the specified status. If no bookings are found, the response contains an empty
         /// list. If the status is invalid, the response indicates failure.</returns>
-        public async Task<BookingGetResponse> GetAllBookingsAsync(int status)
+        public async Task<BookingGetResponseAdmin> GetAllBookingsAsync(int status)
         {
             if (!Enum.IsDefined(typeof(BookingStatus), status))
             {
-                return new BookingGetResponse
+                return new BookingGetResponseAdmin
                 {
                     Success = false,
                     Message = "Не існує такого статусу замовлення",
-                    Bookings = new List<BookingDto>()
+                    Bookings = new List<BookingDtoAdmin>()
                 };
             }
 
@@ -301,10 +301,10 @@ namespace CinemaProject.Server.Services
             var bookings = await _context.Bookings
              .AsNoTracking()
              .Where(b => b.Status == statusEnum)
-             .Select(b => new BookingDto
+             .Select(b => new BookingDtoAdmin
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
@@ -312,21 +312,23 @@ namespace CinemaProject.Server.Services
                      .FirstOrDefault(),
                  MoviePosterPath = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.PosterUri)
-                     .FirstOrDefault()
+                     .FirstOrDefault(),
+                 Email = b.AppUser.Email,
+                 PhoneNum = b.AppUser.PhoneNum
              })
              .ToListAsync();
 
             if (!bookings.Any())
             {
-                return new BookingGetResponse
+                return new BookingGetResponseAdmin
                 {
                     Success = true,
                     Message = "Бронювання відсутні",
-                    Bookings = new List<BookingDto>()
+                    Bookings = new List<BookingDtoAdmin>()
                 };
             }
 
-            return new BookingGetResponse
+            return new BookingGetResponseAdmin
             {
                 Success = true,
                 Message = "Бронювання успішно отримано",
@@ -349,14 +351,14 @@ namespace CinemaProject.Server.Services
         /// <item><description>A list of all bookings if any exist, or an empty list if none are found.</description></item>
         /// </list>
         /// </returns>
-        public async Task<BookingGetResponse> GetAllBookingsAsync()
+        public async Task<BookingGetResponseAdmin> GetAllBookingsAsync()
         {
             var bookings = await _context.Bookings
              .AsNoTracking()
-             .Select(b => new BookingDto
+             .Select(b => new BookingDtoAdmin
              {
                  Id = b.BookingId,
-                 BookingAt = b.BookingAt.ToString("g"),
+                 BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
                  MovieTitle = b.Tickets
@@ -364,21 +366,23 @@ namespace CinemaProject.Server.Services
                      .FirstOrDefault(),
                  MoviePosterPath = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.PosterUri)
-                     .FirstOrDefault()
+                     .FirstOrDefault(),
+                 Email = b.AppUser.Email,
+                 PhoneNum = b.AppUser.PhoneNum
              })
              .ToListAsync();
 
             if (!bookings.Any())
             {
-                return new BookingGetResponse
+                return new BookingGetResponseAdmin
                 {
                     Success = true,
                     Message = "Бронювання відсутні",
-                    Bookings = new List<BookingDto>()
+                    Bookings = new List<BookingDtoAdmin>()
                 };
             }
 
-            return new BookingGetResponse
+            return new BookingGetResponseAdmin
             {
                 Success = true,
                 Message = "Бронювання успішно отримано",
