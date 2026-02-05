@@ -107,7 +107,7 @@ const MyBookingsPage: React.FC = () => {
                       >
                         Деталі квитків
                       </Link>
-                      {booking.status !== 'Cancelled' && (
+                      {booking.status == 'Pending' && (
                         <button onClick={() => handleCancel(booking.id)} className={styles.cancelBtn}>
                           Скасувати
                         </button>
