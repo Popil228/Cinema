@@ -1,5 +1,6 @@
 import { tokenStorage } from "./authApi";
 import type { TicketResponse, TicketGetResponse } from "../types/ticket";
+import { handleHttpStatus } from "../utilities/apiUtils";
 
 const API_BASE_URL = '/api/Tickets';
 
@@ -15,6 +16,8 @@ const getTicketsByUser = async (bookingId: number) => {
     method: 'GET',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
@@ -28,6 +31,8 @@ const getTicketsByAdmin = async (bookingId: number) => {
     method: 'GET',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
@@ -41,6 +46,8 @@ const deleteTicketByUser = async (ticketId: number) => {
     method: 'DELETE',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
@@ -54,6 +61,8 @@ const deleteTicketByAdmin = async (ticketId: number) => {
     method: 'DELETE',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {

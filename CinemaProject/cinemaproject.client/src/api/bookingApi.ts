@@ -5,6 +5,7 @@ import type {
   BookingGetResponse, 
   BookingCreateResponse 
 } from "../types/booking";
+import { handleHttpStatus } from "../utilities/apiUtils";
 
 const API_BASE_URL = '/api/Bookings';
 
@@ -21,6 +22,8 @@ const createBooking = async (request: BookingRequest) => {
     headers: getHeaders(),
     body: JSON.stringify(request),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
@@ -34,6 +37,8 @@ const deleteBooking = async (id: number) => {
     method: 'DELETE',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
@@ -51,6 +56,8 @@ const getUserBookings = async (status?: number) => {
     method: 'GET',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
@@ -68,6 +75,8 @@ const getAllBookings = async (status?: number) => {
     method: 'GET',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
@@ -81,6 +90,8 @@ const updateBookingStatus = async (id: number, status: number) => {
     method: 'PATCH',
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {

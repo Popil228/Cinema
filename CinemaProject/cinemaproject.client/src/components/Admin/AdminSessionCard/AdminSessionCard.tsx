@@ -5,9 +5,10 @@ import styles from './AdminSessionCard.module.scss';
 interface AdminSessionCardProps {
   session: SessionDto;
   onDelete: () => void;
+  onEdit: () => void;
 }
 
-const AdminSessionCard: React.FC<AdminSessionCardProps> = ({ session, onDelete }) => {
+const AdminSessionCard: React.FC<AdminSessionCardProps> = ({ session, onDelete, onEdit }) => {
   const { movieTitle, hallName, startTime, moviePosterPath } = session;
   
   // Форматуємо дату та час
@@ -37,7 +38,7 @@ const AdminSessionCard: React.FC<AdminSessionCardProps> = ({ session, onDelete }
       
       <div className={styles.controls}>
         <button className={styles.deleteBtn} onClick={onDelete}>✕</button>
-        <button className={styles.editBtn}>✎</button>
+        <button className={styles.editBtn} onClick={onEdit}>✎</button>
       </div>
     </div>
   );

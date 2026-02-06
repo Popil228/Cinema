@@ -1,5 +1,6 @@
 import type { StrictMovieInfo, MovieSummary } from "../types/movie";
 import { tokenStorage } from "./authApi";
+import { handleHttpStatus } from "../utilities/apiUtils";
 
 const API_BASE_URL = '/api';
 
@@ -12,13 +13,8 @@ const createMovie = async (movieData: MovieSummary) => {
     headers,
     body: JSON.stringify(movieData),
   });
-  // Handle common auth-related statuses explicitly to give clearer errors
-  if (response.status === 401) {
-    throw new Error('Неавторизовано. Будь ласка, увійдіть у систему.');
-  }
-  if (response.status === 403) {
-    throw new Error('Недостатньо прав для цієї операції.');
-  }
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   let body = null;
   const contentType = response.headers.get('content-type');
@@ -54,6 +50,8 @@ const updateMovie = async (movieData: MovieSummary) => {
     headers,
     body: JSON.stringify(movieData),
   })
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   let body = null;
   const contentType = response.headers.get('content-type');
@@ -178,6 +176,8 @@ const deleteMovieById = async (movieId: number) => {
   const headers: Record<string, string> = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Movies/${movieId}`, { method: "DELETE", headers });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   // Handle empty or non JSON responses
   const contentType = response.headers.get('content-type');

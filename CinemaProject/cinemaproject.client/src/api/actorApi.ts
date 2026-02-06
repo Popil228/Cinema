@@ -1,6 +1,8 @@
 
 import type { Actor } from '../types/actor';
 import { tokenStorage } from './authApi';
+import { HttpError } from '../errors/httpErrors';
+import { handleHttpStatus } from '../utilities/apiUtils';
 
 const API_BASE_URL = '/api';
 
@@ -14,10 +16,13 @@ const createActor = async (movieActorData: Actor[]) => {
         body: JSON.stringify(movieActorData),
     })
 
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    throw new HttpError(response.status, body.message ?? 'Помилка сервера');
   }
 
   return body.message;
@@ -33,10 +38,13 @@ const updateActor = async (actorData: Actor[]) => {
     body: JSON.stringify(actorData),
   })
 
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    throw new HttpError(response.status, body.message ?? 'Помилка сервера');
   }
 
   return body.message;
