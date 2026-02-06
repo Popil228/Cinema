@@ -1,5 +1,7 @@
 import type { Cast, MovieInfo } from "../types/movie";
 import { tokenStorage } from "./authApi";
+import { HttpError, ParseError } from '../errors/httpErrors';
+import { handleHttpStatus } from '../utilities/apiUtils';
 
 const API_BASE_URL = '/api';
 
@@ -13,6 +15,9 @@ const searchMovies = async (searchStr:string) => {
         headers,
     })
 
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+
     let body = null;
     const contentType = response.headers.get('content-type');
     try {
@@ -21,17 +26,20 @@ const searchMovies = async (searchStr:string) => {
         } else {
             const text = await response.text();
             if (text) {
-                throw new Error('Некоректна відповідь сервера (не JSON): ' + text);
+                throw new ParseError('Некоректна відповідь сервера (не JSON)', text);
             } else {
-                throw new Error('Порожня відповідь сервера');
+                throw new ParseError('Порожня відповідь сервера');
             }
         }
     } catch (e) {
-        throw new Error('Некоректна відповідь сервера (не JSON): ' + (e instanceof Error ? e.message : ''));
+        if (e instanceof ParseError) {
+            throw e;
+        }
+        throw new ParseError('Некоректна відповідь сервера (не JSON)', e instanceof Error ? e.message : '');
     }
 
     if (!response.ok) {
-        throw new Error(body?.error ?? 'Помилка сервера');
+        throw new HttpError(response.status, body?.error ?? 'Помилка сервера');
     }
 
     return body as MovieInfo[];
@@ -47,6 +55,9 @@ const getMovieInfoByIdTMDB = async (movieId:number) => {
         headers
     })
 
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+
     let body = null;
     const contentType = response.headers.get('content-type');
     try {
@@ -55,17 +66,20 @@ const getMovieInfoByIdTMDB = async (movieId:number) => {
         } else {
             const text = await response.text();
             if (text) {
-                throw new Error('Некоректна відповідь сервера (не JSON): ' + text);
+                throw new ParseError('Некоректна відповідь сервера (не JSON)', text);
             } else {
-                throw new Error('Порожня відповідь сервера');
+                throw new ParseError('Порожня відповідь сервера');
             }
         }
     } catch (e) {
-        throw new Error('Некоректна відповідь сервера (не JSON): ' + (e instanceof Error ? e.message : ''));
+        if (e instanceof ParseError) {
+            throw e;
+        }
+        throw new ParseError('Некоректна відповідь сервера (не JSON)', e instanceof Error ? e.message : '');
     }
 
     if (!response.ok) {
-        throw new Error(body?.error ?? 'Помилка сервера');
+        throw new HttpError(response.status, body?.error ?? 'Помилка сервера');
     }
 
     return body as MovieInfo;
@@ -81,6 +95,9 @@ const getCastInfoByIdTMDB = async (movieId:number) => {
         headers
     })
 
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+
     let body = null;
     const contentType = response.headers.get('content-type');
     try {
@@ -89,17 +106,20 @@ const getCastInfoByIdTMDB = async (movieId:number) => {
         } else {
             const text = await response.text();
             if (text) {
-                throw new Error('Некоректна відповідь сервера (не JSON): ' + text);
+                throw new ParseError('Некоректна відповідь сервера (не JSON)', text);
             } else {
-                throw new Error('Порожня відповідь сервера');
+                throw new ParseError('Порожня відповідь сервера');
             }
         }
     } catch (e) {
-        throw new Error('Некоректна відповідь сервера (не JSON): ' + (e instanceof Error ? e.message : ''));
+        if (e instanceof ParseError) {
+            throw e;
+        }
+        throw new ParseError('Некоректна відповідь сервера (не JSON)', e instanceof Error ? e.message : '');
     }
 
     if (!response.ok) {
-        throw new Error(body?.error ?? 'Помилка сервера');
+        throw new HttpError(response.status, body?.error ?? 'Помилка сервера');
     }
 
     return body as Cast[];

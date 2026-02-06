@@ -78,19 +78,23 @@ const SearchMoviePage: React.FC = () => {
     // Map TMDB genres to local genres
     try {
       const localGenres = await genresApi.getAllGenres();
-      const mapped: (Genre | null)[] = movie.extraInfo.genres.map(g => {
+      const mapped: (Genre | null)[] = movie.extraInfo?.genres.map(g => {
         const found = localGenres.find(lg => lg.name.toLowerCase() === g.name.toLowerCase());
         return found ? { id: found.id, name: found.name } : null;
-      });
+      }) || [];
 
-      const missing = mapped.filter(m => m === null).map((_, i) => movie.extraInfo.genres[i].name);
+      const missing = mapped.filter(m => m === null).map((_, i) => movie.extraInfo?.genres[i].name || '');
       if (missing.length > 0) {
         console.warn('Some TMDB genres were not found in local DB and will be omitted:', missing);
       }
-      movie.extraInfo.genres = mapped.filter(m => m !== null) as Genre[];
+      if (movie.extraInfo) {
+        movie.extraInfo.genres = mapped.filter(m => m !== null) as Genre[];
+      }
     } catch (err) {
       console.error('Genre mapping failed', err);
-      movie.extraInfo.genres = movie.extraInfo.genres.map(g => ({ id: 0, name: g.name }));
+      if (movie.extraInfo) {
+        movie.extraInfo.genres = movie.extraInfo.genres.map(g => ({ id: 0, name: g.name }));
+      }
     }
 
     movieEditContext.setMovieInfo({mainInfo:movie.mainInfo, extraInfo: movie.extraInfo} as StrictMovieInfo);

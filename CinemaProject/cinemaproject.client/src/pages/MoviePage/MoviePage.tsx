@@ -7,6 +7,7 @@ import SessionItemMoviePage from "../../components/SessionItemMoviePage/SessionI
 import { useFutureSessions } from "../../hooks/ReactQueryHooks";
 import UserMoviesContext from "../../context/userMoviesContext/UserMoviesContext";
 
+
 const MoviePage: React.FC = () => {
   const { id } = useParams();
   const numberId = Number.parseInt(id || "0");
