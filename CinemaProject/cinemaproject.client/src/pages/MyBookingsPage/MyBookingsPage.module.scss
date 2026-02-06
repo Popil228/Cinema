@@ -74,7 +74,8 @@
   border: 1px solid color-mix(in srgb, var(--color-error) 40%, transparent);
 
   &.confirmed { color: #10b981; border-color: #10b981; }
-  &.pending { color: #f59e0b; border-color: #f59e0b; }
+  &.pending { color: #3b82f6; border-color: #3b82f6; }
+  &.completed { color: #f59e0b; border-color: #f59e0b; }
   &.cancelled { color: #ef4444; border-color: #ef4444; }
 }
 

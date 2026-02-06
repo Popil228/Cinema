@@ -81,7 +81,7 @@ const TicketDetailsPage: React.FC = () => {
   );
 
   const movie = tickets[0];
-  const isCancelled = bookingStatus === 'Cancelled';
+  const isPending = bookingStatus === 'Pending';
 
   return (
     <div className={styles.container}>
@@ -97,7 +97,9 @@ const TicketDetailsPage: React.FC = () => {
           <div className={styles.movieDetails}>
             <div className={styles.titleRow}>
               <span className={styles.bookingId}>Бронювання #{bookingId}</span>
-              {isCancelled && <span className={styles.cancelledBadge}>Скасовано</span>}
+              <span className={`${styles.statusBadge} ${styles[bookingStatus?.toLowerCase() || '']}`}>
+                {bookingStatus}
+              </span>
             </div>
             <h1 className={styles.movieTitle}>{movie.movieTitle}</h1>
             
@@ -133,7 +135,7 @@ const TicketDetailsPage: React.FC = () => {
                   </div>
                   <span className={styles.price}>{ticket.price} грн</span>
                 </div>
-                {!isCancelled && (
+                {isPending && (
                   <button className={styles.cancelBtn} onClick={() => handleCancelTicket(ticket.id)}>✕</button>
                 )}
               </div>
