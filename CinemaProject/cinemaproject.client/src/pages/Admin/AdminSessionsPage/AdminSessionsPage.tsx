@@ -4,7 +4,7 @@ import styles from './AdminSessionsPage.module.scss';
 import type { SessionDto, HallDto } from '../../../api/sessionsApi';
 import type { StrictMovieInfo } from '../../../types/movie';
 import type { CreateSessionDto } from '../../../api/sessionsApi';
-import { getAllSessions, createSession, deleteSession, getHalls } from '../../../api/sessionsApi';
+import { getAllSessions, createSession, deleteSession, getHalls, updateSession } from '../../../api/sessionsApi';
 import { getAllMovies } from '../../../api/moviesApi.ts';
 
 const AdminSessionsPage: React.FC = () => {
@@ -16,6 +16,8 @@ const AdminSessionsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [editingSession, setEditingSession] = useState<SessionDto | null>(null);
+  const [updating, setUpdating] = useState(false);
 
   // Form state
   const [selectedMovieId, setSelectedMovieId] = useState<number>(0);
@@ -84,12 +86,52 @@ const AdminSessionsPage: React.FC = () => {
     }
   };
 
+  const handleEditSession = (session: SessionDto) => {
+    setEditingSession(session);
+    setSelectedMovieId(session.movieId);
+    setSelectedHallId(session.hallId);
+    const dateObj = new Date(session.startTime);
+    const date = dateObj.toISOString().split('T')[0];
+    const time = dateObj.toTimeString().slice(0, 5);
+    setSessionDate(date);
+    setSessionTime(time);
+    setTicketPrice(session.basePrice);
+    setShowModal(true);
+  };
+
+  const handleUpdateSession = async () => {
+    if (!editingSession || !selectedMovieId || !selectedHallId || !sessionDate || !sessionTime) {
+      alert('Заповніть всі поля');
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      const date = new Date(`${sessionDate}T${sessionTime}:00`);
+      await updateSession(editingSession.id, {
+        movieId: selectedMovieId,
+        hallId: selectedHallId,
+        startTime: date.toISOString(),
+        ticketPrice: ticketPrice,
+      });
+      setShowModal(false);
+      setEditingSession(null);
+      resetForm();
+      await loadData();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Помилка оновлення сеансу');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const resetForm = () => {
     setSelectedMovieId(0);
     setSelectedHallId(0);
     setSessionDate('');
     setSessionTime('');
     setTicketPrice(150);
+    setEditingSession(null);
   };
 
   const movieTitles = Array.from(new Set(sessions.map(s => s.movieTitle)));
@@ -150,6 +192,7 @@ const AdminSessionsPage: React.FC = () => {
                   key={session.id} 
                   session={session}
                   onDelete={() => handleDeleteSession(session.id)}
+                  onEdit={() => handleEditSession(session)}
                 />
               ))
             ) : (
@@ -161,9 +204,9 @@ const AdminSessionsPage: React.FC = () => {
 
       {/* Modal for creating session */}
       {showModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
+        <div className={styles.modalOverlay} onClick={() => { setShowModal(false); setEditingSession(null); resetForm(); }}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <h2 className={styles.modalTitle}>Новий сеанс</h2>
+            <h2 className={styles.modalTitle}>{editingSession ? 'Редагувати сеанс' : 'Новий сеанс'}</h2>
             
             <div className={styles.formGroup}>
               <label>Фільм</label>
@@ -223,16 +266,19 @@ const AdminSessionsPage: React.FC = () => {
             <div className={styles.modalButtons}>
               <button 
                 className={styles.cancelBtn} 
-                onClick={() => setShowModal(false)}
+                onClick={() => { setShowModal(false); setEditingSession(null); resetForm(); }}
               >
                 Скасувати
               </button>
               <button 
                 className={styles.submitBtn} 
-                onClick={handleCreateSession}
-                disabled={creating}
+                onClick={editingSession ? handleUpdateSession : handleCreateSession}
+                disabled={creating || updating}
               >
-                {creating ? 'Створення...' : 'Створити'}
+                {editingSession 
+                  ? (updating ? 'Збереження...' : 'Зберегти') 
+                  : (creating ? 'Створення...' : 'Створити')
+                }
               </button>
             </div>
           </div>
