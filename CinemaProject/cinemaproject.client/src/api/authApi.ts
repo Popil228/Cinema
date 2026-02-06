@@ -81,4 +81,31 @@ export const tokenStorage = {
   isAuthenticated(): boolean {
     return !!this.getToken();
   },
+
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000; // exp is in seconds
+      const now = Date.now();
+      return now >= exp;
+    } catch {
+      return true;
+    }
+  },
+
+  // Returns token expiration timestamp in ms or null
+  getTokenExpiry(): number | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return (payload.exp * 1000) as number;
+    } catch {
+      return null;
+    }
+  },
 };
