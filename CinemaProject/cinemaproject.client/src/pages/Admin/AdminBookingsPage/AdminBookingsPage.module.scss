@@ -220,7 +220,8 @@ $text-muted: #64748b;
     background: white;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
 
     &:hover {
       background: #f1f5f9;
@@ -231,6 +232,7 @@ $text-muted: #64748b;
   .confirmBtn { color: #10b981; border-color: #10b981; }
   .completeBtn { color: var(--color-primary); border-color: var(--color-primary); }
   .cancelBtn { color: #f59e0b; border-color: #f59e0b; }
+  .editBtn { color: #7700ff; border-color: #7700ff; }
   .deleteBtn { color: var(--color-error); border-color: var(--color-error); }
 }
 
