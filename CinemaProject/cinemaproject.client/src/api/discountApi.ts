@@ -21,6 +21,11 @@ interface DiscountCreateRequst extends DiscountRequest {
   code: string;
 }
 
+interface DiscountCheckResponse {
+  id: number;
+  discountPercentage: number;
+}
+
 const API_BASE_URL = "/api";
 
 const getHeaders = () => {
@@ -119,7 +124,7 @@ const checkDiscount = async (code: string) => {
     throw new Error(body.error ?? "Помилка сервера");
   }
 
-  return body.id;
+  return body as DiscountCheckResponse;
 };
 
 export {

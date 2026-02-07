@@ -109,7 +109,6 @@ namespace CinemaProject.Server.Services
                     DiscountPercentage = d.DiscountPercent
                 }).ToList()
             };
-
         }
 
         /// <summary>
