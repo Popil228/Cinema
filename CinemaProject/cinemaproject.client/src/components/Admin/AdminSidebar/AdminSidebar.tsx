@@ -20,6 +20,12 @@ const AdminSidebar: React.FC = () => {
             Сеанси
           </NavLink>
           <NavLink
+            to="/admin/bookings"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
+            Бронювання
+          </NavLink>
+          <NavLink
             to="/admin/discounts"
             className={({ isActive }) => (isActive ? styles.active : "")}
           >

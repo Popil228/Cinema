@@ -1,5 +1,7 @@
-import { tokenStorage } from "./authApi";
-const API_BASE_URL = "/api";
+import { tokenStorage } from './authApi';
+import { HttpError } from '../errors/httpErrors';
+import { handleHttpStatus } from '../utilities/apiUtils';
+const API_BASE_URL = '/api';
 
 export interface SessionDto {
   id: number;
@@ -44,19 +46,16 @@ export interface SessionSeatDto {
   seatTypePricePercentage: number;
 }
 
-export const getAllSessions = async (
-  onlyUpcoming: boolean = false,
-  movieId: number | null = null,
-): Promise<SessionDto[]> => {
-  const fetchUri =
-    "" +
-    `${API_BASE_URL}/Sessions` +
-    `?onlyUpcoming=${onlyUpcoming}` +
-    (movieId === null ? "" : `&movieId=${movieId}`);
+export const getAllSessions = async (onlyUpcoming:boolean = false, movieId:number|null = null): Promise<SessionDto[]> => {
+  const fetchUri = "" + `${API_BASE_URL}/Sessions`
+  + `?onlyUpcoming=${onlyUpcoming}`
+  + ((movieId===null) ? "" : `&movieId=${movieId}`);
 
-  const response = await fetch(fetchUri, { method: "GET" });
+  const response = await fetch(fetchUri, {method:"GET"});
+  // Handle common auth related statuses
+  handleHttpStatus(response);
   if (!response.ok) {
-    throw new Error("Помилка завантаження сесій");
+    throw new HttpError(response.status, 'Помилка завантаження сесій');
   }
 
   return response.json();
@@ -64,8 +63,10 @@ export const getAllSessions = async (
 
 export const getSessionById = async (id: number): Promise<SessionDto> => {
   const response = await fetch(`${API_BASE_URL}/Sessions/${id}`);
+  // Handle common auth related statuses
+  handleHttpStatus(response);
   if (!response.ok) {
-    throw new Error(`Сесія з ID ${id} не знайдена`);
+    throw new HttpError(response.status, `Сесія з ID ${id} не знайдена`);
   }
   return response.json();
 };
@@ -83,10 +84,13 @@ export const createSession = async (
     headers,
     body: JSON.stringify(dto),
   });
-
+  
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+  
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Помилка створення сесії");
+    throw new HttpError(response.status, error.message || 'Помилка створення сесії');
   }
 
   return response.json();
@@ -108,9 +112,12 @@ export const updateSession = async (
     body: JSON.stringify(dto),
   });
 
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Помилка оновлення сесії");
+    throw new HttpError(response.status, error.message || 'Помилка оновлення сесії');
   }
 
   return response.json();
@@ -125,7 +132,10 @@ export const deleteSession = async (id: number): Promise<void> => {
     headers,
   });
 
-  const contentType = response.headers.get("content-type");
+  // Handle common auth related statuses
+  handleHttpStatus(response);
+
+  const contentType = response.headers.get('content-type');
   let body = null;
   if (contentType && contentType.includes("application/json")) {
     body = await response.json();
@@ -135,18 +145,20 @@ export const deleteSession = async (id: number): Promise<void> => {
   }
 
   if (!response.ok) {
-    if (body && typeof body === "object" && "message" in body) {
-      throw new Error(body.message ?? "Помилка видалення сесії");
+    if (body && typeof body === 'object' && 'message' in body) {
+      throw new HttpError(response.status, body.message ?? 'Помилка видалення сесії');
     } else {
-      throw new Error("Помилка видалення сесії");
+      throw new HttpError(response.status, 'Помилка видалення сесії');
     }
   }
 };
 
 export const getHalls = async (): Promise<HallDto[]> => {
   const response = await fetch(`${API_BASE_URL}/Halls`);
+  // Handle common auth related statuses
+  handleHttpStatus(response);
   if (!response.ok) {
-    throw new Error("Помилка завантаження залів");
+    throw new HttpError(response.status, 'Помилка завантаження залів');
   }
   return response.json();
 };
@@ -155,8 +167,10 @@ export const initHalls = async (): Promise<{ message: string }> => {
   const response = await fetch(`${API_BASE_URL}/Halls/init`, {
     method: "POST",
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
   if (!response.ok) {
-    throw new Error("Помилка ініціалізації залів");
+    throw new HttpError(response.status, 'Помилка ініціалізації залів');
   }
   return response.json();
 };

@@ -1,4 +1,5 @@
 import { tokenStorage } from "./authApi";
+import { handleHttpStatus } from "../utilities/apiUtils";
 
 interface DiscountDto {
   id: number;
@@ -42,6 +43,8 @@ const createDiscount = async (discountData: DiscountCreateRequst) => {
     headers: getHeaders(),
     body: JSON.stringify(discountData),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
 
@@ -57,6 +60,8 @@ const getDiscounts = async () => {
     method: "GET",
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   const body = await response.json();
 
@@ -72,6 +77,8 @@ const deleteDiscount = async (id: number) => {
     method: "DELETE",
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   console.log(response);
   const body = await response.json();
@@ -89,6 +96,8 @@ const updateDiscount = async (id: number, request: DiscountRequest) => {
     headers: getHeaders(),
     body: JSON.stringify(request),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   console.log(response);
   const body = await response.json();
@@ -105,6 +114,8 @@ const checkDiscount = async (code: string) => {
     method: "GET",
     headers: getHeaders(),
   });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   console.log(response);
   const body = await response.json();

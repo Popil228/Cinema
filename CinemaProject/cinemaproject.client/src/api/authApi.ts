@@ -1,4 +1,6 @@
 import type { AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
+import { HttpError } from '../errors/httpErrors';
+import { handleHttpStatus } from '../utilities/apiUtils';
 
 const API_BASE_URL = '/api';
 
@@ -12,6 +14,14 @@ export const authApi = {
       body: JSON.stringify(data),
     });
 
+    // Handle common auth related statuses
+    handleHttpStatus(response);
+
+    if (!response.ok) {
+      const body = await response.json();
+      throw new HttpError(response.status, body.message ?? 'Помилка входу');
+    }
+
     return response.json();
   },
 
@@ -23,6 +33,14 @@ export const authApi = {
       },
       body: JSON.stringify(data),
     });
+
+    // Handle common auth related statuses
+    handleHttpStatus(response);
+
+    if (!response.ok) {
+      const body = await response.json();
+      throw new HttpError(response.status, body.message ?? 'Помилка реєстрації');
+    }
 
     return response.json();
   },

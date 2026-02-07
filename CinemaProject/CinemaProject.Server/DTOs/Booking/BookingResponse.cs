@@ -13,6 +13,11 @@ namespace CinemaProject.Server.DTOs.Booking
         public List<BookingDto> Bookings { get; set; }
     }
 
+    public class BookingGetResponseAdmin : BookingResponse
+    {
+        public List<BookingDtoAdmin> Bookings { get; set; }
+    }
+
     public class BookingCreateResponse : BookingResponse
     {
         public int BookingId { get; set; }
@@ -27,5 +32,11 @@ namespace CinemaProject.Server.DTOs.Booking
         public string? Status { get; set; }
         public string MovieTitle { get; set; }
         public string MoviePosterPath { get; set; }
+    }
+
+    public class BookingDtoAdmin : BookingDto
+    {
+        public string Email { get; set; } = null!;
+        public string PhoneNum { get; set; } = null!;
     }
 }

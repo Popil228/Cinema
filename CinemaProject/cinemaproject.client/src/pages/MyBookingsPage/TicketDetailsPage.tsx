@@ -86,10 +86,7 @@ const TicketDetailsPage: React.FC = () => {
     );
 
   const movie = tickets[0];
-  const isCancelled = bookingStatus === "Cancelled";
-  const dateObj = new Date(movie.showTime);
-  const displayTime =
-    dateToDayMonthStrUA(dateObj) + " - " + dateObj.toTimeString().slice(0, 5);
+  const isPending = bookingStatus === 'Pending';
 
   return (
     <div className={styles.container}>
@@ -107,9 +104,9 @@ const TicketDetailsPage: React.FC = () => {
           <div className={styles.movieDetails}>
             <div className={styles.titleRow}>
               <span className={styles.bookingId}>Бронювання #{bookingId}</span>
-              {isCancelled && (
-                <span className={styles.cancelledBadge}>Скасовано</span>
-              )}
+              <span className={`${styles.statusBadge} ${styles[bookingStatus?.toLowerCase() || '']}`}>
+                {bookingStatus}
+              </span>
             </div>
             <h1 className={styles.movieTitle}>{movie.movieTitle}</h1>
 
@@ -121,7 +118,13 @@ const TicketDetailsPage: React.FC = () => {
               <div className={styles.divider}></div>
               <div className={styles.infoBlock}>
                 <span className={styles.label}>Дата та час сеансу</span>
-                <p className={styles.value}>{displayTime}</p>
+                <p className={styles.value}>{new Date(movie.showTime).toLocaleString('uk-UA', { 
+                  year: 'numeric', 
+                  month: 'numeric', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</p>
               </div>
             </div>
           </div>
@@ -143,13 +146,8 @@ const TicketDetailsPage: React.FC = () => {
                   </div>
                   <span className={styles.price}>{ticket.price} грн</span>
                 </div>
-                {!isCancelled && (
-                  <button
-                    className={styles.cancelBtn}
-                    onClick={() => handleCancelTicket(ticket.id)}
-                  >
-                    ✕
-                  </button>
+                {isPending && (
+                  <button className={styles.cancelBtn} onClick={() => handleCancelTicket(ticket.id)}>✕</button>
                 )}
               </div>
             ))}

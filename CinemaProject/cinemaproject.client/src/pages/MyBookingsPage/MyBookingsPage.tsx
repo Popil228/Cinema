@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getUserBookings, updateBookingStatus } from "../../api/bookingApi";
-import type { BookingDto } from "../../types/booking";
-import styles from "./MyBookingsPage.module.scss";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getUserBookings, updateBookingStatus } from '../../api/bookingApi';
+import type { BookingDto } from '../../types/booking';
+import styles from './MyBookingsPage.module.scss';
 
 const MyBookingsPage: React.FC = () => {
   const [bookings, setBookings] = useState<BookingDto[]>([]);
@@ -19,9 +19,7 @@ const MyBookingsPage: React.FC = () => {
       const response = await getUserBookings();
       if (response.success) {
         const sortedBookings = [...response.bookings].sort((a, b) => {
-          return (
-            new Date(b.bookingAt).getTime() - new Date(a.bookingAt).getTime()
-          );
+          return new Date(b.bookingAt).getTime() - new Date(a.bookingAt).getTime();
         });
         setBookings(sortedBookings);
       }
@@ -85,11 +83,8 @@ const MyBookingsPage: React.FC = () => {
                     <div className={styles.item}>
                       <span className={styles.label}>Дата замовлення</span>
                       <p>
-                        {dateObj.toLocaleDateString("uk-UA")} •{" "}
-                        {dateObj.toLocaleTimeString("uk-UA", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {dateObj.toLocaleDateString('uk-UA')} • 
+                        {dateObj.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                     <div className={styles.item}>
@@ -111,11 +106,8 @@ const MyBookingsPage: React.FC = () => {
                       >
                         Деталі квитків
                       </Link>
-                      {booking.status == "Pending" && (
-                        <button
-                          onClick={() => handleCancel(booking.id)}
-                          className={styles.cancelBtn}
-                        >
+                      {booking.status === 'Pending' && (
+                        <button onClick={() => handleCancel(booking.id)} className={styles.cancelBtn}>
                           Скасувати
                         </button>
                       )}

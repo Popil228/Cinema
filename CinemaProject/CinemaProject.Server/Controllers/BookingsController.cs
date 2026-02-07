@@ -120,7 +120,7 @@ namespace CinemaProject.Server.Controllers
 
         [HttpGet("admin")]
         [Authorize(Policy = "ManageBookings")]
-        public async Task<ActionResult<BookingGetResponse>> GetAllBookings([FromQuery] int? status)
+        public async Task<ActionResult<BookingGetResponseAdmin>> GetAllBookings([FromQuery] int? status)
         {
             var response = status.HasValue
                 ? await _bookingService.GetAllBookingsAsync(status.Value)
