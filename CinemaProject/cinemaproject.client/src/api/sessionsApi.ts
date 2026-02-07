@@ -181,18 +181,16 @@ interface SessionSeatApiResponse {
   data: SessionSeatDto[];
 }
 
-export const getSessionSeats = async (
-  sessionId: number,
-): Promise<SessionSeatDto[]> => {
-  const response = await fetch(
-    `${API_BASE_URL}/SessionSeat?sessionId=${sessionId}`,
-    {
-      method: "GET",
-    },
-  );
+export const getSessionSeats = async(sessionId:number) : Promise<SessionSeatDto[]> => {
+  const response = await fetch(`${API_BASE_URL}/SessionSeat?sessionId=${sessionId}`, {
+    method: 'GET',
+  });
+  // Handle common auth related statuses
+  handleHttpStatus(response);
 
   if (!response.ok) {
     throw new Error("Помилка завантаження місць для сеансу");
   }
-  return ((await response.json()) as SessionSeatApiResponse).data;
-};
+
+  return (await response.json() as SessionSeatApiResponse).data;
+}

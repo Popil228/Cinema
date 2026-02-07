@@ -83,7 +83,8 @@ const getAllMovies = async () => {
         method: 'GET',
       headers: { 'Content-type': 'application/json' },
     })
-
+    // Handle common auth related statuses
+    handleHttpStatus(response);
   let body = null;
   const contentType = response.headers.get('content-type');
   try {
@@ -114,7 +115,8 @@ const getAllNowShowingMovies = async () => {
         method: 'GET',
       headers: { 'Content-type': 'application/json' },
     })
-
+    // Handle common auth related statuses
+    handleHttpStatus(response);
   let body = null;
   const contentType = response.headers.get('content-type');
   try {
@@ -145,7 +147,8 @@ const getMovieById = async (id: number) => {
         method: 'GET',
       headers: { 'Content-type': 'application/json' },
     })
-
+    // Handle common auth related statuses
+    handleHttpStatus(response);
   let body = null;
   const contentType = response.headers.get('content-type');
   try {
