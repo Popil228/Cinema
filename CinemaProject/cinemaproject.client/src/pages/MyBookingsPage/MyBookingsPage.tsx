@@ -7,7 +7,7 @@ import styles from './MyBookingsPage.module.scss';
 const MyBookingsPage: React.FC = () => {
   const [bookings, setBookings] = useState<BookingDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchBookings();
@@ -23,32 +23,35 @@ const MyBookingsPage: React.FC = () => {
         });
         setBookings(sortedBookings);
       }
-    } catch (err) {
-      setError('Не вдалося завантажити бронювання');
+    } catch {
+      setError("Не вдалося завантажити бронювання");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleCancel = async (id: number) => {
-    if (window.confirm('Ви впевнені, що хочете скасувати це бронювання?')) {
+    if (window.confirm("Ви впевнені, що хочете скасувати це бронювання?")) {
       try {
-        const CANCELLED_STATUS = 2; 
+        const CANCELLED_STATUS = 2;
         await updateBookingStatus(id, CANCELLED_STATUS);
         fetchBookings();
-      } catch (err) {
-        alert('Помилка при скасуванні');
+      } catch {
+        alert("Помилка при скасуванні");
       }
     }
   };
 
-  if (isLoading) return <div className={styles.loader}>Завантаження ваших бронювань...</div>;
+  if (isLoading)
+    return <div className={styles.loader}>Завантаження ваших бронювань...</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Мої Бронювання</h1>
-        <p className={styles.subtitle}>Історія ваших замовлень та поточний статус квитків</p>
+        <p className={styles.subtitle}>
+          Історія ваших замовлень та поточний статус квитків
+        </p>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
@@ -60,16 +63,18 @@ const MyBookingsPage: React.FC = () => {
 
             return (
               <div key={booking.id} className={styles.card}>
-                <img 
+                <img
                   src={`https://image.tmdb.org/t/p/w500${booking.moviePosterPath}`}
                   alt={booking.movieTitle}
                   className={styles.poster}
                 />
-                
+
                 <div className={styles.content}>
                   <div className={styles.topRow}>
                     <h2 className={styles.movieTitle}>{booking.movieTitle}</h2>
-                    <span className={`${styles.statusBadge} ${styles[booking.status?.toLowerCase() || '']}`}>
+                    <span
+                      className={`${styles.statusBadge} ${styles[booking.status?.toLowerCase() || ""]}`}
+                    >
                       {booking.status}
                     </span>
                   </div>
@@ -96,7 +101,7 @@ const MyBookingsPage: React.FC = () => {
                     <div className={styles.actions}>
                       <Link
                         to={`/profile/tickets?bookingId=${booking.id}`}
-                        state={{status: booking.status}}
+                        state={{ status: booking.status }}
                         className={styles.detailsBtn}
                       >
                         Деталі квитків
@@ -116,7 +121,9 @@ const MyBookingsPage: React.FC = () => {
       ) : (
         <div className={styles.emptyState}>
           <p>У вас поки немає бронювань.</p>
-          <Link to="/schedule" className={styles.linkBtn}>Замовити перший квиток</Link>
+          <Link to="/schedule" className={styles.linkBtn}>
+            Замовити перший квиток
+          </Link>
         </div>
       )}
     </div>

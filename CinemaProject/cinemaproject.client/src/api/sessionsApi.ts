@@ -35,7 +35,7 @@ export interface HallDto {
   name: string;
 }
 
-export interface SessionSeatDto{
+export interface SessionSeatDto {
   sessionSeatId: number;
   sessionId: number;
   seatId: number;
@@ -43,6 +43,7 @@ export interface SessionSeatDto{
   rowNumber: number;
   seatNumber: number;
   seatType: string;
+  seatTypePricePercentage: number;
 }
 
 export const getAllSessions = async (onlyUpcoming:boolean = false, movieId:number|null = null): Promise<SessionDto[]> => {
@@ -70,12 +71,16 @@ export const getSessionById = async (id: number): Promise<SessionDto> => {
   return response.json();
 };
 
-export const createSession = async (dto: CreateSessionDto): Promise<SessionDto> => {
+export const createSession = async (
+  dto: CreateSessionDto,
+): Promise<SessionDto> => {
   const token = tokenStorage.getToken();
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Sessions`, {
-    method: 'POST',
+    method: "POST",
     headers,
     body: JSON.stringify(dto),
   });
@@ -87,17 +92,22 @@ export const createSession = async (dto: CreateSessionDto): Promise<SessionDto> 
     const error = await response.json();
     throw new HttpError(response.status, error.message || 'Помилка створення сесії');
   }
-  
+
   return response.json();
 };
 
-export const updateSession = async (id: number, dto: UpdateSessionDto): Promise<SessionDto> => {
+export const updateSession = async (
+  id: number,
+  dto: UpdateSessionDto,
+): Promise<SessionDto> => {
   const token = tokenStorage.getToken();
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const response = await fetch(`${API_BASE_URL}/Sessions/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers,
     body: JSON.stringify(dto),
   });
@@ -116,9 +126,9 @@ export const updateSession = async (id: number, dto: UpdateSessionDto): Promise<
 export const deleteSession = async (id: number): Promise<void> => {
   const token = tokenStorage.getToken();
   const headers: Record<string, string> = {};
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Sessions/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers,
   });
 
@@ -127,7 +137,7 @@ export const deleteSession = async (id: number): Promise<void> => {
 
   const contentType = response.headers.get('content-type');
   let body = null;
-  if (contentType && contentType.includes('application/json')) {
+  if (contentType && contentType.includes("application/json")) {
     body = await response.json();
   } else {
     const text = await response.text();
@@ -155,7 +165,7 @@ export const getHalls = async (): Promise<HallDto[]> => {
 
 export const initHalls = async (): Promise<{ message: string }> => {
   const response = await fetch(`${API_BASE_URL}/Halls/init`, {
-    method: 'POST',
+    method: "POST",
   });
   // Handle common auth related statuses
   handleHttpStatus(response);
@@ -165,20 +175,24 @@ export const initHalls = async (): Promise<{ message: string }> => {
   return response.json();
 };
 
-interface SessionSeatApiResponse
-{
-  success : true;
-  message : null;
-  data : SessionSeatDto[];
+interface SessionSeatApiResponse {
+  success: true;
+  message: null;
+  data: SessionSeatDto[];
 }
 
-export const getSessionSeats = async(sessionId:number) : Promise<SessionSeatDto[]> => {
-  const response = await fetch(`${API_BASE_URL}/SessionSeat?sessionId=${sessionId}`, {
-    method: 'GET',
-  });
+export const getSessionSeats = async (
+  sessionId: number,
+): Promise<SessionSeatDto[]> => {
+  const response = await fetch(
+    `${API_BASE_URL}/SessionSeat?sessionId=${sessionId}`,
+    {
+      method: "GET",
+    },
+  );
 
-  if(!response.ok) {
-    throw new Error('Помилка завантаження місць для сеансу');
+  if (!response.ok) {
+    throw new Error("Помилка завантаження місць для сеансу");
   }
-  return (await response.json() as SessionSeatApiResponse).data;
-}
+  return ((await response.json()) as SessionSeatApiResponse).data;
+};

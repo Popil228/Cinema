@@ -29,9 +29,11 @@ const BookingPage: React.FC = () => {
   const displayDate: string = dateToDayMonthStrUA(
     new Date(bookingPageContext.selectedSession?.startTime || "0000-01-01"),
   );
-  const displayTime: string =
-    bookingPageContext.selectedSession?.startTime.split("T")[1].slice(0, 5) ||
-    "00:00";
+  const displayTime: string = new Date(
+    bookingPageContext.selectedSession?.startTime || "0000-01-01",
+  )
+    .toTimeString()
+    .slice(0, 5);
   const displayHall: string =
     bookingPageContext.selectedSession?.hallName || "Зал _";
 
@@ -45,6 +47,9 @@ const BookingPage: React.FC = () => {
     "Активувати промокод",
   );
   const [discountId, setDiscountId] = useState<number | null>(null);
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(
+    null,
+  );
 
   const promoElementsAdditionalStyle =
     " " +
@@ -55,10 +60,10 @@ const BookingPage: React.FC = () => {
   const defaultPrice: number =
     bookingPageContext.selectedSession?.basePrice || 0;
   const totalCost: number = selectedSessionSeats
-    .map((s) =>
-      Math.round((s.seatType == "VIP" ? 150 : 100) * defaultPrice * 0.01),
-    ) //обрахування відсотку - заглушка
+    .map((s) => Math.round(s.seatTypePricePercentage * defaultPrice * 0.01))
     .reduce((sum, singleTicketPrice) => sum + singleTicketPrice, 0);
+  const discountCost = Math.round(totalCost * (discountPercentage || 0) * 0.01);
+  const dislayCost = totalCost - discountCost;
 
   useEffect(() => {
     const loadSessionByCurrentId = async () => {
@@ -105,7 +110,9 @@ const BookingPage: React.FC = () => {
     let isCodeUsable: boolean;
     let errorText: string = "";
     try {
-      newDiscountId = await checkDiscount(promoInput);
+      const discountCheckResponse = await checkDiscount(promoInput);
+      newDiscountId = discountCheckResponse.id;
+      setDiscountPercentage(discountCheckResponse.discountPercentage);
       isCodeUsable = true;
     } catch (err) {
       if (err instanceof Error) {
@@ -127,7 +134,8 @@ const BookingPage: React.FC = () => {
     {
       setPromoFailure(true);
       setPromoBtnText(errorText);
-      setDiscountId(newDiscountId);
+      setDiscountId(null);
+      setDiscountPercentage(null);
     }
   };
 
@@ -137,9 +145,10 @@ const BookingPage: React.FC = () => {
       sessionSeatIds: selectedSessionSeats.map((s) => s.sessionSeatId),
     };
 
-    await createBooking(createBookingRequest);
+    const createdBookingId = (await createBooking(createBookingRequest))
+      .bookingId;
 
-    navigate("/");
+    navigate(`/profile/tickets?bookingId=${createdBookingId}`);
   };
 
   const onPromoInputTextChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -148,10 +157,16 @@ const BookingPage: React.FC = () => {
     if (promoSuccess) {
       setPromoSuccess(false);
       setPromoBtnText("Активувати промокод");
+
+      setDiscountId(null);
+      setDiscountPercentage(null);
     }
     if (promoFailure) {
       setPromoFailure(false);
       setPromoBtnText("Активувати промокод");
+
+      setDiscountId(null);
+      setDiscountPercentage(null);
     }
   };
 
@@ -221,6 +236,7 @@ const BookingPage: React.FC = () => {
               <div className={styles.seatsList}>
                 {row.map((s) => (
                   <SessionSeat
+                    key={s.sessionSeatId}
                     sessionSeat={s}
                     isSelected={selectedSessionSeats.includes(s)}
                     handleClick={handleSeatClick}
@@ -259,7 +275,14 @@ const BookingPage: React.FC = () => {
                 </div>
                 <div className={styles.priceInfo}>
                   <strong>Загальна вартість:</strong>{" "}
-                  <span className={styles.totalPrice}>{totalCost} грн</span>
+                  <span className={styles.totalPrice}>{dislayCost} грн</span>
+                  {discountPercentage ? (
+                    <span className={styles.discountInfo}>
+                      {totalCost} -{discountPercentage}%
+                    </span>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </>
             ) : (
