@@ -218,6 +218,19 @@ namespace CinemaProject.Server.Services
                     Message = "Фільм не знайдено"
                 };
             }
+
+            var hasTickets = await _context.Tickets
+                .AnyAsync(t => t.SessionSeat.Session.MovieId == Id);
+
+            if (hasTickets)
+            {
+                return new MovieResponse
+                {
+                    Success = false,
+                    Message = "Неможливо видалити фільм, оскільки існують пов'язані квитки"
+                };
+            }
+
             _context.MovieActors.RemoveRange(movie.MovieActors);
             _context.MovieGenres.RemoveRange(movie.MovieGenres);
             _context.Movies.Remove(movie);
