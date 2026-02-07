@@ -38,5 +38,78 @@
 .discountList {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
+}
+
+.errorMsg {
+  font-size: 18px;
+  color: var(--color-error);
+  text-align: center;
+  padding: 40px;
+}
+
+.retryBtn {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 24px;
+  background-color: #1e293b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
+    background-color: #334155;
+  }
+}
+
+.discountHeader {
+  background-color: var(--color-border);
+  border-radius: 20px;
+  padding: 8px;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 12px;
+
+  .discountHeaderGrid {
+    padding-right: 69pt;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-auto-flow: column;
+    column-gap: 10px;
+
+    .discountHeaderColumnTitle {
+      //whole button
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      border-style: none;
+
+      background-color: #435062;
+      border-radius: 12px;
+
+      transition: all 0.1s;
+
+      .discountHeaderText {
+        margin: 0;
+        color: #fff;
+      }
+
+      .discountHeaderButton {
+        //arrow symbol
+        background: transparent;
+        color: #fff;
+        margin: 0;
+      }
+
+      &:hover {
+        transform: scale(1.02);
+        border-radius: 10px;
+        cursor: pointer;
+      }
+    }
+  }
 }

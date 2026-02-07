@@ -38,13 +38,17 @@ const AdminDiscountCard: React.FC<AdminDiscountCardInterface> = ({
   const displayStartDate =
     startDate_date.getDate() +
     "." +
-    startDate_date.getMonth() +
+    (startDate_date.getMonth() <= 9
+      ? "0" + (startDate_date.getMonth() + 1)
+      : startDate_date.getMonth() + 1) +
     "." +
     startDate_date.getFullYear();
   const displayEndDate =
     endDate_date.getDate() +
     "." +
-    endDate_date.getMonth() +
+    (endDate_date.getMonth() <= 9
+      ? "0" + (endDate_date.getMonth() + 1)
+      : endDate_date.getMonth() + 1) +
     "." +
     endDate_date.getFullYear();
 

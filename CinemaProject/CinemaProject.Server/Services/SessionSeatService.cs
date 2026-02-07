@@ -86,6 +86,7 @@ namespace CinemaProject.Server.Services
 
         private static SessionSeatDto MapToDto(SessionSeat sessionSeat)
         {
+            short pricePercentage = (sessionSeat.Seat == null) ? (short)100 : sessionSeat.Seat.SeatType.PricePercent;
             return new SessionSeatDto
             {
                 SessionSeatId = sessionSeat.SessionSeatId,
@@ -94,7 +95,8 @@ namespace CinemaProject.Server.Services
                 IsActive = sessionSeat.IsAvailable,
                 RowNumber = sessionSeat.Seat?.RowNumber ?? 0,
                 SeatNumber = sessionSeat.Seat?.SeatNumber ?? 0,
-                SeatType = sessionSeat.Seat?.SeatType?.Type
+                SeatType = sessionSeat.Seat?.SeatType?.Type,
+                SeatTypePricePercentage = pricePercentage
             };
         }
     }
