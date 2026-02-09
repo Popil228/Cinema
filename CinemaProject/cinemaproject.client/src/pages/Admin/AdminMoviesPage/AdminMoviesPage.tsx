@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminMovieCard from '../../../components/Admin/AdminMovieCard/AdminMovieCard';
 import styles from './AdminMoviesPage.module.scss';
@@ -11,6 +11,7 @@ const AdminMoviesPage: React.FC = () => {
   const movieEditContext = useContext(MoveEditContext);
   
   const [rawMovies, setRawMovies] = useState<StrictMovieInfo[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const mapToCardProps = (movie: StrictMovieInfo) => ({
     id: movie.mainInfo.id,
@@ -36,18 +37,21 @@ const AdminMoviesPage: React.FC = () => {
     loadMovies();
   }, []);
 
+  const filteredMovies = useMemo(() => {
+    return rawMovies.filter(movie => 
+      movie.mainInfo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [rawMovies, searchTerm]);
+
   const handleEditRedirect = (movie: StrictMovieInfo) => {
     movieEditContext.setMovieInfo(movie);
     movieEditContext.setIsLoaded(true);
-    
     localStorage.setItem("movie_edit", JSON.stringify(movie));
-    
     navigate(`/admin/movies/edit/${movie.mainInfo.id}`);
   };
 
   const handleDeleteMovie = async (movieId: number, title: string) => {
     const confirmed = window.confirm(`Ви впевнені, що хочете видалити фільм "${title}"?`);
-    
     if (confirmed) {
       try {
         await moviesApi.deleteMovieById(movieId);
@@ -63,27 +67,49 @@ const AdminMoviesPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.pageTitle}>Фільми ({rawMovies.length})</h1>
+        <div className={styles.titleGroup}>
+          <h1 className={styles.pageTitle}>Фільми ({rawMovies.length})</h1>
+          <div className={styles.searchWrapper}>
+            <input 
+              type="text" 
+              placeholder="Пошук за назвою..." 
+              className={styles.searchInput}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+        
         <button 
           className={styles.addBtn} 
           onClick={() => navigate('/admin/movies/search')}
+          title="Додати новий фільм"
         >
           +
         </button>
       </header>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>В прокаті</h2>
-        <div className={styles.grid}>
-          {rawMovies.map(movie => (
-            <AdminMovieCard 
-              key={movie.mainInfo.id} 
-              {...mapToCardProps(movie)} 
-              onEdit={() => handleEditRedirect(movie)}
-              onDelete={() => handleDeleteMovie(movie.mainInfo.id, movie.mainInfo.title)}
-            />
-          ))}
-        </div>
+        <h2 className={styles.sectionTitle}>
+          {searchTerm ? `Результати пошуку: ${filteredMovies.length}` : 'В прокаті'}
+        </h2>
+        
+        {filteredMovies.length > 0 ? (
+          <div className={styles.grid}>
+            {filteredMovies.map(movie => (
+              <AdminMovieCard 
+                key={movie.mainInfo.id} 
+                {...mapToCardProps(movie)} 
+                onEdit={() => handleEditRedirect(movie)}
+                onDelete={() => handleDeleteMovie(movie.mainInfo.id, movie.mainInfo.title)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptySearch}>
+            <p>Нічого не знайдено за запитом "{searchTerm}"</p>
+          </div>
+        )}
       </section>
     </div>
   );
