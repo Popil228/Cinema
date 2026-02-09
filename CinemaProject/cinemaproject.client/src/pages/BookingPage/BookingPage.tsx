@@ -65,6 +65,27 @@ const BookingPage: React.FC = () => {
   const discountCost = Math.round(totalCost * (discountPercentage || 0) * 0.01);
   const dislayCost = totalCost - discountCost;
 
+  const displayStandartSeatPrice =
+    bookingPageContext.sessionSeats.findIndex(
+      (s) => s.seatType == "Standart",
+    ) != 0
+      ? Math.round(
+          (bookingPageContext.sessionSeats.find((s) => s.seatType == "Standart")
+            ?.seatTypePricePercentage || 100) *
+            defaultPrice *
+            0.01,
+        ).toString() + " грн"
+      : "відсутні";
+  const displayVipSeatPrice =
+    bookingPageContext.sessionSeats.findIndex((s) => s.seatType == "VIP") != 0
+      ? Math.round(
+          (bookingPageContext.sessionSeats.find((s) => s.seatType == "VIP")
+            ?.seatTypePricePercentage || 100) *
+            defaultPrice *
+            0.01,
+        ).toString() + " грн"
+      : "відсутні";
+
   useEffect(() => {
     const loadSessionByCurrentId = async () => {
       const s: SessionDto = await getSessionById(selectedSessionId);
@@ -72,7 +93,6 @@ const BookingPage: React.FC = () => {
     };
 
     const loadSessionsSeats = async () => {
-      //тут має бути запит в апішку по типу await getSessionSeats(selectedSessionId);
       const loadedSessionSeats: SessionSeatDto[] =
         await getSessionSeats(selectedSessionId);
       bookingPageContext.setSessionSeats(loadedSessionSeats);
@@ -249,6 +269,16 @@ const BookingPage: React.FC = () => {
         </div>
 
         {/* Легенда */}
+        <div className={styles.legend}>
+          <div className={styles.legendItem}>
+            <div className={`${styles.dot} ${styles.dotStandart}`}></div>
+            <span>Звичайні - {displayStandartSeatPrice}</span>
+          </div>
+          <div className={styles.legendItem}>
+            <div className={`${styles.dot} ${styles.dotPremium}`}></div>
+            <span>VIP - {displayVipSeatPrice}</span>
+          </div>
+        </div>
         <div className={styles.legend}>
           <div className={styles.legendItem}>
             <div className={`${styles.dot} ${styles.dotAvailable}`}></div>
