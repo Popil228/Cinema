@@ -30,6 +30,7 @@ namespace CinemaProject.Server.DTOs.Booking
         public DateTime BookingAt { get; set; } 
         public decimal TotalPrice { get; set; }
         public string? Status { get; set; }
+        public int MovieId { get; set; }
         public string MovieTitle { get; set; }
         public string MoviePosterPath { get; set; }
     }
