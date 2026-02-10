@@ -10,6 +10,15 @@ export interface RegisterRequest {
   confirmPassword: string;
 }
 
+export interface ConfirmEmailRequest {
+  email: string;
+  code: string;
+}
+
+export interface ResendCodeRequest {
+  email: string;
+}
+
 export interface UserDto {
   id: number;
   email: string;

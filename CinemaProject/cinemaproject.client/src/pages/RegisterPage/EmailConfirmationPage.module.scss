@@ -23,6 +23,14 @@
   margin-bottom: 20px;
 }
 
+.errorBanner {
+  background-color: var(--color-error);
+  color: var(--color-white);
+  padding: 5px;
+  border-radius: 20px;
+  margin-bottom: 25px;
+}
+
 .title {
   color: var(--color-white);
   font-size: var(--font-lg);
