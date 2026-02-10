@@ -9,6 +9,7 @@ using CinemaProject.Server.Models.Enums;
 using CinemaProject.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CinemaProject.Server.Services
 {
@@ -16,11 +17,15 @@ namespace CinemaProject.Server.Services
     {
         private readonly CinemaDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _cache;
+        private readonly IEmailService _emailService;
 
-        public AuthService(CinemaDbContext context, IConfiguration configuration)
+        public AuthService(CinemaDbContext context, IConfiguration configuration, IMemoryCache cache, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _cache = cache;
+            _emailService = emailService;
         }
 
         public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
@@ -45,7 +50,7 @@ namespace CinemaProject.Server.Services
                 };
             }
 
-            //Створення нового користувача
+            // Створюємо об'єкт користувача, але НЕ додаємо в _context
             var user = new AppUser
             {
                 Email = request.Email,
@@ -56,18 +61,17 @@ namespace CinemaProject.Server.Services
                 IsActive = true
             };
 
-            _context.AppUsers.Add(user);
-            await _context.SaveChangesAsync();
+            // Зберігаємо дані користувача в кеш на 30 хвилин
+            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
+            _cache.Set($"temp_user_data_{request.Email}", user, cacheOptions);
 
-            //Генерація JWT токена
-            var token = GenerateJwtToken(user);
+            // Генеруємо та відправляємо код
+            await ResendConfirmationCodeAsync(user.Email);
 
             return new AuthResponse
             {
                 Success = true,
-                Message = "Реєстрація успішна",
-                Token = token,
-                User = MapToUserDto(user)
+                Message = "Код підтвердження надіслано на вашу пошту. Будь ласка, введіть його для завершення реєстрації."
             };
         }
 
@@ -77,7 +81,7 @@ namespace CinemaProject.Server.Services
             var user = await _context.AppUsers
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return new AuthResponse
                 {
@@ -89,24 +93,9 @@ namespace CinemaProject.Server.Services
             // Перевірка чи активний користувач....
             if (!user.IsActive)
             {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Message = "Обліковий запис деактивовано"
-                };
+                return new AuthResponse { Success = false, Message = "Обліковий запис деактивовано" };
             }
 
-            //Перевірка паролю
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Message = "Невірний email або пароль"
-                };
-            }
-
-            //Генерація JWT токена
             var token = GenerateJwtToken(user);
 
             return new AuthResponse
@@ -116,6 +105,60 @@ namespace CinemaProject.Server.Services
                 Token = token,
                 User = MapToUserDto(user)
             };
+        }
+
+        public async Task<AuthResponse> ConfirmEmailAsync(ConfirmEmailRequest request)
+        {
+            if (_cache.TryGetValue($"confirm_{request.Email}", out string savedCode))
+            {
+                if (savedCode == request.Code)
+                {
+                    // Якщо код вірний, дістаємо дані користувача, які ми "відклали" раніше
+                    if (_cache.TryGetValue($"temp_user_data_{request.Email}", out AppUser tempUser))
+                    {
+                        // Тільки зараз додаємо користувача в реальну базу даних
+                        _context.AppUsers.Add(tempUser);
+                        await _context.SaveChangesAsync();
+
+                        // Очищуємо кеш
+                        _cache.Remove($"confirm_{request.Email}");
+                        _cache.Remove($"temp_user_data_{request.Email}");
+
+                        return new AuthResponse { Success = true, Message = "Реєстрація завершена! Тепер ви можете увійти." };
+                    }
+                    else
+                    {
+                        return new AuthResponse { Success = false, Message = "Час реєстрації вичерпано. Будь ласка, спробуйте зареєструватися знову." };
+                    }
+                }
+            }
+
+            return new AuthResponse { Success = false, Message = "Невірний або застарілий код підтвердження" };
+        }
+
+        public async Task<AuthResponse> ResendConfirmationCodeAsync(string email)
+        {
+            if (!_cache.TryGetValue($"temp_user_data_{email}", out _))
+            {
+                return new AuthResponse { Success = false, Message = "Дані реєстрації не знайдено. Почніть спочатку." };
+            }
+
+            var code = new Random().Next(100000, 999999).ToString();
+            _cache.Set($"confirm_{email}", code, TimeSpan.FromMinutes(15));
+
+            var message = $@"
+            <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee;'>
+                <h2 style='color: #2d3748;'>Підтвердження пошти</h2>
+                <p>Ваш код для завершення реєстрації в Cinema Hall:</p>
+                <div style='font-size: 24px; font-weight: bold; color: #4a5568; letter-spacing: 5px; padding: 10px; background: #f7fafc; display: inline-block;'>
+                    {code}
+                </div>
+                <p style='color: #718096; font-size: 12px; margin-top: 20px;'>Код дійсний протягом 15 хвилин.</p>
+            </div>";
+
+            await _emailService.SendEmailAsync(email, "Код підтвердження Cinema Hall", message);
+
+            return new AuthResponse { Success = true, Message = "Код надіслано на вашу пошту" };
         }
 
         private string GenerateJwtToken(AppUser user)

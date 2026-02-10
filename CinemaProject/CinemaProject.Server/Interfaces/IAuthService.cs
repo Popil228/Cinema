@@ -6,5 +6,7 @@ namespace CinemaProject.Server.Interfaces
     {
         Task<AuthResponse> RegisterAsync(RegisterRequest request);
         Task<AuthResponse> LoginAsync(LoginRequest request);
+        Task<AuthResponse> ConfirmEmailAsync(ConfirmEmailRequest request);
+        Task<AuthResponse> ResendConfirmationCodeAsync(string email);
     }
 }
