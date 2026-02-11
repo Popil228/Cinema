@@ -1,15 +1,18 @@
 using CinemaProject.Server.Data;
-using CinemaProject.Server.Services;
 using CinemaProject.Server.Interfaces;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+using CinemaProject.Server.Models.Settings;
+using CinemaProject.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddMemoryCache();
 
 // DbContext
 builder.Services.AddDbContext<CinemaDbContext>(options =>
@@ -75,6 +78,7 @@ builder.Services.AddAuthorization(options =>
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // CORS
 builder.Services.AddCors(options =>

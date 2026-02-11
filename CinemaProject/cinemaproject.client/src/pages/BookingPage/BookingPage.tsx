@@ -12,7 +12,7 @@ import {
   type SessionSeatDto,
 } from "../../api/sessionsApi";
 import { dateToDayMonthStrUA } from "../../utilities/dateToStringUA";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import BookingPageContext from "../../context/bookingPageContext/BookingPageContext";
 import SessionSeat from "../../components/SessionSeat/SessionSeat";
 import { checkDiscount } from "../../api/discountApi";
@@ -191,10 +191,12 @@ const BookingPage: React.FC = () => {
         <div className={styles.movieHeader}>
           <div className={styles.movieInfo}>
             <div className={styles.poster}>
-              <img
-                src={`https://image.tmdb.org/t/p/w500${bookingPageContext.selectedSession?.moviePosterPath}`}
-                alt={bookingPageContext.selectedSession?.movieTitle}
-              />
+              <Link to={`/movie/${bookingPageContext.selectedSession?.movieId}`}>
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${bookingPageContext.selectedSession?.moviePosterPath}`}
+                  alt={bookingPageContext.selectedSession?.movieTitle}
+                />
+              </Link>
             </div>
             <div className={styles.text}>
               <h1 className={styles.title}>

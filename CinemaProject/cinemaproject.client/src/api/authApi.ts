@@ -44,6 +44,39 @@ export const authApi = {
 
     return response.json();
   },
+
+  async confirmEmail(email: string, code: string): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/Auth/confirm-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code }),
+    });
+
+    const body = await response.json();
+
+    if (!response.ok) {
+      throw new HttpError(response.status, body.message ?? 'Помилка підтвердження');
+    }
+
+    return body;
+  },
+
+  async resendConfirmationCode(email: string): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/Auth/resend-confirmation-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    handleHttpStatus(response);
+
+    if (!response.ok) {
+      const body = await response.json();
+      throw new HttpError(response.status, body.message ?? 'Не вдалося надіслати код');
+    }
+
+    return response.json();
+  },
 };
 
 //Функції для роботи з токеном
