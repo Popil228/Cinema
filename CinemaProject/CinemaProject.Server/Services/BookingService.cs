@@ -186,6 +186,9 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
+                 MovieId = b.Tickets
+                    .Select(t => t.SessionSeat.Session.Movie.MovieId)
+                    .FirstOrDefault(),
                  MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
@@ -249,6 +252,9 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
+                 MovieId = b.Tickets
+                    .Select(t => t.SessionSeat.Session.Movie.MovieId)
+                    .FirstOrDefault(),
                  MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
@@ -307,6 +313,9 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
+                 MovieId = b.Tickets
+                    .Select(t => t.SessionSeat.Session.Movie.MovieId)
+                    .FirstOrDefault(),
                  MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
@@ -361,6 +370,9 @@ namespace CinemaProject.Server.Services
                  BookingAt = b.BookingAt,
                  TotalPrice = b.TotalPrice,
                  Status = b.Status.ToString(),
+                 MovieId = b.Tickets
+                    .Select(t => t.SessionSeat.Session.Movie.MovieId)
+                    .FirstOrDefault(),
                  MovieTitle = b.Tickets
                      .Select(t => t.SessionSeat.Session.Movie.Title)
                      .FirstOrDefault(),
@@ -409,6 +421,7 @@ namespace CinemaProject.Server.Services
             var currentBooking = await _context.Bookings
                 .Include(b => b.Tickets)
                     .ThenInclude(t => t.SessionSeat)
+                        .ThenInclude(ss => ss.Session)
                 .Where(b => b.BookingId == id)
                 .FirstOrDefaultAsync();
 
@@ -446,6 +459,22 @@ namespace CinemaProject.Server.Services
                     Success = false,
                     Message = "Неможливо в підтверджений букінг поставити статус в очікуванні"
                 };
+            }
+
+            if (status == BookingStatus.Completed)
+            {
+                var sessionStartTime = currentBooking.Tickets?
+                    .Select(t => t.SessionSeat.Session.StartTime)
+                    .FirstOrDefault();
+
+                if (sessionStartTime.HasValue && DateTime.UtcNow < sessionStartTime.Value)
+                {
+                    return new BookingResponse
+                    {
+                        Success = false,
+                        Message = "Неможливо завершити бронювання, якщо сеанс ще не почався"
+                    };
+                }
             }
 
             if (status == BookingStatus.Cancelled && currentBooking.Tickets != null)
