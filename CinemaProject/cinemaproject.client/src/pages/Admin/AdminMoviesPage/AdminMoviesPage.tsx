@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminMovieCard from '../../../components/Admin/AdminMovieCard/AdminMovieCard';
 import styles from './AdminMoviesPage.module.scss';
@@ -10,7 +10,10 @@ const AdminMoviesPage: React.FC = () => {
   const navigate = useNavigate();
   const movieEditContext = useContext(MoveEditContext);
   
-  const [rawMovies, setRawMovies] = useState<StrictMovieInfo[]>([]);
+  const [allMovies, setAllMovies] = useState<StrictMovieInfo[]>([]);
+  const [nowShowing, setNowShowing] = useState<StrictMovieInfo[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const mapToCardProps = (movie: StrictMovieInfo) => ({
     id: movie.mainInfo.id,
@@ -25,57 +28,111 @@ const AdminMoviesPage: React.FC = () => {
   });
 
   useEffect(() => {
-    const loadMovies = async () => {
+    const fetchData = async () => {
       try {
-        const data = await moviesApi.getAllMovies(); 
-        setRawMovies(data);
+        setIsLoading(true);
+        const [allData, showingData] = await Promise.all([
+          moviesApi.getAllMovies(),
+          moviesApi.getAllNowShowingMovies()
+        ]);
+        setAllMovies(allData);
+        setNowShowing(showingData);
       } catch (err) {
         console.error("Не вдалося завантажити фільми", err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    loadMovies();
+    fetchData();
   }, []);
+
+  const filteredNowShowing = useMemo(() => {
+    return nowShowing.filter(movie => 
+      movie.mainInfo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [nowShowing, searchTerm]);
+
+  const otherMovies = useMemo(() => {
+    const nowShowingIds = new Set(nowShowing.map(m => m.mainInfo.id));
+    return allMovies.filter(movie => 
+      !nowShowingIds.has(movie.mainInfo.id) &&
+      movie.mainInfo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allMovies, nowShowing, searchTerm]);
 
   const handleEditRedirect = (movie: StrictMovieInfo) => {
     movieEditContext.setMovieInfo(movie);
     movieEditContext.setIsLoaded(true);
-    
     localStorage.setItem("movie_edit", JSON.stringify(movie));
-    
     navigate(`/admin/movies/edit/${movie.mainInfo.id}`);
   };
 
   const handleDeleteMovie = async (movieId: number, title: string) => {
-    const confirmed = window.confirm(`Ви впевнені, що хочете видалити фільм "${title}"?`);
-    
-    if (confirmed) {
+    if (window.confirm(`Ви впевнені, що хочете видалити фільм "${title}"?`)) {
       try {
         await moviesApi.deleteMovieById(movieId);
-        setRawMovies(prev => prev.filter(m => m.mainInfo.id !== movieId));
+        setAllMovies(prev => prev.filter(m => m.mainInfo.id !== movieId));
+        setNowShowing(prev => prev.filter(m => m.mainInfo.id !== movieId));
         alert("Фільм успішно видалено");
       } catch (err) {
-        console.error("Помилка при видаленні:", err);
         alert("Не вдалося видалити фільм");
       }
     }
   };
 
+  if (isLoading) return <div className={styles.loader}>Завантаження фільмів...</div>;
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.pageTitle}>Фільми ({rawMovies.length})</h1>
+        <div className={styles.titleGroup}>
+          <h1 className={styles.pageTitle}>Фільми ({allMovies.length})</h1>
+          <div className={styles.searchWrapper}>
+            <input 
+              type="text" 
+              placeholder="Пошук за назвою..." 
+              className={styles.searchInput}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+        
         <button 
           className={styles.addBtn} 
           onClick={() => navigate('/admin/movies/search')}
+          title="Додати новий фільм"
         >
           +
         </button>
       </header>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>В прокаті</h2>
+        <h2 className={styles.sectionTitle}>
+          🔥 В прокаті ({filteredNowShowing.length})
+        </h2>
+        {filteredNowShowing.length > 0 ? (
+          <div className={styles.grid}>
+            {filteredNowShowing.map(movie => (
+              <AdminMovieCard 
+                key={movie.mainInfo.id} 
+                {...mapToCardProps(movie)} 
+                onEdit={() => handleEditRedirect(movie)}
+                onDelete={() => handleDeleteMovie(movie.mainInfo.id, movie.mainInfo.title)}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className={styles.emptyText}>Немає активних фільмів із сеансами.</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>
+          📂 Всі інші фільми ({otherMovies.length})
+        </h2>
         <div className={styles.grid}>
-          {rawMovies.map(movie => (
+          {otherMovies.map(movie => (
             <AdminMovieCard 
               key={movie.mainInfo.id} 
               {...mapToCardProps(movie)} 
@@ -84,6 +141,11 @@ const AdminMoviesPage: React.FC = () => {
             />
           ))}
         </div>
+        {otherMovies.length === 0 && searchTerm && (
+          <div className={styles.emptySearch}>
+            Нічого не знайдено за запитом "{searchTerm}"
+          </div>
+        )}
       </section>
     </div>
   );

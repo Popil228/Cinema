@@ -1,13 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IMaskInput } from 'react-imask';
 import { authApi, } from '../../api/authApi';
 import styles from './RegisterPage.module.scss';
-import { AuthContext } from '../../context/authContext/AuthContext';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const auth = useContext(AuthContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -39,16 +37,12 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    // 1. Очищаємо номер від маски (залишаємо лише цифри)
     const cleanDigits = phone.replace(/\D/g, '');
-
-    // 2. Перевірка номера на повноту
     if (cleanDigits.length < 12) {
       setPhoneError('Введіть повний номер телефону');
       return;
     }
 
-    // 3. Форматуємо для відправки (прибираємо 38)
     const phoneForServer = cleanDigits.startsWith('38') 
       ? cleanDigits.substring(2) 
       : cleanDigits;
@@ -74,18 +68,12 @@ const RegisterPage: React.FC = () => {
       });
 
       if (response.success) {
-        if (response.token && response.user) {
-          auth?.login(response.user, response.token);
-          navigate('/');
-        }
-        else {
-          navigate('/confirm-email', { state: { email } });
-        }
+        navigate('/confirm-email', { state: { email } });
       } else {
         setError(response.message || 'Помилка реєстрації');
       }
-    } catch {
-      setError('Помилка з\'єднання з сервером');
+    } catch (err: any) {
+      setError(err.message || 'Помилка з\'єднання з сервером');
     } finally {
       setIsLoading(false);
     }

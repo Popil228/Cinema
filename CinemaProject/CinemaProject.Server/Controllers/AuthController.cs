@@ -64,5 +64,47 @@ namespace CinemaProject.Server.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Підтвердження Email через код
+        /// </summary>
+        [HttpPost("confirm-email")]
+        public async Task<ActionResult<AuthResponse>> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new AuthResponse { Success = false, Message = "Невалідні дані" });
+            }
+
+            var result = await _authService.ConfirmEmailAsync(request);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Повторне надсилання коду підтвердження
+        /// </summary>
+        [HttpPost("resend-confirmation-code")]
+        public async Task<ActionResult<AuthResponse>> ResendCode([FromBody] ResendCodeRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new AuthResponse { Success = false, Message = "Email обов'язковий" });
+            }
+
+            var result = await _authService.ResendConfirmationCodeAsync(request.Email);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

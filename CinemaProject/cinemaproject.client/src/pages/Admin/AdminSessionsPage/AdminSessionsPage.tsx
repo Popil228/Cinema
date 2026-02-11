@@ -184,7 +184,7 @@ const AdminSessionsPage: React.FC = () => {
 
       <div className={styles.hallsGrid}>
         {sessionsByHall.map(({ hall, sessions: hallSessions }) => (
-          <section key={hall.hallId} className={styles.hallColumn}>
+          <section key={hall.hallId}>
             <h2 className={styles.hallTitle}>{hall.name.toUpperCase()}</h2>
             {hallSessions.length > 0 ? (
               hallSessions.map(session => (

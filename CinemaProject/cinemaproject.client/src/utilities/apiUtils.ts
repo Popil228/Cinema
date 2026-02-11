@@ -15,8 +15,6 @@ import {
  */
 export const handleHttpStatus = (response: Response): void => {
   switch (response.status) {
-    case 400:
-      throw new BadRequestError('Невірний запит');
     case 401:
       throw new UnauthorizedError('Неавторизовано. Будь ласка, увійдіть у систему.');
     case 403:
@@ -28,8 +26,8 @@ export const handleHttpStatus = (response: Response): void => {
     case 500:
       throw new InternalServerError('Внутрішня помилка сервера');
     default:
-      if (!response.ok) {
-        throw new HttpError(response.status, `HTTP ${response.status}: ${response.statusText}`, response.statusText);
+      if (!response.ok && response.status !== 400) {
+        throw new HttpError(response.status, `HTTP ${response.status}: ${response.statusText}`);
       }
   }
 };
