@@ -17,11 +17,12 @@ const getTicketsByUser = async (bookingId: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || 'Помилка отримання квитків');
+    const apiError = body?.error?.message || 'Помилка отримання квитків';
+    throw new Error(apiError);
   }
   return body as TicketGetResponse;
 };
@@ -32,11 +33,12 @@ const getTicketsByAdmin = async (bookingId: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || 'Помилка сервера');
+    const apiError = body?.error?.message || 'Помилка сервера';
+    throw new Error(apiError);
   }
   return body as TicketGetResponse;
 };
@@ -47,11 +49,12 @@ const deleteTicketByUser = async (ticketId: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || 'Помилка видалення');
+    const apiError = body?.error?.message || 'Помилка видалення';
+    throw new Error(apiError);
   }
   return body as TicketResponse;
 };
@@ -62,11 +65,12 @@ const deleteTicketByAdmin = async (ticketId: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || 'Помилка видалення');
+    const apiError = body?.error?.message || 'Помилка видалення';
+    throw new Error(apiError);
   }
   return body as TicketResponse;
 };

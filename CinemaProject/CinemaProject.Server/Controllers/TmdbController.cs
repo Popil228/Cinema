@@ -26,10 +26,13 @@ namespace CinemaProject.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = ex.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
         }
 
@@ -44,10 +47,13 @@ namespace CinemaProject.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = ex.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
         }
 
@@ -62,10 +68,13 @@ namespace CinemaProject.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
+                var error = new { error = new CinemaProject.Server.DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = ex.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
         }
     }

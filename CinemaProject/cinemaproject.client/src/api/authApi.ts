@@ -15,14 +15,18 @@ export const authApi = {
     });
 
     // Handle common auth related statuses
-    handleHttpStatus(response);
-
-    if (!response.ok) {
-      const body = await response.json();
-      throw new HttpError(response.status, body.message ?? 'Помилка входу');
+    await handleHttpStatus(response);
+    let body;
+    try {
+      body = await response.json();
+    } catch {
+      body = {};
     }
-
-    return response.json();
+    if (!response.ok) {
+      const apiError = body?.error?.message || body?.error || body?.message || 'Помилка входу';
+      throw new HttpError(response.status ?? 400, apiError);
+    }
+    return body;
   },
 
   async register(data: RegisterRequest): Promise<AuthResponse> {
@@ -35,14 +39,18 @@ export const authApi = {
     });
 
     // Handle common auth related statuses
-    handleHttpStatus(response);
-
-    if (!response.ok) {
-      const body = await response.json();
-      throw new HttpError(response.status, body.message ?? 'Помилка реєстрації');
+    await handleHttpStatus(response);
+    let body;
+    try {
+      body = await response.json();
+    } catch {
+      body = {};
     }
-
-    return response.json();
+    if (!response.ok) {
+      const apiError = body?.error?.message || body?.error || body?.message || 'Помилка реєстрації';
+      throw new HttpError(response.status ?? 400, apiError);
+    }
+    return body;
   },
 
   async confirmEmail(email: string, code: string): Promise<AuthResponse> {

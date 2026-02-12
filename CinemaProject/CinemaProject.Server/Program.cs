@@ -119,6 +119,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Глобальна обробка помилок
+app.UseMiddleware<CinemaProject.Server.Middleware.ExceptionMiddleware>();
+
 app.UseCors();
 
 app.UseDefaultFiles();

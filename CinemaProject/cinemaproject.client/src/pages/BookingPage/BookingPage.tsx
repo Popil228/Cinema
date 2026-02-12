@@ -165,10 +165,16 @@ const BookingPage: React.FC = () => {
       sessionSeatIds: selectedSessionSeats.map((s) => s.sessionSeatId),
     };
 
-    const createdBookingId = (await createBooking(createBookingRequest))
-      .bookingId;
-
-    navigate(`/profile/tickets?bookingId=${createdBookingId}`);
+    try {
+      const createdBookingId = (await createBooking(createBookingRequest)).bookingId;
+      navigate(`/profile/tickets?bookingId=${createdBookingId}`);
+    } catch (err: any) {
+      if (err?.message) {
+        alert(err.message);
+      } else {
+        alert('Помилка при бронюванні');
+      }
+    }
   };
 
   const onPromoInputTextChange = (e: ChangeEvent<HTMLInputElement>) => {

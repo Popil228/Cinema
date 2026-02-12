@@ -24,21 +24,26 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new DiscountResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             var response = await _discount.CreateDiscountAsync(request);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             return Ok(response);
         }
@@ -50,10 +55,13 @@ namespace CinemaProject.Server.Controllers
             var response = await _discount.GetDiscountsAsync();
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             return Ok(response);
         }
@@ -64,21 +72,26 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new DiscountResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             var response = await _discount.DeleteDiscountAsync(id);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             return Ok(response);
         }
@@ -89,32 +102,39 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new DiscountUseResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(userIdStr, out var userId))
             {
-                return Unauthorized(new DiscountResponse
-                {
-                    Success = false,
-                    Message = "Користувач не автентифікований"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "Unauthorized",
+                    Message = "Користувач не автентифікований",
+                    Target = null,
+                    Details = null
+                }};
+                return Unauthorized(error);
             }
 
             var response = await _discount.CheckDiscountAsync(code, userId);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             return Ok(response);
         }
@@ -125,18 +145,37 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new DiscountResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             var response = await _discount.UpdateDiscountAsync(id, request);
             if(!response.Success)
             {
-                return response.Message == "Код на знижку не знайдено"
-                    ? NotFound(response)
-                    : BadRequest(response);
+                if(response.Message == "Код на знижку не знайдено")
+                {
+                    var error = new { error = new DTOs.ApiError {
+                        Code = "NotFound",
+                        Message = response.Message,
+                        Target = null,
+                        Details = null
+                    }};
+                    return NotFound(error);
+                }
+                else
+                {
+                    var error = new { error = new DTOs.ApiError {
+                        Code = "BadRequest",
+                        Message = response.Message,
+                        Target = null,
+                        Details = null
+                    }};
+                    return BadRequest(error);
+                }
             }
             return Ok(response);
         }

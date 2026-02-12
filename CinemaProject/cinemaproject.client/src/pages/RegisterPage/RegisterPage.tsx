@@ -68,12 +68,18 @@ const RegisterPage: React.FC = () => {
       });
 
       if (response.success) {
-        navigate('/confirm-email', { state: { email } });
+        if (response.token && response.user) {
+          auth?.login(response.user, response.token);
+          navigate('/');
+        } else {
+          navigate('/confirm-email', { state: { email } });
+        }
       } else {
+        // Покращене відображення помилки з сервера
         setError(response.message || 'Помилка реєстрації');
       }
     } catch (err: any) {
-      setError(err.message || 'Помилка з\'єднання з сервером');
+      setError(err?.message || "Помилка з'єднання з сервером");
     } finally {
       setIsLoading(false);
     }

@@ -53,7 +53,7 @@ export const getAllSessions = async (onlyUpcoming:boolean = false, movieId:numbe
 
   const response = await fetch(fetchUri, {method:"GET"});
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
   if (!response.ok) {
     throw new HttpError(response.status, 'Помилка завантаження сесій');
   }
@@ -64,7 +64,7 @@ export const getAllSessions = async (onlyUpcoming:boolean = false, movieId:numbe
 export const getSessionById = async (id: number): Promise<SessionDto> => {
   const response = await fetch(`${API_BASE_URL}/Sessions/${id}`);
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
   if (!response.ok) {
     throw new HttpError(response.status, `Сесія з ID ${id} не знайдена`);
   }
@@ -86,7 +86,7 @@ export const createSession = async (
   });
   
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
   
   if (!response.ok) {
     const error = await response.json();
@@ -113,7 +113,7 @@ export const updateSession = async (
   });
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   if (!response.ok) {
     const error = await response.json();
@@ -133,7 +133,7 @@ export const deleteSession = async (id: number): Promise<void> => {
   });
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   const contentType = response.headers.get('content-type');
   let body = null;
@@ -156,7 +156,7 @@ export const deleteSession = async (id: number): Promise<void> => {
 export const getHalls = async (): Promise<HallDto[]> => {
   const response = await fetch(`${API_BASE_URL}/Halls`);
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
   if (!response.ok) {
     throw new HttpError(response.status, 'Помилка завантаження залів');
   }
@@ -168,7 +168,7 @@ export const initHalls = async (): Promise<{ message: string }> => {
     method: "POST",
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
   if (!response.ok) {
     throw new HttpError(response.status, 'Помилка ініціалізації залів');
   }
@@ -186,7 +186,7 @@ export const getSessionSeats = async(sessionId:number) : Promise<SessionSeatDto[
     method: 'GET',
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   if (!response.ok) {
     throw new Error("Помилка завантаження місць для сеансу");

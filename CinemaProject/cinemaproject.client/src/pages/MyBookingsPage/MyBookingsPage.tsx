@@ -23,8 +23,12 @@ const MyBookingsPage: React.FC = () => {
         });
         setBookings(sortedBookings);
       }
-    } catch {
-      setError("Не вдалося завантажити бронювання");
+    } catch (err: any) {
+      if (err?.message) {
+        setError(err.message);
+      } else {
+        setError("Не вдалося завантажити бронювання");
+      }
     } finally {
       setIsLoading(false);
     }

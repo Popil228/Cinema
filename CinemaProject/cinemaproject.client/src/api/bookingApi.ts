@@ -24,11 +24,16 @@ const createBooking = async (request: BookingRequest) => {
     body: JSON.stringify(request),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
-  const body = await response.json();
+  await handleHttpStatus(response);
+  let body;
+  try {
+    body = await response.json();
+  } catch {
+    body = {};
+  }
   if (!response.ok) {
-    throw new Error(body.error || body.message || 'Помилка при бронюванні');
+    const apiError = body?.error?.message || 'Помилка при бронюванні';
+    throw new Error(apiError);
   }
   return body as BookingCreateResponse;
 };
@@ -39,11 +44,11 @@ const deleteBooking = async (id: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || body.message || 'Помилка при видаленні');
+    const apiError = body?.error?.message || 'Помилка при видаленні';
+    throw new Error(apiError);
   }
   return body as BookingResponse;
 };
@@ -58,11 +63,11 @@ const getUserBookings = async (status?: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || body.message || 'Помилка отримання списку');
+    const apiError = body?.error?.message || 'Помилка отримання списку';
+    throw new Error(apiError);
   }
   return body as BookingGetResponse;
 };
@@ -77,11 +82,11 @@ const getAllBookings = async (status?: number): Promise<BookingGetResponseAdmin>
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || body.message || 'Помилка сервера');
+    const apiError = body?.error?.message || 'Помилка сервера';
+    throw new Error(apiError);
   }
   return body as BookingGetResponseAdmin;
 };
@@ -92,11 +97,11 @@ const updateBookingStatus = async (id: number, status: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.error || body.message || 'Помилка оновлення статусу');
+    const apiError = body?.error?.message || 'Помилка оновлення статусу';
+    throw new Error(apiError);
   }
   return body as BookingResponse;
 };

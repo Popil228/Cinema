@@ -11,13 +11,12 @@ const getAllGenres = async (): Promise<Genre[]> => {
   });
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   if (!response.ok) {
     const body = await response.json();
-    throw new HttpError(response.status, body.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new HttpError(response.status, apiError);
   }
-
   return await response.json();
 }
 

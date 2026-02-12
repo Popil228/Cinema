@@ -26,18 +26,26 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieActorResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             var result = await _movieActorService.CreateMovieActorsAsync(request);
             
             if (!result.Success)
             {
-                return BadRequest(result);
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             return Ok(result);
         }
@@ -48,18 +56,26 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieActorResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             var result = await _movieActorService.UpdateMovieActorsAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             return Ok(result);
@@ -71,18 +87,26 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieActorResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             var result = await _movieActorService.DeleteMovieActorsAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             return Ok(result);

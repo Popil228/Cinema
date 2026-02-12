@@ -15,8 +15,8 @@ const searchMovies = async (searchStr:string) => {
         headers,
     })
 
-  // Handle common auth related statuses
-  handleHttpStatus(response);
+    // Handle common auth related statuses
+    await handleHttpStatus(response);
 
     let body = null;
     const contentType = response.headers.get('content-type');
@@ -39,9 +39,9 @@ const searchMovies = async (searchStr:string) => {
     }
 
     if (!response.ok) {
-        throw new HttpError(response.status, body?.error ?? 'Помилка сервера');
+        const apiError = body?.error?.message || 'Помилка сервера';
+        throw new HttpError(response.status, apiError);
     }
-
     return body as MovieInfo[];
 }
 
@@ -55,8 +55,8 @@ const getMovieInfoByIdTMDB = async (movieId:number) => {
         headers
     })
 
-  // Handle common auth related statuses
-  handleHttpStatus(response);
+    // Handle common auth related statuses
+    await handleHttpStatus(response);
 
     let body = null;
     const contentType = response.headers.get('content-type');
@@ -79,9 +79,9 @@ const getMovieInfoByIdTMDB = async (movieId:number) => {
     }
 
     if (!response.ok) {
-        throw new HttpError(response.status, body?.error ?? 'Помилка сервера');
+        const apiError = body?.error?.message || 'Помилка сервера';
+        throw new HttpError(response.status, apiError);
     }
-
     return body as MovieInfo;
 }
 
@@ -95,8 +95,8 @@ const getCastInfoByIdTMDB = async (movieId:number) => {
         headers
     })
 
-  // Handle common auth related statuses
-  handleHttpStatus(response);
+    // Handle common auth related statuses
+    await handleHttpStatus(response);
 
     let body = null;
     const contentType = response.headers.get('content-type');
@@ -119,9 +119,9 @@ const getCastInfoByIdTMDB = async (movieId:number) => {
     }
 
     if (!response.ok) {
-        throw new HttpError(response.status, body?.error ?? 'Помилка сервера');
+        const apiError = body?.error?.message || 'Помилка сервера';
+        throw new HttpError(response.status, apiError);
     }
-
     return body as Cast[];
 }
 

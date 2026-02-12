@@ -46,8 +46,12 @@ const TicketDetailsPage: React.FC = () => {
       if (response.success && response.tickets) {
         setTickets(response.tickets);
       }
-    } catch {
-      setError("Не вдалося завантажити квитки");
+    } catch (err: any) {
+      if (err?.message) {
+        setError(err.message);
+      } else {
+        setError("Не вдалося завантажити квитки");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -62,8 +66,12 @@ const TicketDetailsPage: React.FC = () => {
         setTickets((prev) => prev.filter((t) => t.id !== ticketId));
         if (tickets.length === 1) fetchTickets(Number(bookingId));
       }
-    } catch {
-      alert("Помилка при скасуванні квитка");
+    } catch (err: any) {
+      if (err?.message) {
+        alert(err.message);
+      } else {
+        alert("Помилка при скасуванні квитка");
+      }
     }
   };
 

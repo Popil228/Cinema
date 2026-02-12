@@ -44,14 +44,12 @@ const createDiscount = async (discountData: DiscountCreateRequst) => {
     body: JSON.stringify(discountData),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new Error(body.message ?? "Помилка сервера");
+    const apiError = body?.error?.message || body?.error || body?.message || "Помилка сервера";
+    throw new Error(apiError);
   }
-
   return body.message;
 };
 
@@ -61,14 +59,12 @@ const getDiscounts = async () => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new Error(body.message ?? "Помилка сервера");
+    const apiError = body?.error?.message || body?.error || body?.message || "Помилка сервера";
+    throw new Error(apiError);
   }
-
   return body.discounts;
 };
 
@@ -78,15 +74,12 @@ const deleteDiscount = async (id: number) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
-  console.log(response);
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new Error(body.message ?? "Помилка сервера");
+    const apiError = body?.error?.message || body?.error || body?.message || "Помилка сервера";
+    throw new Error(apiError);
   }
-
   return body.success;
 };
 
@@ -97,15 +90,12 @@ const updateDiscount = async (id: number, request: DiscountRequest) => {
     body: JSON.stringify(request),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
-  console.log(response);
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new Error(body.message ?? "Помилка сервера");
+    const apiError = body?.error?.message || body?.error || body?.message || "Помилка сервера";
+    throw new Error(apiError);
   }
-
   return body.success;
 };
 
@@ -115,15 +105,12 @@ const checkDiscount = async (code: string) => {
     headers: getHeaders(),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
-  console.log(response);
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new Error(body.error ?? "Помилка сервера");
+    const apiError = body?.error?.message || body?.error || body?.message || "Помилка сервера";
+    throw new Error(apiError);
   }
-
   return body as DiscountCheckResponse;
 };
 
