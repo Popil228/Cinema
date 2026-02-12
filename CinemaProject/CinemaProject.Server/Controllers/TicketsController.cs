@@ -27,17 +27,26 @@ namespace CinemaProject.Server.Controllers
 
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
-                return Unauthorized();
+                var error = new { error = new DTOs.ApiError {
+                    Code = "Unauthorized",
+                    Message = "User is not authorized.",
+                    Target = null,
+                    Details = null
+                }};
+                return Unauthorized(error);
             }
 
             var response = await _ticketService.GetTicketsByBookingIdAsync(bookingId, userId);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             return Ok(response);
         }
@@ -50,10 +59,13 @@ namespace CinemaProject.Server.Controllers
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             return Ok(response);
         }
@@ -66,17 +78,24 @@ namespace CinemaProject.Server.Controllers
 
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
-                return Unauthorized();
+                return Unauthorized(new { error = new DTOs.ApiError {
+                    Code = "Unauthorized",
+                    Message = "User is not authorized.",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var response = await _ticketService.DeleteTicketAsync(id, userId);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
             return Ok(response);
         }
@@ -88,10 +107,12 @@ namespace CinemaProject.Server.Controllers
             var response = await _ticketService.DeleteTicketAsync(id);
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
             return Ok(response);
         }

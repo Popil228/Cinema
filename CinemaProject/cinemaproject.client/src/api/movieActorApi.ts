@@ -17,14 +17,12 @@ const createMovieActor = async (movieActorData: MovieActor[]) => {
     })
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new HttpError(response.status, body.message ?? 'Помилка при створенні зв’язків акторів');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка при створенні зв’язків акторів';
+    throw new HttpError(response.status, apiError);
   }
-
   return body.message;
 }
 
@@ -39,14 +37,12 @@ const updateMovieActor = async (movieActorData: MovieActor[]) => {
   })
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new HttpError(response.status, body.message ?? 'Помилка при оновленні зв’язків акторів');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка при оновленні зв’язків акторів';
+    throw new HttpError(response.status, apiError);
   }
-
   return body.message;
 }
 
@@ -61,13 +57,12 @@ const deleteMovieActor = async (movieActorData: MovieActor) => {
   });
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   if (!response.ok) {
     const body = await response.json();
-    throw new HttpError(response.status, body.message ?? 'Помилка при видаленні зв’язку актора');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка при видаленні зв’язку актора';
+    throw new HttpError(response.status, apiError);
   }
-
   return true;
 };
 

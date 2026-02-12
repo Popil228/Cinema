@@ -30,8 +30,8 @@ export function setupApiInterceptor(onTokenExpired: () => void) {
     const response = await originalFetch(resource, config);
 
     try {
-      // Convert common HTTP statuses to typed errors
-      handleHttpStatus(response);
+      // Convert common HTTP statuses to typed errors (асинхронно)
+      await handleHttpStatus(response);
     } catch (err) {
       // If unauthorized and user was logged in trigger token expired flow
       if (err instanceof UnauthorizedError && user) {
@@ -44,4 +44,14 @@ export function setupApiInterceptor(onTokenExpired: () => void) {
 
     return response;
   };
+}
+
+// Edge-case utility: extracts error message from API error object (for tests and fallback UI)
+export function interceptApiError(error: any): Error {
+  // Typical axios/fetch error shape: { response: { data: { error: { message } } } }
+  const message =
+    error?.response?.data?.error?.message ||
+    error?.message ||
+    'Невідома помилка API';
+  return new Error(message);
 }

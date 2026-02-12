@@ -27,8 +27,12 @@ const LoginPage: React.FC = () => {
       } else {
         setError(response.message || 'Помилка входу');
       }
-    } catch {
-      setError('Помилка з`єднання з сервером');
+    } catch (err: any) {
+      if (err?.message) {
+        setError(err.message);
+      } else {
+        setError('Помилка з`єднання з сервером');
+      }
     } finally {
       setIsLoading(false);
     }

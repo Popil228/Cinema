@@ -28,10 +28,13 @@ namespace CinemaProject.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = ex.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
         }
@@ -46,10 +49,13 @@ namespace CinemaProject.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = ex.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
         }
@@ -60,18 +66,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var result = await _movieService.CreateMovieAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
 
             return Ok(result);
@@ -83,18 +95,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var result = await _movieService.DeleteMovieAsync(id);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
 
             return Ok(result);
@@ -106,18 +124,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var result = await _movieService.UpdateMovieAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
 
             return Ok(result);

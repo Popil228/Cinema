@@ -17,14 +17,12 @@ const createActor = async (movieActorData: Actor[]) => {
     })
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new HttpError(response.status, body.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new HttpError(response.status, apiError);
   }
-
   return body.message;
 }
 
@@ -39,14 +37,12 @@ const updateActor = async (actorData: Actor[]) => {
   })
 
   // Handle common auth related statuses
-  handleHttpStatus(response);
-
+  await handleHttpStatus(response);
   const body = await response.json();
-
   if (!response.ok) {
-    throw new HttpError(response.status, body.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new HttpError(response.status, apiError);
   }
-
   return body.message;
 }
 

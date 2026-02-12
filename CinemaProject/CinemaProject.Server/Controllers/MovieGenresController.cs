@@ -26,18 +26,26 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieActorResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             var result = await _movieGenreService.CreateMovieGenresAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             return Ok(result);
@@ -49,18 +57,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new MovieActorResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var result = await _movieGenreService.UpdateMovieGenresAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
 
             return Ok(result);

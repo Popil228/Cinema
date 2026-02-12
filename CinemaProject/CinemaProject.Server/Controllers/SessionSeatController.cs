@@ -23,7 +23,13 @@ namespace CinemaProject.Server.Controllers
             var response = await _sessionSeatService.GetAllBySessionIdAsync(sessionId, isActive);
             if (!response.Success)
             {
-                return BadRequest(response);
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
 
             return Ok(response);
@@ -38,7 +44,13 @@ namespace CinemaProject.Server.Controllers
 
             if (!response.Success)
             {
-                return NotFound(response);
+                var error = new { error = new DTOs.ApiError {
+                    Code = "NotFound",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return NotFound(error);
             }
 
             return Ok(response);

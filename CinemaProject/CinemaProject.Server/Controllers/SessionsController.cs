@@ -31,7 +31,13 @@ namespace CinemaProject.Server.Controllers
             var session = await _sessionService.GetSessionByIdAsync(id);
             if (session == null)
             {
-                return NotFound(new { message = $"Сесія з ID {id} не знайдена" });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "NotFound",
+                    Message = $"Сесія з ID {id} не знайдена",
+                    Target = "id",
+                    Details = null
+                }};
+                return NotFound(error);
             }
             return Ok(session);
         }
@@ -47,11 +53,23 @@ namespace CinemaProject.Server.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = ex.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return BadRequest(error);
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new { message = ex.Message });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "Conflict",
+                    Message = ex.Message,
+                    Target = null,
+                    Details = null
+                }};
+                return Conflict(error);
             }
         }
 
@@ -64,13 +82,23 @@ namespace CinemaProject.Server.Controllers
                 var session = await _sessionService.UpdateSessionAsync(id, dto);
                 if (session == null)
                 {
-                    return NotFound(new { message = $"Сесія з ID {id} не знайдена" });
+                    var error = new { error = new DTOs.ApiError {
+                        Code = "NotFound",
+                        Message = $"Сесія з ID {id} не знайдена",
+                        Target = "id"
+                    }};
+                    return NotFound(error);
                 }
                 return Ok(session);
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = ex.Message,
+                    Target = "id"
+                }};
+                return BadRequest(error);
             }
         }
 
@@ -81,7 +109,12 @@ namespace CinemaProject.Server.Controllers
             var result = await _sessionService.DeleteSessionAsync(id);
             if (!result)
             {
-                return NotFound(new { message = $"Сесія з ID {id} не знайдена" });
+                var error = new { error = new DTOs.ApiError {
+                    Code = "NotFound",
+                    Message = $"Сесія з ID {id} не знайдена",
+                    Target = "id"
+                }};
+                return NotFound(error);
             }
             return NoContent();
         }

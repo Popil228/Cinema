@@ -14,7 +14,7 @@ const createMovie = async (movieData: MovieSummary) => {
     body: JSON.stringify(movieData),
   });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   let body = null;
   const contentType = response.headers.get('content-type');
@@ -35,9 +35,9 @@ const createMovie = async (movieData: MovieSummary) => {
   }
 
   if (!response.ok) {
-    throw new Error(body.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new Error(apiError);
   }
-
   return body.message;
 };
 
@@ -51,7 +51,7 @@ const updateMovie = async (movieData: MovieSummary) => {
     body: JSON.stringify(movieData),
   })
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   let body = null;
   const contentType = response.headers.get('content-type');
@@ -72,9 +72,9 @@ const updateMovie = async (movieData: MovieSummary) => {
   }
 
   if (!response.ok) {
-    throw new Error(body?.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new Error(apiError);
   }
-
   return body?.message;
 }
 
@@ -84,7 +84,7 @@ const getAllMovies = async () => {
       headers: { 'Content-type': 'application/json' },
     })
     // Handle common auth related statuses
-    handleHttpStatus(response);
+    await handleHttpStatus(response);
   let body = null;
   const contentType = response.headers.get('content-type');
   try {
@@ -104,9 +104,9 @@ const getAllMovies = async () => {
   }
 
   if (!response.ok) {
-    throw new Error(body?.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new Error(apiError);
   }
-
   return body as StrictMovieInfo[];
 }
 
@@ -116,7 +116,7 @@ const getAllNowShowingMovies = async () => {
       headers: { 'Content-type': 'application/json' },
     })
     // Handle common auth related statuses
-    handleHttpStatus(response);
+    await handleHttpStatus(response);
   let body = null;
   const contentType = response.headers.get('content-type');
   try {
@@ -136,9 +136,9 @@ const getAllNowShowingMovies = async () => {
   }
 
   if (!response.ok) {
-    throw new Error(body?.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new Error(apiError);
   }
-
   return body as StrictMovieInfo[];
 }
 
@@ -148,7 +148,7 @@ const getMovieById = async (id: number) => {
       headers: { 'Content-type': 'application/json' },
     })
     // Handle common auth related statuses
-    handleHttpStatus(response);
+    await handleHttpStatus(response);
   let body = null;
   const contentType = response.headers.get('content-type');
   try {
@@ -168,9 +168,9 @@ const getMovieById = async (id: number) => {
   }
 
   if (!response.ok) {
-    throw new Error(body?.message ?? 'Помилка сервера');
+    const apiError = body?.error?.message || body?.error || body?.message || 'Помилка сервера';
+    throw new Error(apiError);
   }
-
   return body as StrictMovieInfo;
 }
 
@@ -180,7 +180,7 @@ const deleteMovieById = async (movieId: number) => {
   if (token) headers['Authorization'] = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}/Movies/${movieId}`, { method: "DELETE", headers });
   // Handle common auth related statuses
-  handleHttpStatus(response);
+  await handleHttpStatus(response);
 
   // Handle empty or non JSON responses
   const contentType = response.headers.get('content-type');
@@ -193,14 +193,9 @@ const deleteMovieById = async (movieId: number) => {
   }
 
   if (!response.ok) {
-    // Try to extract error message from body if its possible
-    if (body && typeof body === 'object' && 'message' in body) {
-      throw new Error(body.message ?? 'Помилка сервера');
-    } else {
-      throw new Error('Помилка сервера');
-    }
+    const apiError = body?.error?.message || body?.error || (body && typeof body === 'object' && 'message' in body ? body.message : 'Помилка сервера');
+    throw new Error(apiError);
   }
-
   return body;
 }
 

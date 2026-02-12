@@ -24,41 +24,46 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BookingCreateResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             if(!request.SessionSeatIds.Any())
             {
-                return BadRequest(new BookingCreateResponse
-                {
-                    Success = true,
-                    Message = "Бронювання неможливе, виберіть містя"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Бронювання неможливе, виберіть містя",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(userIdStr, out var userId))
             {
-                return Unauthorized(new BookingCreateResponse
-                {
-                    Success = false,
-                    Message = "Користувач не автентифікований"
-                });
+                return Unauthorized(new { error = new DTOs.ApiError {
+                    Code = "Unauthorized",
+                    Message = "Користувач не автентифікований",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var response = await _bookingService.CreateBookingAsync(request, userId);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
             return Ok(response);
         }
@@ -69,21 +74,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BookingResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var response = await _bookingService.DeleteBookingAsync(id);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
             return Ok(response);
         }
@@ -96,12 +104,12 @@ namespace CinemaProject.Server.Controllers
 
             if (!int.TryParse(userIdStr, out var userId))
             {
-                return Unauthorized(new BookingGetResponse
-                {
-                    Success = false,
+                return Unauthorized(new { error = new DTOs.ApiError {
+                    Code = "Unauthorized",
                     Message = "Користувач не автентифікований",
-                    Bookings = new List<BookingDto>()
-                });
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var response = status.HasValue
@@ -110,10 +118,12 @@ namespace CinemaProject.Server.Controllers
             
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
             return Ok(response);
         }
@@ -128,10 +138,12 @@ namespace CinemaProject.Server.Controllers
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
             return Ok(response);
         }
@@ -142,20 +154,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!Enum.IsDefined(typeof(BookingStatus), status))
             {
-                return BadRequest(new 
-                {
-                    error = "Некоректний статус бронювання"
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Некоректний статус бронювання",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var response = await _bookingService.UpdateBookingStatusAsync(id, status);
 
             if (!response.Success)
             {
-                return BadRequest(new
-                {
-                    error = response.Message
-                });
+                return BadRequest(new { error = new DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = response.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
             return Ok(response);
         }

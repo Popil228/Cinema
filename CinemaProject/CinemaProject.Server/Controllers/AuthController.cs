@@ -23,18 +23,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new AuthResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new CinemaProject.Server.DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var result = await _authService.RegisterAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(new { error = new CinemaProject.Server.DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
 
             return Ok(result);
@@ -48,18 +54,24 @@ namespace CinemaProject.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new AuthResponse
-                {
-                    Success = false,
-                    Message = "Невалідні дані"
-                });
+                return BadRequest(new { error = new CinemaProject.Server.DTOs.ApiError {
+                    Code = "BadRequest",
+                    Message = "Невалідні дані",
+                    Target = null,
+                    Details = null
+                }});
             }
 
             var result = await _authService.LoginAsync(request);
 
             if (!result.Success)
             {
-                return Unauthorized(result);
+                return Unauthorized(new { error = new CinemaProject.Server.DTOs.ApiError {
+                    Code = "Unauthorized",
+                    Message = result.Message,
+                    Target = null,
+                    Details = null
+                }});
             }
 
             return Ok(result);
